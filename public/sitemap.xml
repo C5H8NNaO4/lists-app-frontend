@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+		<!--	created with www.mysitemapgenerator.com	-->
+		<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<url>
+	<loc>https://state-less.cloud/</loc>
+	<lastmod>2023-05-07T17:50:42+01:00</lastmod>
+	<priority>0.8</priority>
+</url>
+<url>
+	<loc>https://state-less.cloud/installation</loc>
+	<lastmod>2023-05-07T17:50:42+01:00</lastmod>
+	<priority>1.0</priority>
+</url>
+<url>
+	<loc>https://state-less.cloud/faq</loc>
+	<lastmod>2023-05-07T17:50:42+01:00</lastmod>
+	<priority>1.0</priority>
+</url>
+<url>
+	<loc>https://state-less.cloud/changes</loc>
+	<lastmod>2023-05-07T17:50:42+01:00</lastmod>
+	<priority>1.0</priority>
+</url>
+<url>
+	<loc>https://state-less.cloud/collaborating</loc>
+	<lastmod>2023-05-07T17:50:42+01:00</lastmod>
+	<priority>1.0</priority>
+</url>
+<url>
+	<loc>https://state-less.cloud/additional-topics</loc>
+	<lastmod>2023-05-07T17:50:42+01:00</lastmod>
+	<priority>1.0</priority>
+</url>
+<url>
+	<loc>https://state-less.cloud/SSR</loc>
+	<lastmod>2023-05-07T17:50:42+01:00</lastmod>
+	<priority>1.0</priority>
+</url>
+<url>
+	<loc>https://state-less.cloud/states</loc>
+	<lastmod>2023-05-07T17:50:42+01:00</lastmod>
+	<priority>1.0</priority>
+</url>
+<url>
+	<loc>https://state-less.cloud/components</loc>
+	<lastmod>2023-05-07T17:50:42+01:00</lastmod>
+	<priority>1.0</priority>
+</url>
+<url>
+	<loc>https://state-less.cloud/react-server</loc>
+	<lastmod>2023-05-07T17:50:42+01:00</lastmod>
+	<priority>1.0</priority>
+</url>
+<url>
+	<loc>https://state-less.cloud/react-server/hooks</loc>
+	<lastmod>2023-05-07T17:50:42+01:00</lastmod>
+	<priority>0.8</priority>
+</url>
+<url>
+	<loc>https://state-less.cloud/stores</loc>
+	<lastmod>2023-05-07T17:50:42+01:00</lastmod>
+	<priority>1.0</priority>
+</url>
+<url>
+	<loc>https://state-less.cloud/server</loc>
+	<lastmod>2023-05-07T17:50:42+01:00</lastmod>
+	<priority>1.0</priority>
+</url>
+<url>
+	<loc>https://state-less.cloud/authentication</loc>
+	<lastmod>2023-05-07T17:50:42+01:00</lastmod>
+	<priority>1.0</priority>
+</url>
+<url>
+	<loc>https://state-less.cloud/examples</loc>
+	<lastmod>2023-05-07T17:50:42+01:00</lastmod>
+	<priority>1.0</priority>
+</url>
+<url>
+	<loc>https://state-less.cloud/examples/comments</loc>
+	<lastmod>2023-05-07T17:50:42+01:00</lastmod>
+	<priority>0.8</priority>
+</url>
+<url>
+	<loc>https://state-less.cloud/examples/chat</loc>
+	<lastmod>2023-05-07T17:50:42+01:00</lastmod>
+	<priority>0.8</priority>
+</url>
+<url>
+	<loc>https://state-less.cloud/examples/cms</loc>
+	<lastmod>2023-05-07T17:50:42+01:00</lastmod>
+	<priority>0.8</priority>
+</url>
+<url>
+	<loc>https://state-less.cloud/examples/cms/pages</loc>
+	<lastmod>2023-05-07T17:50:42+01:00</lastmod>
+	<priority>0.6</priority>
+</url>
+<url>
+	<loc>https://state-less.cloud/examples/cms/rendering</loc>
+	<lastmod>2023-05-07T17:50:42+01:00</lastmod>
+	<priority>0.6</priority>
+</url>
+<url>
+	<loc>https://state-less.cloud/debug</loc>
+	<lastmod>2023-05-07T17:50:42+01:00</lastmod>
+	<priority>1.0</priority>
+</url>
+<url>
+	<loc>https://state-less.cloud/examples/votings</loc>
+	<lastmod>2023-05-07T17:50:42+01:00</lastmod>
+	<priority>0.8</priority>
+</url>
+<url>
+	<loc>https://state-less.cloud/admin</loc>
+	<lastmod>2023-05-07T17:50:42+01:00</lastmod>
+	<priority>1.0</priority>
+</url>
+</urlset>

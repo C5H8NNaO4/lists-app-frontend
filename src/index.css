@@ -1,0 +1,11 @@
+/* Load Roboto font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* Apply Roboto font to all elements */
+body {
+  font-family: 'Roboto', sans-serif;
+  font-weight: 300;
+  margin: 0px;
+}

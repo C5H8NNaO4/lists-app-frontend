@@ -1,0 +1,6 @@
+.impressum {
+  justify-content: space-around;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
