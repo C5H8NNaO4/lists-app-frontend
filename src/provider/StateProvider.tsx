@@ -5,6 +5,9 @@ type State = {
   animatedBackground: boolean;
   messages: string[];
   history: HistoryAction[];
+  fullscreen: boolean;
+  search: string;
+  searchDistance: number;
 };
 
 type HistoryAction = {
@@ -20,6 +23,9 @@ const initialState: State = {
     : localStorage.getItem('animatedBackground') === 'true',
   messages: [],
   history: [],
+  fullscreen: localStorage.getItem('fullscreen') === 'true',
+  search: '',
+  searchDistance: Number(localStorage.getItem('searchDistance') || 2),
 };
 
 export enum Actions {
@@ -29,6 +35,9 @@ export enum Actions {
   HIDE_MESSAGE,
   RECORD_CHANGE,
   REVERT_CHANGE,
+  TOGGLE_FULLSCREEN,
+  SEARCH,
+  SET_SEARCH_DISTANCE,
 }
 
 export const stateContext = createContext({
@@ -71,6 +80,24 @@ const reducer = (state: State, action: Action) => {
         history: state.history.slice(0, -1),
       };
     }
+    case Actions.TOGGLE_FULLSCREEN:
+      return {
+        ...state,
+        fullscreen: !state.fullscreen,
+      };
+
+    case Actions.SEARCH:
+      return {
+        ...state,
+        search: action.value,
+      };
+    case Actions.SET_SEARCH_DISTANCE:
+      return {
+        ...state,
+        searchDistance: action.value,
+      };
+    default:
+      return state;
   }
   return state;
 };

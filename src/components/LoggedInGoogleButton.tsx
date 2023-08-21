@@ -76,7 +76,6 @@ export const GoogleLoginButton = () => {
       buttonText="Login"
       onSuccess={(response) => {
         if (!isGoogleLoginResponse(response)) {
-          console.log('Offline?', response);
           return;
         }
         const { tokenId, accessToken } = response;
