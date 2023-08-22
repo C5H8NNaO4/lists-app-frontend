@@ -118,7 +118,7 @@ export const Layout = () => {
         }
         <main>
           <SidebarNavigation />
-          {!state.fullscreen && (
+          {!state.fullscreen && state.alerts.info?.length > 0 && (
             <Alert
               severity="info"
               // sx={{ mt: 8 }}
@@ -133,6 +133,7 @@ export const Layout = () => {
               {time < 1000 ? messages[1] : messages[3]}
             </Alert>
           )}
+          <div id="app-warnings" />
           {state.messages.map((message) => {
             return (
               <Snackbar

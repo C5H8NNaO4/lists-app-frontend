@@ -4,6 +4,7 @@ type State = {
   menuOpen: boolean;
   animatedBackground: boolean;
   messages: string[];
+  alerts: Record<string, string[]>;
   history: HistoryAction[];
   fullscreen: boolean;
   search: string;
@@ -22,6 +23,10 @@ const initialState: State = {
     ? localStorage.getItem('animatedBackgroundUser') === 'true'
     : localStorage.getItem('animatedBackground') === 'true',
   messages: [],
+  alerts: {
+    info: [],
+    warning: [],
+  },
   history: [],
   fullscreen: localStorage.getItem('fullscreen') === 'true',
   search: '',
