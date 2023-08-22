@@ -69,6 +69,8 @@ import SortByAlphaIcon from '@mui/icons-material/SortByAlpha';
 import PushPinIcon from '@mui/icons-material/PushPin';
 import ReplayIcon from '@mui/icons-material/Replay';
 import InvertColorsIcon from '@mui/icons-material/InvertColors';
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
+
 import {
   DndContext,
   TouchSensor,
@@ -107,6 +109,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { TimePicker } from '@mui/x-date-pickers';
 import { NotificationButton } from '../../components/NotificationButton';
+import { format } from 'date-fns';
 
 const minWord = (word: string, str: string) => {
   let min = Infinity;
@@ -2086,6 +2089,7 @@ const TodoItem = (props) => {
         <ListItemButton
           selected={dist <= 1}
           dense
+          disableGutters
           sx={{
             backgroundColor: component?.props?.color || undefined,
             '&:hover': {
@@ -2130,7 +2134,21 @@ const TodoItem = (props) => {
             sx={{ mr: 10, '&>p': { color: error ? 'red' : 'theme.text' } }}
             secondary={error ? error.message : ''}
           />
-          <ListItemSecondaryAction>
+          <ListItemSecondaryAction
+            sx={{ display: 'flex', alignItems: 'center' }}
+          >
+            {(component?.props?.dueDate || component?.props?.dueTime) && (
+              <Tooltip
+                title={`${
+                  component?.props?.dueDate
+                    ? format(new Date(component?.props?.dueDate), 'dd.MM')
+                    : ''
+                } ${format(new Date(component?.props?.dueTime), 'HH:mm')}`}
+                placement='left'
+              >
+                <NotificationsNoneIcon sx={{ mr: 1 }}></NotificationsNoneIcon>
+              </Tooltip>
+            )}
             {component?.props?.valuePoints > 0 && (
               <Tooltip
                 title={`Can be completed ${times} times within ${
