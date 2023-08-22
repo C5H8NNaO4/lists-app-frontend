@@ -11,6 +11,9 @@ export const Warning = ({
   action,
 }: {
   id: string;
+  severity?: string;
+  title?: string;
+  action?: React.ReactNode;
 }) => {
   const [dismissed, setDismissed] = useLocalStorage(id + 'dismissed', false);
   if (dismissed) {
