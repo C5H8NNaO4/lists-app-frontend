@@ -1,7 +1,6 @@
 import { Paper, Container } from '@mui/material';
 
 import { Markdown } from '../components/Markdown';
-import { Server } from '../server-components/Server';
 import { getRawPath } from '../components/CollabEditButton';
 import { Navigation } from '../components/NavigationButton';
 
