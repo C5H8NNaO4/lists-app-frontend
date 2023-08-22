@@ -2,7 +2,7 @@
 
 import { useTheme } from '@mui/material';
 import clsx from 'clsx';
-import React, {
+import {
   FunctionComponent,
   PropsWithChildren,
   useEffect,
@@ -14,6 +14,7 @@ enum Vanta {
   CLOUDS,
   WAVES,
 }
+
 type VANTA = {
   [index: string]: any;
   CLOUDS: any;
@@ -55,8 +56,8 @@ export const VantaBackground: FunctionComponent<
   /** Destroy the background on unmount */
   useEffect(() => {
     return () => {
-      if (instance.current && instance.current.destroy)
-        instance.current.destroy();
+      if (instance.current && instance?.current?.destroy)
+        instance?.current?.destroy?.();
     };
   }, []);
 

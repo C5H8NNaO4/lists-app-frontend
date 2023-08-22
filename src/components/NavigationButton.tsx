@@ -5,7 +5,6 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import HomeIcon from '@mui/icons-material/Home';
 import { useLocation } from 'react-router-dom';
 import { navigation } from '../routes';
-import { pascalCase } from 'change-case';
 import { ReactNode } from 'react';
 import { CollabEditButton, getGHPath } from './CollabEditButton';
 
