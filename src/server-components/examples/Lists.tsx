@@ -1308,12 +1308,23 @@ export const List = ({
   nItems,
   lastCompleted,
   refetchPoints,
+  options = {},
+}: {
+  list: string;
+  remove?: any;
+  id?: string;
+  refetch?: any;
+  nItems: number;
+  lastCompleted?: any;
+  refetchPoints?: any;
+  options?: any;
 }) => {
   const { dispatch, state } = useContext(stateContext);
   const [component, { loading, error, refetch: refetchList }] = useComponent(
     list,
     {}
   );
+  const { hideHUD } = options as any;
   const [todoTitle, setTodoTitle] = useState('');
   const [listTitle, setListTitle] = useSyncedState(
     component?.props?.title,
@@ -1519,7 +1530,9 @@ export const List = ({
     <Card
       sx={{
         height: '100%',
-        backgroundColor: component?.props?.color || 'white',
+        backgroundColor: component?.props?.color
+          ? `${component?.props?.color} !important`
+          : undefined,
       }}
       onMouseOver={() => setHover(true)}
       onMouseLeave={() => setTimeout(setHover, 200, false)}
@@ -1729,7 +1742,7 @@ export const List = ({
         <CardActionArea
           sx={{
             mt: 'auto',
-            opacity: hover ? 1 : 0,
+            opacity: hover && !hideHUD ? 1 : 0,
             transition: 'opacity 200ms ease-in',
             '&:hover': {
               transition: 'opacity 200ms ease-out',

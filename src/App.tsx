@@ -1,5 +1,5 @@
 import './App.css';
-import client from './lib/client';
+import client, { localClient } from './lib/client';
 import { ApolloProvider } from '@apollo/client';
 import { Layout } from './container/Layout';
 import { BrowserRouter as Router } from 'react-router-dom';
@@ -10,7 +10,11 @@ import { AuthProvider } from '@state-less/react-client';
 function App() {
   return (
     <div className="App">
-      <ApolloProvider client={client}>
+      <ApolloProvider
+        client={
+          import.meta.env.NODE_ENV === 'production' ? client : localClient
+        }
+      >
         <AuthProvider>
           <StateProvider>
             <Router>

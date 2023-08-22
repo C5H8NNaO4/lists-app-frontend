@@ -33,8 +33,7 @@ pre {
 }
 .light.animated .MuiPaper-root:not(.opaque) {
   /* background-color: #1E1F27AA !important; */
-  background-color: #ffffff33 !important;
-
+  background-color: #ffffff33;
   backdrop-filter: blur(6px);
 }
 

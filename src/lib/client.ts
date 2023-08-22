@@ -35,36 +35,41 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
-// Create an HTTP link
-const localHttp = new HttpLink({
-  uri: `http://${LOCAL_HOST}:4000/graphql`,
-});
+let localClient: any = null;
 
-// Create a WebSocket link
-const localWs = new WebSocketLink({
-  uri: `ws://${LOCAL_HOST}:4000/graphql`,
-  options: {
-    reconnect: true,
-  },
-});
+if (import.meta.env.NODE_ENV !== 'production') {
+  // Create an HTTP link
+  const localHttp = new HttpLink({
+    uri: `http://${LOCAL_HOST}:4000/graphql`,
+  });
 
-// Use the split function to direct traffic between the two links
-const local = split(
-  ({ query }) => {
-    const definition = getMainDefinition(query);
-    return (
-      definition.kind === 'OperationDefinition' &&
-      definition.operation === 'subscription'
-    );
-  },
-  localWs,
-  localHttp
-);
+  // Create a WebSocket link
+  const localWs = new WebSocketLink({
+    uri: `ws://${LOCAL_HOST}:4000/graphql`,
+    options: {
+      reconnect: true,
+    },
+  });
 
-// Create the Apollo Client instance
-export const localClient = new ApolloClient({
-  link: local,
-  cache: new InMemoryCache(),
-});
+  // Use the split function to direct traffic between the two links
+  const local = split(
+    ({ query }) => {
+      const definition = getMainDefinition(query);
+      return (
+        definition.kind === 'OperationDefinition' &&
+        definition.operation === 'subscription'
+      );
+    },
+    localWs,
+    localHttp
+  );
+
+  // Create the Apollo Client instance
+  localClient = new ApolloClient({
+    link: local,
+    cache: new InMemoryCache(),
+  });
+}
 
 export default client;
+export { localClient };

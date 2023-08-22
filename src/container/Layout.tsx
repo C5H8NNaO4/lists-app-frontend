@@ -54,6 +54,7 @@ const messages = [
 export const Layout = () => {
   const { state, dispatch } = useContext(stateContext);
   const [features, { loading: featuresLoading }] = useComponent('features');
+  const { pathname } = useLocation();
   const [_animated, setAnim] = useState(false);
 
   const [time, setTime] = useState(0);
@@ -68,9 +69,9 @@ export const Layout = () => {
 
   useEffect(() => {
     setTimeout(() => {
-      setAnim(state?.animatedBackground);
-    }, 1000);
-  }, [state?.animatedBackground]);
+      setAnim(pathname === '/welcome' || state?.animatedBackground);
+    }, 500);
+  }, [state?.animatedBackground, pathname]);
 
   useEffect(() => {
     localStorage.setItem('animatedBackground', features?.props?.animated);
@@ -85,7 +86,6 @@ export const Layout = () => {
     }
   }, [features?.props?.animated]);
 
-  const { pathname } = useLocation();
   useEffect(() => {
     gtag('event', 'load', { event_category: 'page' });
   }, [pathname]);
