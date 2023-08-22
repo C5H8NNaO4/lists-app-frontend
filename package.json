@@ -21,6 +21,7 @@
     "@state-less/react-client": "^2.0.3",
     "copy-to-clipboard": "^3.3.3",
     "date-fns": "^2.30.0",
+    "eslint-plugin-prettier": "^5.0.0",
     "github-api": "^3.4.0",
     "mermaid": "^10.3.1",
     "prettier": "^3.0.0",

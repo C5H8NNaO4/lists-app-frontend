@@ -254,6 +254,8 @@ export const MyLists = (props) => {
       navigate('/lists');
     }
   });
+
+  // Might be useful later to compare it to exported data to know if the data is up to date with the server
   const data = component?.children
     ?.filter((list) => list?.props?.id)
     ?.reduce((acc, list) => {
@@ -2144,7 +2146,7 @@ const TodoItem = (props) => {
                     ? format(new Date(component?.props?.dueDate), 'dd.MM')
                     : ''
                 } ${format(new Date(component?.props?.dueTime), 'HH:mm')}`}
-                placement='left'
+                placement="left"
               >
                 <NotificationsNoneIcon sx={{ mr: 1 }}></NotificationsNoneIcon>
               </Tooltip>
