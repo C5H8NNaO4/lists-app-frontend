@@ -31,7 +31,11 @@ export const IndexPage = () => {
           </>
         }
       />
-      <Warning id="data-loss" />
+      <Warning
+        id="data-loss"
+        title={`Please backup / sync your data frequently as there's currently no database
+      connected to the server. Data-loss may occur in unexpected circumstances.`}
+      />
       <MyLists key={ctx?.session?.id} />
     </div>
   );

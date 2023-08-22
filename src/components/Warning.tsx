@@ -1,4 +1,4 @@
-import { Alert, Button, Link, IconButton } from '@mui/material';
+import { Alert, Button, Link, IconButton, AlertColor } from '@mui/material';
 import { useLocalStorage } from '@state-less/react-client';
 import { createPortal } from 'react-dom';
 import { Link as RouterLink } from 'react-router-dom';
@@ -11,7 +11,7 @@ export const Warning = ({
   action,
 }: {
   id: string;
-  severity?: string;
+  severity?: AlertColor;
   title?: string;
   action?: React.ReactNode;
 }) => {
@@ -38,9 +38,7 @@ export const Warning = ({
         </>
       }
     >
-      {title ||
-        `Please backup / sync your data frequently as there's currently no database
-      connected to the server. Data-loss may occur in unexpected circumstances.`}
+      {title}
     </Alert>
   );
 
