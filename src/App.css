@@ -45,3 +45,8 @@ pre {
 .recharts-tooltip-wrapper:focus {
   outline: none;
 }
+
+.MuiCard-root {
+  display: flex;
+  flex-direction: column;
+}
