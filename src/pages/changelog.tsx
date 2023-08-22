@@ -21,7 +21,7 @@ import GitHubIcon from '@mui/icons-material/GitHub';
 import { LineChart, Line, ResponsiveContainer, Tooltip } from 'recharts';
 
 const DAYS_HISTORY = 30;
-const PAGE_SRC = 'changelog.md';
+const PAGE_SRC = 'readme/changelog.md';
 
 const commitsToData = (commits) => {
   const data = [
