@@ -9,7 +9,9 @@ import { stateContext } from '../provider/StateProvider';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 
-const logError = () => {};
+const logError = (e) => {
+  console.log ("Google Login error", e)
+};
 
 const isGoogleLoginResponse = (val: any): val is GoogleLoginResponse => {
   return val?.tokenId !== undefined && val.accessToken !== undefined;
@@ -74,7 +76,9 @@ export const GoogleLoginButton = () => {
     <GoogleLogin
       clientId={GOOGLE_ID}
       buttonText="Login"
+
       onSuccess={(response) => {
+        console.log('Google Login success', response);
         if (!isGoogleLoginResponse(response)) {
           return;
         }

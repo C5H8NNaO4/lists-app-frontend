@@ -5,7 +5,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 // https://vitejs.dev/config/
 export default defineConfig({
   server: {
-    port: 3001,
+    // port: 3001,
   },
   envPrefix: 'REACT_APP_',
   plugins: [
