@@ -4,7 +4,14 @@ import { createPortal } from 'react-dom';
 import { Link as RouterLink } from 'react-router-dom';
 import CloseIcon from '@mui/icons-material/Close';
 
-export const Warning = ({ id }: { id: string }) => {
+export const Warning = ({
+  id,
+  severity = 'warning',
+  title,
+  action,
+}: {
+  id: string;
+}) => {
   const [dismissed, setDismissed] = useLocalStorage(id + 'dismissed', false);
   if (dismissed) {
     return null;
@@ -12,22 +19,25 @@ export const Warning = ({ id }: { id: string }) => {
   const warning = (
     <Alert
       sx={{ alignItems: 'center', display: 'flex', justifyContent: 'center' }}
-      severity="warning"
+      severity={severity}
       action={
         <>
-          <Button>
-            <Link to="/about" component={RouterLink}>
-              More
-            </Link>
-          </Button>
+          {action || (
+            <Button>
+              <Link to="/about" component={RouterLink}>
+                More
+              </Link>
+            </Button>
+          )}
           <IconButton onClick={() => setDismissed(true)}>
             <CloseIcon />
           </IconButton>
         </>
       }
     >
-      Please backup / sync your data frequently as there's currently no database
-      connected to the server. Data-loss may occur in unexpected circumstances.
+      {title ||
+        `Please backup / sync your data frequently as there's currently no database
+      connected to the server. Data-loss may occur in unexpected circumstances.`}
     </Alert>
   );
 

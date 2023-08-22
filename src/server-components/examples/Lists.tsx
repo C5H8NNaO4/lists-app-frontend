@@ -448,7 +448,7 @@ export const MyLists = (props) => {
         strategy={rectSortingStrategy}
       >
         <Box sx={{ mx: fullWidth ? 0 : 0 }}>
-          <Grid container spacing={1}>
+          <Grid container rowSpacing={1} columnSpacing={0}>
             {[pinnedOrder, unpinnedOrder].map((optimisticOrder) => {
               return optimisticOrder?.map((id, i) => {
                 const list = lkp[id];
