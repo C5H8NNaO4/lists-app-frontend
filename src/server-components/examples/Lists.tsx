@@ -473,6 +473,7 @@ export const MyLists = (props) => {
                       <List
                         key={list.component}
                         list={list.component || list.key}
+                        data={list}
                         remove={component?.props?.remove}
                         id={list.id}
                         refetch={refetch}
@@ -1302,6 +1303,7 @@ const useSyncedState = (defValue, updateFn) => {
 
 export const List = ({
   list,
+  data,
   remove,
   id,
   refetch,
@@ -1311,6 +1313,7 @@ export const List = ({
   options = {},
 }: {
   list: string;
+  data?: any;
   remove?: any;
   id?: string;
   refetch?: any;
@@ -1322,7 +1325,9 @@ export const List = ({
   const { dispatch, state } = useContext(stateContext);
   const [component, { loading, error, refetch: refetchList }] = useComponent(
     list,
-    {}
+    {
+      data,
+    }
   );
   const { hideHUD } = options as any;
   const [todoTitle, setTodoTitle] = useState('');
