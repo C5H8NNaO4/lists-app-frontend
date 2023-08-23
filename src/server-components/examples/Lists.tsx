@@ -15,6 +15,7 @@ import {
   TextField,
   CardContent,
   CardActions,
+  Fab,
   ButtonProps,
   InputLabel,
   FormControl,
@@ -437,6 +438,10 @@ export const MyLists = (props) => {
   const exists = component?.children?.some(
     (todo) => todo?.props?.title === title
   );
+
+  const pinnedColumns = transpose(pinnedOrder, 4);
+  const unpinnedColumns = transpose(unpinnedOrder, 4);
+
   const content = (
     <DndContext
       sensors={sensors}
@@ -447,46 +452,58 @@ export const MyLists = (props) => {
         items={unpinnedOrder || []}
         strategy={rectSortingStrategy}
       >
-        <Box sx={{ mx: fullWidth ? 0 : 0 }}>
-          <Grid container rowSpacing={1} columnSpacing={0}>
-            {[pinnedOrder, unpinnedOrder].map((optimisticOrder) => {
-              return optimisticOrder?.map((id, i) => {
-                const list = lkp[id];
-                if (!list) return null;
-                return (
-                  <Grid
-                    item
-                    xs={bp[0]}
-                    sm={bp[1]}
-                    md={bp[2]}
-                    lg={bp[3]}
-                    xl={bp[4]}
-                  >
-                    <SortableItem
-                      key={id + i}
-                      id={id}
-                      fullHeight
-                      enabled={
-                        !isTouchScreenDevice() && !list?.props?.settings?.pinned
-                      }
+        <Box sx={{ mx: fullWidth ? 0 : 0, display: 'flex', flexDirection: 'column', gap: 4}}>
+          {[pinnedColumns, unpinnedColumns].map((optimisticOrder) => {
+            console.log('ORDER ', optimisticOrder);
+            return (
+              <Grid container rowSpacing={1} columnSpacing={0}>
+                {optimisticOrder?.map((column, j) => {
+                  return (
+                    <Grid
+                      item
+                      xs={bp[0]}
+                      sm={bp[1]}
+                      md={bp[2]}
+                      lg={bp[3]}
+                      xl={bp[4]}
                     >
-                      <List
-                        key={list.component}
-                        list={list.component || list.key}
-                        data={list}
-                        remove={component?.props?.remove}
-                        id={list.id}
-                        refetch={refetch}
-                        refetchPoints={refetchPoints}
-                        nItems={nItems}
-                        lastCompleted={pointsComponent?.props?.lastCompleted}
-                      />
-                    </SortableItem>
-                  </Grid>
-                );
-              });
-            })}
-          </Grid>
+                      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                        {column.map((id, i) => {
+                          const list = lkp[id];
+                          if (!list) return null;
+                          return (
+                            <SortableItem
+                              key={id + i + j}
+                              id={id}
+                              fullHeight
+                              enabled={
+                                !isTouchScreenDevice() &&
+                                !list?.props?.settings?.pinned
+                              }
+                            >
+                              <List
+                                key={list.component}
+                                list={list.component || list.key}
+                                data={list}
+                                remove={component?.props?.remove}
+                                id={list.id}
+                                refetch={refetch}
+                                refetchPoints={refetchPoints}
+                                nItems={nItems}
+                                lastCompleted={
+                                  pointsComponent?.props?.lastCompleted
+                                }
+                              />
+                            </SortableItem>
+                          );
+                        })}
+                      </Box>
+                    </Grid>
+                  );
+                })}
+              </Grid>
+            );
+          })}
         </Box>
       </SortableContext>
     </DndContext>
@@ -537,10 +554,10 @@ export const MyLists = (props) => {
       <Container maxWidth="xl">
         {error && <Alert severity="error">{error.message}</Alert>}
         <Box
-          sx={{ display: 'flex', width: '100%', mt: 2, alignItems: 'start' }}
+          sx={{ display: 'flex', width: '100%', mt: 0, alignItems: 'start' }}
           ref={setNodeRef}
         >
-          <Box
+          {/* <Box
             sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}
           >
             <TextField
@@ -584,7 +601,7 @@ export const MyLists = (props) => {
                 setTitle('');
               }}
             />
-          </Box>
+          </Box> */}
         </Box>
         <Box
           sx={{
@@ -710,6 +727,21 @@ export const MyLists = (props) => {
         {!fullWidth && content}
       </Container>
       {fullWidth && content}
+      <Fab
+        color="primary"
+        aria-label="add"
+        sx={{ position: 'absolute', right: 16, bottom: 16 }}
+        onClick={() => {
+          component?.props?.add({
+            title,
+            settings: { defaultType: 'Todo' },
+          });
+          setTitle('');
+        }}
+      >
+        <AddIcon />
+      </Fab>
+
       <MoreMenu
         open={show.more}
         onClose={handleClose('more')}
@@ -1301,6 +1333,17 @@ const useSyncedState = (defValue, updateFn) => {
   return [localValue, setValue];
 };
 
+const transpose = (arr, n) => {
+  if (!arr?.length) return [];
+  let ret = [];
+  for (var i = 0; i < arr.length; i++) {
+    const x = i % n;
+
+    ret[x] = ret[x] || [];
+    ret[x].push(arr[i]);
+  }
+  return ret;
+};
 export const List = ({
   list,
   data,
@@ -1474,7 +1517,6 @@ export const List = ({
   }
 
   const order = !canAddLabel ? filteredItemOrder : labelOrder;
-
   function handleDragEnd(event) {
     const { active, over } = event;
 
@@ -1534,7 +1576,7 @@ export const List = ({
   return (
     <Card
       sx={{
-        height: '100%',
+        // height: '100%',
         backgroundColor: component?.props?.color
           ? `${component?.props?.color} !important`
           : undefined,
@@ -1544,95 +1586,7 @@ export const List = ({
       elevation={hover ? 2 : component?.props?.settings?.pinned ? 1 : 0}
     >
       {error && <Alert severity="error">{error.message}</Alert>}
-      <CardHeader
-        title={
-          <>
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'start',
-                opacity: hover ? 1 : 0.5,
-                transition: 'opacity 0.2s ease-in',
-                '&:hover': {
-                  transition: 'opacity 0.2s ease-out',
-                },
-              }}
-            >
-              <TextField
-                fullWidth
-                inputRef={inputRef}
-                value={edit && !labelMode ? listTitle : todoTitle}
-                label={
-                  canAddLabel ? 'Add Label' : edit ? 'Edit Title' : 'Add Item'
-                }
-                error={exists}
-                helperText={exists ? 'Item already exists' : ''}
-                onChange={(e) => {
-                  edit && !labelMode
-                    ? setListTitle(e.target.value)
-                    : setTodoTitle(e.target.value);
-                }}
-                onKeyUp={async (e) => {
-                  e.stopPropagation();
-                  if ((!edit || canAddLabel) && e.key === 'Enter') {
-                    await addEntry(e, canAddLabel);
-                    await refetchPoints();
-                  }
-                }}
-                onKeyDown={(e) => {
-                  e.stopPropagation();
-                }}
-                InputProps={{
-                  inputProps: {
-                    enterKeyHint: 'enter',
-                  },
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={() => {
-                          edit && !labelMode
-                            ? setListTitle('')
-                            : setTodoTitle('');
-                          setTimeout(() => inputRef.current?.focus(), 0);
-                        }}
-                        disabled={edit ? !listTitle : !todoTitle}
-                      >
-                        <IconClear />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              {(!edit || canAddLabel) && (
-                <IconButton
-                  sx={{ mt: 1 }}
-                  disabled={!todoTitle}
-                  onClick={(e) =>
-                    canAddLabel
-                      ? addEntry(e, true)
-                      : setShowType(e.target as HTMLElement)
-                  }
-                >
-                  <IconMore />
-                </IconButton>
-              )}
-            </Box>
-          </>
-        }
-      ></CardHeader>
-      <CardContent>
-        {!edit && (
-          <Typography
-            data-no-dnd="true"
-            sx={{
-              cursor: 'text',
-            }}
-            variant="h6"
-          >
-            {component?.props?.title}
-          </Typography>
-        )}
-      </CardContent>
+      <CardHeader title={component?.props?.title}></CardHeader>
 
       <DndContext
         sensors={sensors}
@@ -1646,7 +1600,8 @@ export const List = ({
           <MUIList
             disablePadding
             sx={{
-              height: LIST_ITEM_HEIGHT * nItems + 'px',
+              maxHeight: LIST_ITEM_HEIGHT * nItems + 'px',
+
               overflowY: 'auto',
               overflowX: 'hidden',
             }}
@@ -1704,6 +1659,75 @@ export const List = ({
       {component?.props?.settings?.defaultType === 'Expense' && (
         <Sum items={component?.children} includeArchived={showArchived} />
       )}
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'start',
+          opacity: hover ? 1 : 0.5,
+          transition: 'opacity 0.2s ease-in',
+          '&:hover': {
+            transition: 'opacity 0.2s ease-out',
+          },
+          ml: 1,
+          mr: 2,
+          mt: 'auto',
+        }}
+      >
+        <TextField
+          fullWidth
+          inputRef={inputRef}
+          value={edit && !labelMode ? listTitle : todoTitle}
+          label={canAddLabel ? 'Add Label' : edit ? 'Edit Title' : 'Add Item'}
+          error={exists}
+          helperText={exists ? 'Item already exists' : ''}
+          onChange={(e) => {
+            edit && !labelMode
+              ? setListTitle(e.target.value)
+              : setTodoTitle(e.target.value);
+          }}
+          onKeyUp={async (e) => {
+            e.stopPropagation();
+            if ((!edit || canAddLabel) && e.key === 'Enter') {
+              await addEntry(e, canAddLabel);
+              await refetchPoints();
+            }
+          }}
+          onKeyDown={(e) => {
+            e.stopPropagation();
+          }}
+          InputProps={{
+            inputProps: {
+              enterKeyHint: 'enter',
+            },
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  onClick={() => {
+                    edit && !labelMode ? setListTitle('') : setTodoTitle('');
+                    setTimeout(() => inputRef.current?.focus(), 0);
+                  }}
+                  disabled={edit ? !listTitle : !todoTitle}
+                >
+                  <IconClear />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
+        {(!edit || canAddLabel) && (
+          <IconButton
+            sx={{ mt: 1 }}
+            disabled={!todoTitle}
+            onClick={(e) =>
+              canAddLabel
+                ? addEntry(e, true)
+                : setShowType(e.target as HTMLElement)
+            }
+          >
+            <IconMore />
+          </IconButton>
+        )}
+      </Box>
       {component?.props?.settings?.pinned && !hover && (
         <CardActionArea
           sx={{
@@ -1745,12 +1769,13 @@ export const List = ({
       {!(component?.props?.settings?.pinned && !hover) && (
         <CardActionArea
           sx={{
-            mt: 'auto',
+            // mt: 'auto',
             opacity: hover && !hideHUD ? 1 : 0,
             transition: 'opacity 200ms ease-in',
             '&:hover': {
               transition: 'opacity 200ms ease-out',
             },
+            height: 'min-content',
           }}
         >
           <CardActions>

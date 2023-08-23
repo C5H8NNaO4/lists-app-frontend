@@ -156,10 +156,16 @@ export const Layout = () => {
                   sm: 1,
                   md: 2,
                 },
-                mt: 9,
+                mt: 16,
+                backgroundColor: 'primary.main',
               }}
             >
-              <Typography variant="body2" color="textSecondary" align="center">
+              <Typography
+                variant="body2"
+                color="textSecondary"
+                align="center"
+                sx={{ color: 'white' }}
+              >
                 © 2023 React Server
               </Typography>
               <Grid container spacing={1} justifyContent="center">
