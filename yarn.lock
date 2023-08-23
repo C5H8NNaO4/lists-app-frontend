@@ -2165,10 +2165,10 @@
   dependencies:
     "@sinonjs/commons" "^3.0.0"
 
-"@state-less/react-client@^2.0.3":
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/@state-less/react-client/-/react-client-2.0.3.tgz#10d95ed61d8f9cc38c9f304ec47691a2139c6ddc"
-  integrity sha512-WVj7SPGa3BAkd7cESVF25d91TeBWe8AGIqMlkBamp0sHUmbZN37pZ9WgX8J19Tv36Jiuatp/oC7zLi2FViG+vQ==
+"@state-less/react-client@^2.0.6":
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/@state-less/react-client/-/react-client-2.0.6.tgz#bb88589b1d49ee80042972460110277ddee58466"
+  integrity sha512-GPnvbIIdhsmkHl1mivEJmqzEsEL4bByKRJVuViRin/1RzkOCSvBVCpzgATD1q2JnriPCLmjgjXQGmlQatqz4fw==
   dependencies:
     "@apollo/client" "^3.7.10"
     "@babel/plugin-transform-react-jsx" "^7.21.0"
