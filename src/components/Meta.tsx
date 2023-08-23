@@ -8,9 +8,46 @@ export const DefaultMeta = () => {
   return (
     <>
       <title>React Server + Vite + React + TS</title>
+      <meta
+        name="description"
+        content="React Server is a new framework that allows you to build serverside components using JSX/TSX along with a reactive coding style known from the frontend library React. (components, hooks, effects etc.)"
+      />
+      <meta
+        name="keywords"
+        content="React Server, serverside components, serverside react components, React, GraphQL,full stack, fullstack framework, JS, JavaScript, TypeScript, reactive programming, declarative programming, "
+      />
+      <link rel="canonical" href="https://lists.state-less.cloud" />
+      <meta
+        property="og:title"
+        content="Lists App - Organize Your Life with Productivity in Mind"
+      />
+      <meta
+        property="og:description"
+        content="React Server is a new framework that allows you to build serverside components using JSX/TSX along with a reactive coding style known from the frontend library React. (components, hooks, effects etc.)"
+      />
+      <meta
+        property="og:image"
+        content="https://state-less.cloud/react-server.png"
+      />
+      <meta property="og:url" content="https://state-less.cloud/lists" />
+      <meta property="og:type" content="website" />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta
+        name="twitter:title"
+        content="Lists App - Organize Your Life with Productivity in Mind"
+      />
+      <meta
+        name="twitter:description"
+        content="React Server is a new framework that allows you to build serverside components using JSX/TSX along with a reactive coding style known from the frontend library React. (components, hooks, effects etc.)"
+      />
+      <meta
+        name="twitter:image"
+        content="https://state-less.cloud/react-server.png"
+      />
     </>
   );
 };
+
 export const ListsMeta = () => {
   return (
     <>
@@ -25,7 +62,7 @@ export const ListsMeta = () => {
         name="keywords"
         content="Lists app, productivity app, task management, water intake tracker, expense tracker, productivity tool, gamification, organization, to-do list"
       />
-      <link rel="canonical" href="https://www.lists-productivity.com" />
+      <link rel="canonical" href="https://lists.state-less.cloud" />
       <meta
         property="og:title"
         content="Lists App - Organize Your Life with Productivity in Mind"
@@ -36,9 +73,9 @@ export const ListsMeta = () => {
       />
       <meta
         property="og:image"
-        content="https://www.lists-productivity.com/images/og-image.jpg"
+        content="https://state-less.cloud/react-server.png"
       />
-      <meta property="og:url" content="https://www.lists-productivity.com" />
+      <meta property="og:url" content="https://state-less.cloud/lists" />
       <meta property="og:type" content="website" />
       <meta name="twitter:card" content="summary_large_image" />
       <meta
@@ -51,7 +88,7 @@ export const ListsMeta = () => {
       />
       <meta
         name="twitter:image"
-        content="https://www.lists-productivity.com/images/twitter-card-image.jpg"
+        content="https://state-less.cloud/react-server.png"
       />
     </>
   );
