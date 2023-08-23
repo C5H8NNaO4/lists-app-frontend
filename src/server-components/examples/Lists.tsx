@@ -736,7 +736,7 @@ export const MyLists = (props) => {
       <Fab
         color="primary"
         aria-label="add"
-        sx={{ position: 'absolute', right: 16, bottom: 16 }}
+        sx={{ position: 'fixed', right: 16, bottom: 16 }}
         onClick={() => {
           component?.props?.add({
             title,
