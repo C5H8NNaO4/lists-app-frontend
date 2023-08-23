@@ -452,12 +452,18 @@ export const MyLists = (props) => {
         items={unpinnedOrder || []}
         strategy={rectSortingStrategy}
       >
-        <Box sx={{ mx: fullWidth ? 0 : 0, display: 'flex', flexDirection: 'column', gap: 4}}>
+        <Box
+          sx={{
+            mx: fullWidth ? 0 : 0,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 4,
+          }}
+        >
           {[pinnedColumns, unpinnedColumns].map((optimisticOrder) => {
-            console.log('ORDER ', optimisticOrder);
             return (
               <Grid container rowSpacing={1} columnSpacing={0}>
-                {optimisticOrder?.map((column, j) => {
+                {optimisticOrder?.map((column: string[], j) => {
                   return (
                     <Grid
                       item
