@@ -12,7 +12,7 @@ function App() {
     <div className="App">
       <ApolloProvider
         client={
-          import.meta.env.NODE_ENV === 'production' ? client : localClient
+          import.meta.env.MODE === 'production' ? client : localClient
         }
       >
         <AuthProvider>

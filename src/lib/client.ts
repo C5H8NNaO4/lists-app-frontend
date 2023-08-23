@@ -37,7 +37,7 @@ const client = new ApolloClient({
 
 let localClient: any = null;
 
-if (import.meta.env.NODE_ENV !== 'production') {
+if (import.meta.env.MODE !== 'production') {
   // Create an HTTP link
   const localHttp = new HttpLink({
     uri: `http://${LOCAL_HOST}:4000/graphql`,
