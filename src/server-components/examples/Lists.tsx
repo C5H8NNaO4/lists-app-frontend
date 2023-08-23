@@ -432,8 +432,6 @@ export const MyLists = (props) => {
     }
   }
 
-  const bps = [12, 12, 6, 4, 3];
-  const bpsFw = [12, 6, 4, 3, 2];
   const bpsLkp = {
     xs: 1,
     sm: fullWidth ? 2 : 1,
@@ -441,11 +439,6 @@ export const MyLists = (props) => {
     lg: fullWidth ? 4 : 3,
     xl: fullWidth ? 6 : 4,
   };
-  const bp = fullWidth ? bpsFw : bps;
-
-  const exists = component?.children?.some(
-    (todo) => todo?.props?.title === title
-  );
 
   const { getBreakPointName } = useBreakpoint();
   const currentBreakpoint = getBreakPointName() || 'lg';
@@ -477,11 +470,11 @@ export const MyLists = (props) => {
                   return (
                     <Grid
                       item
-                      xs={bp[0]}
-                      sm={bp[1]}
-                      md={bp[2]}
-                      lg={bp[3]}
-                      xl={bp[4]}
+                      xs={12 / bpsLkp['xs']}
+                      sm={12 / bpsLkp['sm']}
+                      md={12 / bpsLkp['md']}
+                      lg={12 / bpsLkp['lg']}
+                      xl={12 / bpsLkp['xl']}
                     >
                       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                         {column.map((id, i) => {
