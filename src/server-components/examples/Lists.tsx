@@ -1538,9 +1538,7 @@ export const List = ({
       onMouseLeave={() => setTimeout(setHover, 200, false)}
       elevation={hover ? 2 : component?.props?.settings?.pinned ? 1 : 0}
     >
-      {JSON.stringify(list)}
       {error && <Alert severity="error">{error.message}</Alert>}
-
       <CardHeader
         title={
           <>
