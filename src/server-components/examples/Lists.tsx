@@ -731,22 +731,52 @@ export const MyLists = (props) => {
         )}
 
         {!fullWidth && content}
+        {optimisticOrder?.length === 0 && (
+          <Box
+            sx={{
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Box sx={{ mx: 'auto', my: 'auto' }}>
+              {' '}
+              <Fab
+                color="secondary"
+                aria-label="add"
+                // sx={{ position: 'fixed', right: 16, bottom: 16 }}
+                onClick={() => {
+                  component?.props?.add({
+                    title,
+                    settings: { defaultType: 'Todo' },
+                  });
+                  setTitle('');
+                }}
+              >
+                <AddIcon />
+              </Fab>
+            </Box>
+          </Box>
+        )}
       </Container>
       {fullWidth && content}
-      <Fab
-        color="primary"
-        aria-label="add"
-        sx={{ position: 'fixed', right: 16, bottom: 16 }}
-        onClick={() => {
-          component?.props?.add({
-            title,
-            settings: { defaultType: 'Todo' },
-          });
-          setTitle('');
-        }}
-      >
-        <AddIcon />
-      </Fab>
+      {optimisticOrder?.length > 0 && (
+        <Fab
+          color="secondary"
+          aria-label="add"
+          sx={{ position: 'fixed', right: 16, bottom: 16 }}
+          onClick={() => {
+            component?.props?.add({
+              title,
+              settings: { defaultType: 'Todo' },
+            });
+            setTitle('');
+          }}
+        >
+          <AddIcon />
+        </Fab>
+      )}
 
       <MoreMenu
         open={show.more}
@@ -1589,7 +1619,7 @@ export const List = ({
       }}
       onMouseOver={() => setHover(true)}
       onMouseLeave={() => setTimeout(setHover, 200, false)}
-      elevation={hover ? 2 : component?.props?.settings?.pinned ? 1 : 0}
+      elevation={hover ? 3 : component?.props?.settings?.pinned ? 2 : 1}
     >
       {error && <Alert severity="error">{error.message}</Alert>}
       <CardHeader title={component?.props?.title}></CardHeader>
@@ -1669,7 +1699,7 @@ export const List = ({
         sx={{
           display: 'flex',
           alignItems: 'start',
-          opacity: hover ? 1 : 0.5,
+          opacity: hover ? 1 : 0.9,
           transition: 'opacity 0.2s ease-in',
           '&:hover': {
             transition: 'opacity 0.2s ease-out',

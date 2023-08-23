@@ -100,10 +100,13 @@ export const Layout = () => {
         key={pathname}
         sx={{
           maxHeight: '100vh',
+          height: '100%',
           overflowY: 'auto',
           overflowX: 'hidden',
           zIndex: 1,
           position: 'relative',
+          display: 'flex',
+          flexDirection: 'column',
         }}
       >
         {
@@ -147,7 +150,7 @@ export const Layout = () => {
           <Routes>{routes}</Routes>
         </main>
         {!state.fullscreen && (
-          <footer>
+          <footer style={{ marginTop: 'auto' }}>
             <Paper
               square
               sx={{
@@ -156,7 +159,8 @@ export const Layout = () => {
                   sm: 1,
                   md: 2,
                 },
-                mt: 16,
+                mt: 'auto',
+                pt: 16,
                 backgroundColor: 'primary.main',
               }}
             >

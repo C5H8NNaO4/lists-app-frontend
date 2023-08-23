@@ -110,7 +110,7 @@ export const VantaBackground: FunctionComponent<
       className={clsx(theme.palette.mode, 'fh', {
         animated: enabled,
       })}
-      style={{ overflow: 'hidden' }}
+      style={{ overflow: 'hidden', height: '100%' }}
     >
       {children}
     </div>
