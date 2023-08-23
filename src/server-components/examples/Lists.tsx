@@ -1339,10 +1339,10 @@ const useSyncedState = (defValue, updateFn) => {
   return [localValue, setValue];
 };
 
-const transpose = (arr, n) => {
+const transpose = (arr: Array<any>, n: number): Array<any> => {
   if (!arr?.length) return [];
-  let ret = [];
-  for (var i = 0; i < arr.length; i++) {
+  const ret: Array<any> = [];
+  for (let i = 0; i < arr.length; i++) {
     const x = i % n;
 
     ret[x] = ret[x] || [];
