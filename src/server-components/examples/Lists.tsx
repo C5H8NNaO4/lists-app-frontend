@@ -513,6 +513,29 @@ export const MyLists = (props) => {
               </Grid>
             );
           })}
+          {optimisticOrder?.length > 0 && fullWidth && (
+            <Box sx={{ position: 'sticky', width: '100%', bottom: 0 }}>
+              <Fab
+                color="secondary"
+                aria-label="add"
+                sx={{
+                  position: 'absolute',
+                  right: 32,
+                  bottom: 32,
+                  // marginBottom: -8,
+                }}
+                onClick={() => {
+                  component?.props?.add({
+                    title,
+                    settings: { defaultType: 'Todo' },
+                  });
+                  setTitle('');
+                }}
+              >
+                <AddIcon />
+              </Fab>
+            </Box>
+          )}
         </Box>
       </SortableContext>
     </DndContext>
@@ -762,7 +785,7 @@ export const MyLists = (props) => {
             </Box>
           </Box>
         )}
-        {optimisticOrder?.length > 0 && (
+        {optimisticOrder?.length > 0 && !fullWidth && (
           <Box sx={{ position: 'sticky', width: '100%', bottom: 0 }}>
             <Fab
               color="secondary"
