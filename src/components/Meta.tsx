@@ -19,7 +19,7 @@ export const DefaultMeta = () => {
       <link rel="canonical" href="https://lists.state-less.cloud" />
       <meta
         property="og:title"
-        content="Lists App - Organize Your Life with Productivity in Mind"
+        content="React Server"
       />
       <meta
         property="og:description"
@@ -34,7 +34,7 @@ export const DefaultMeta = () => {
       <meta name="twitter:card" content="summary_large_image" />
       <meta
         name="twitter:title"
-        content="Lists App - Organize Your Life with Productivity in Mind"
+        content="React Server"
       />
       <meta
         name="twitter:description"
