@@ -159,8 +159,7 @@ export const Layout = () => {
                   sm: 1,
                   md: 2,
                 },
-                mt: 'auto',
-                pt: 16,
+                mt: 16,
                 backgroundColor: 'primary.main',
               }}
             >

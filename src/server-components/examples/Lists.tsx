@@ -762,24 +762,31 @@ export const MyLists = (props) => {
             </Box>
           </Box>
         )}
+        {optimisticOrder?.length > 0 && (
+          <Box sx={{ position: 'sticky', width: '100%', bottom: 0 }}>
+            <Fab
+              color="secondary"
+              aria-label="add"
+              sx={{
+                position: 'absolute',
+                right: 32,
+                bottom: 32,
+                // marginBottom: -8,
+              }}
+              onClick={() => {
+                component?.props?.add({
+                  title,
+                  settings: { defaultType: 'Todo' },
+                });
+                setTitle('');
+              }}
+            >
+              <AddIcon />
+            </Fab>
+          </Box>
+        )}
       </Container>
       {fullWidth && content}
-      {optimisticOrder?.length > 0 && (
-        <Fab
-          color="secondary"
-          aria-label="add"
-          sx={{ position: 'fixed', right: 16, bottom: 16 }}
-          onClick={() => {
-            component?.props?.add({
-              title,
-              settings: { defaultType: 'Todo' },
-            });
-            setTitle('');
-          }}
-        >
-          <AddIcon />
-        </Fab>
-      )}
 
       <MoreMenu
         open={show.more}
