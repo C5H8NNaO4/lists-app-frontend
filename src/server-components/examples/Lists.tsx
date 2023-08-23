@@ -111,6 +111,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { TimePicker } from '@mui/x-date-pickers';
 import { NotificationButton } from '../../components/NotificationButton';
 import { format } from 'date-fns';
+import useBreakpoint from '../../lib/useBreakpoint';
 
 const minWord = (word: string, str: string) => {
   let min = Infinity;
@@ -433,14 +434,23 @@ export const MyLists = (props) => {
 
   const bps = [12, 12, 6, 4, 3];
   const bpsFw = [12, 6, 4, 3, 2];
+  const bpsLkp = {
+    xs: 1,
+    sm: fullWidth ? 2 : 1,
+    md: fullWidth ? 3 : 2,
+    lg: fullWidth ? 4 : 3,
+    xl: fullWidth ? 6 : 4,
+  };
   const bp = fullWidth ? bpsFw : bps;
 
   const exists = component?.children?.some(
     (todo) => todo?.props?.title === title
   );
 
-  const pinnedColumns = transpose(pinnedOrder, 4);
-  const unpinnedColumns = transpose(unpinnedOrder, 4);
+  const { getBreakPointName } = useBreakpoint();
+  const currentBreakpoint = getBreakPointName() || 'lg';
+  const pinnedColumns = transpose(pinnedOrder, bpsLkp[currentBreakpoint]);
+  const unpinnedColumns = transpose(unpinnedOrder, bpsLkp[currentBreakpoint]);
 
   const content = (
     <DndContext
