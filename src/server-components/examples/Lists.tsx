@@ -1606,7 +1606,10 @@ export const List = ({
   useEffect(() => {
     if (component?.props?.order?.length > scrollDownRef?.current) {
       setTimeout(() => {
-        ref?.current?.scrollTo({ top: ref?.current?.scrollHeight });
+        ref?.current?.scrollTo({
+          top: ref?.current?.scrollHeight,
+          behavior: 'smooth',
+        });
       }, 100);
     }
     scrollDownRef.current = component?.props?.order?.length;
