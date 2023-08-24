@@ -1761,7 +1761,9 @@ export const List = ({
             if ((!edit || canAddLabel) && e.key === 'Enter') {
               await addEntry(e, canAddLabel);
               await refetchPoints();
-              ref?.current?.scrollTo({ top: ref?.current?.scrollHeight });
+              setTimeout(() => {
+                ref?.current?.scrollTo({ top: ref?.current?.scrollHeight });
+              }, 250);
             }
           }}
           onKeyDown={(e) => {
@@ -1795,8 +1797,9 @@ export const List = ({
               canAddLabel
                 ? await addEntry(e, true)
                 : setShowType(e.target as HTMLElement);
-              console.log('Ref current', ref);
-              ref?.current?.scrollTo({ top: ref?.current?.scrollHeight });
+              setTimeout(() => {
+                ref?.current?.scrollTo({ top: ref?.current?.scrollHeight });
+              }, 250);
             }}
           >
             <IconMore />
@@ -2020,9 +2023,11 @@ export const List = ({
       <AddMenu
         onClose={handleClose}
         open={showType}
-        addEntry={(...args) => {
-          addEntry(args[0], args[1], args[2]);
-          ref?.current?.scrollTo({ top: ref?.current?.scrollHeight });
+        addEntry={async (...args) => {
+          await addEntry(args[0], args[1], args[2]);
+          setTimeout(() => {
+            ref?.current?.scrollTo({ top: ref?.current?.scrollHeight });
+          }, 250);
         }}
         refetchPoints={refetchPoints}
         canAddLabel={canAddLabel}
