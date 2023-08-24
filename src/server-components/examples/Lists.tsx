@@ -1601,6 +1601,11 @@ export const List = ({
     }
   }
   const ref = useRef<HTMLElement>();
+  const scrollDownRef = useRef();
+
+  useEffect(() => {
+    ref?.current?.scrollTo({ top: ref?.current?.scrollHeight });
+  }, [component?.props?.order]);
   function handleClose() {
     setShowColors(null);
     setShowType(null);
@@ -1761,9 +1766,7 @@ export const List = ({
             if ((!edit || canAddLabel) && e.key === 'Enter') {
               await addEntry(e, canAddLabel);
               await refetchPoints();
-              setTimeout(() => {
-                ref?.current?.scrollTo({ top: ref?.current?.scrollHeight });
-              }, 250);
+              f;
             }
           }}
           onKeyDown={(e) => {
@@ -1797,9 +1800,6 @@ export const List = ({
               canAddLabel
                 ? await addEntry(e, true)
                 : setShowType(e.target as HTMLElement);
-              setTimeout(() => {
-                ref?.current?.scrollTo({ top: ref?.current?.scrollHeight });
-              }, 250);
             }}
           >
             <IconMore />
@@ -2025,9 +2025,7 @@ export const List = ({
         open={showType}
         addEntry={async (...args) => {
           await addEntry(args[0], args[1], args[2]);
-          setTimeout(() => {
-            ref?.current?.scrollTo({ top: ref?.current?.scrollHeight });
-          }, 250);
+          setScrollDown(true);
         }}
         refetchPoints={refetchPoints}
         canAddLabel={canAddLabel}
