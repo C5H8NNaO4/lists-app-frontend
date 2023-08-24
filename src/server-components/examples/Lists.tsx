@@ -1600,7 +1600,7 @@ export const List = ({
       });
     }
   }
-
+  const ref = useRef<HTMLElement>();
   function handleClose() {
     setShowColors(null);
     setShowType(null);
@@ -1667,6 +1667,7 @@ export const List = ({
           strategy={verticalListSortingStrategy}
         >
           <MUIList
+            ref={ref}
             disablePadding
             sx={{
               maxHeight: LIST_ITEM_HEIGHT * nItems + 'px',
@@ -1760,6 +1761,7 @@ export const List = ({
             if ((!edit || canAddLabel) && e.key === 'Enter') {
               await addEntry(e, canAddLabel);
               await refetchPoints();
+              ref?.current?.scrollTo({ top: ref?.current?.scrollHeight });
             }
           }}
           onKeyDown={(e) => {
@@ -1788,11 +1790,14 @@ export const List = ({
           <IconButton
             sx={{ mt: 1 }}
             disabled={!todoTitle}
-            onClick={(e) =>
+            onClick={async (e) => {
+              console.log('Ref current before');
               canAddLabel
-                ? addEntry(e, true)
-                : setShowType(e.target as HTMLElement)
-            }
+                ? await addEntry(e, true)
+                : setShowType(e.target as HTMLElement);
+              console.log('Ref current', ref);
+              ref?.current?.scrollTo({ top: ref?.current?.scrollHeight });
+            }}
           >
             <IconMore />
           </IconButton>
@@ -2015,7 +2020,10 @@ export const List = ({
       <AddMenu
         onClose={handleClose}
         open={showType}
-        addEntry={addEntry}
+        addEntry={(...args) => {
+          addEntry(args[0], args[1], args[2]);
+          ref?.current?.scrollTo({ top: ref?.current?.scrollHeight });
+        }}
         refetchPoints={refetchPoints}
         canAddLabel={canAddLabel}
       />
