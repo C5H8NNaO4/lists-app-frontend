@@ -2548,6 +2548,7 @@ const ExpenseItem = (props) => {
             {!edit && !component?.props?.archived && (
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <TextField
+                  sx={{ width: '100px' }}
                   data-no-dnd="true"
                   size="small"
                   value={value}
