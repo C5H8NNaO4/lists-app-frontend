@@ -2097,38 +2097,70 @@ const AddMenu = ({ open, onClose, addEntry, refetchPoints, canAddLabel }) => {
 };
 
 const Sum = ({ items, includeArchived }) => {
-  const pos = items?.reduce(
+  const posNotArchived = items?.reduce(
     (acc, item) =>
       acc +
-      (item?.props?.value > 0 && !(item?.props?.archived && !includeArchived)
+      (item?.props?.value > 0 && !item?.props?.archived
         ? Number(item?.props?.value)
         : 0),
     0
   );
-  const neg = items?.reduce(
+  const posArchived = items?.reduce(
     (acc, item) =>
       acc +
-      (item?.props?.value < 0 && !(item?.props?.archived && !includeArchived)
+      (item?.props?.value > 0 && item?.props?.archived
         ? Number(item?.props?.value)
         : 0),
     0
   );
 
+  const pos = includeArchived ? posNotArchived + posArchived : posNotArchived;
+
+  const negNotArchived = items?.reduce(
+    (acc, item) =>
+      acc +
+      (item?.props?.value < 0 && !item?.props?.archived
+        ? Number(item?.props?.value)
+        : 0),
+    0
+  );
+
+  const negArchived = items?.reduce(
+    (acc, item) =>
+      acc +
+      (item?.props?.value < 0 && item?.props?.archived
+        ? Number(item?.props?.value)
+        : 0),
+    0
+  );
+
+  const neg = includeArchived ? negNotArchived + negArchived : negNotArchived;
+
   if (pos === 0 && neg === 0) {
     return (
-      <Alert severity={'info'}>{`Go ahead and track your expenses.`}</Alert>
+      <Alert severity={'info'}>{`Click the eye icon to show archived items.`}</Alert>
     );
   }
   if (pos === 0) {
-    return <Alert severity={'error'}>{`You spent ${Math.abs(neg)}€`}</Alert>;
+    return (
+      <Alert severity={'error'}>{`You spent ${Math.abs(negArchived)}€ ${
+        negNotArchived < 0 ? ` and planned to spend ${negNotArchived}€` : ''
+      }`}</Alert>
+    );
   }
   if (neg === 0) {
-    return <Alert severity={'success'}>{`You gained ${Math.abs(pos)}€`}</Alert>;
+    return (
+      <Alert severity={'success'}>{`You gained ${Math.abs(posArchived)}€ ${
+        posNotArchived > 0 ? ` and planned with ${posNotArchived}€` : ''
+      }`}</Alert>
+    );
   }
   return (
     <Alert
-      severity={pos < Math.abs(neg) ? 'error' : 'success'}
-    >{`You spent ${Math.abs(neg)}€ and gained ${pos}€`}</Alert>
+      severity={posNotArchived < Math.abs(negNotArchived) ? 'error' : 'success'}
+    >{`You spent ${Math.abs(
+      negNotArchived
+    )}€ and gained ${posNotArchived}€`}</Alert>
   );
 };
 export interface ConfirmationDialogRawProps {
