@@ -1601,6 +1601,20 @@ export const List = ({
     }
   }
   const ref = useRef<HTMLElement>();
+  const scrollDownRef = useRef(0);
+
+  useEffect(() => {
+    if (component?.props?.order?.length > scrollDownRef?.current) {
+      setTimeout(() => {
+        ref?.current?.scrollTo({
+          top: ref?.current?.scrollHeight,
+          behavior: 'smooth',
+        });
+      }, 100);
+    }
+    scrollDownRef.current = component?.props?.order?.length;
+  }, [component?.props?.order?.length]);
+
   function handleClose() {
     setShowColors(null);
     setShowType(null);
@@ -1647,7 +1661,7 @@ export const List = ({
       sx={{
         // height: '100%',
         backgroundColor: component?.props?.color
-          ? `${component?.props?.color} !important`
+          ? `${component?.props?.color + '88'} !important`
           : undefined,
       }}
       onMouseOver={() => setHover(true)}
@@ -1667,7 +1681,7 @@ export const List = ({
           strategy={verticalListSortingStrategy}
         >
           <MUIList
-            ref={ref}
+            ref={ref as any}
             disablePadding
             sx={{
               maxHeight: LIST_ITEM_HEIGHT * nItems + 'px',
@@ -1761,7 +1775,6 @@ export const List = ({
             if ((!edit || canAddLabel) && e.key === 'Enter') {
               await addEntry(e, canAddLabel);
               await refetchPoints();
-              ref?.current?.scrollTo({ top: ref?.current?.scrollHeight });
             }
           }}
           onKeyDown={(e) => {
@@ -1795,8 +1808,6 @@ export const List = ({
               canAddLabel
                 ? await addEntry(e, true)
                 : setShowType(e.target as HTMLElement);
-              console.log('Ref current', ref);
-              ref?.current?.scrollTo({ top: ref?.current?.scrollHeight });
             }}
           >
             <IconMore />
@@ -2020,9 +2031,8 @@ export const List = ({
       <AddMenu
         onClose={handleClose}
         open={showType}
-        addEntry={(...args) => {
-          addEntry(args[0], args[1], args[2]);
-          ref?.current?.scrollTo({ top: ref?.current?.scrollHeight });
+        addEntry={async (...args) => {
+          await addEntry(args[0], args[1], args[2]);
         }}
         refetchPoints={refetchPoints}
         canAddLabel={canAddLabel}
@@ -2317,11 +2327,7 @@ const TodoItem = (props) => {
 
                   if (!component?.props?.completed && moveToBottom)
                     await setOrder(
-                      arrayMove(
-                        order,
-                        order.indexOf(component?.props?.id),
-                        order?.length
-                      )
+                      arrayMove(order, order.indexOf(component?.props?.id), 0)
                     );
                   await refetchPoints();
                 }}
