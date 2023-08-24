@@ -1605,7 +1605,8 @@ export const List = ({
 
   useEffect(() => {
     ref?.current?.scrollTo({ top: ref?.current?.scrollHeight });
-  }, [component?.props?.order]);
+  }, [component?.props?.order?.length]);
+  
   function handleClose() {
     setShowColors(null);
     setShowType(null);
