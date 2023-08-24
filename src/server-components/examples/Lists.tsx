@@ -1667,7 +1667,7 @@ export const List = ({
           strategy={verticalListSortingStrategy}
         >
           <MUIList
-            ref={ref}
+            ref={ref as any}
             disablePadding
             sx={{
               maxHeight: LIST_ITEM_HEIGHT * nItems + 'px',
