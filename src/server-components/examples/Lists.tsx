@@ -1766,7 +1766,6 @@ export const List = ({
             if ((!edit || canAddLabel) && e.key === 'Enter') {
               await addEntry(e, canAddLabel);
               await refetchPoints();
-              f;
             }
           }}
           onKeyDown={(e) => {
@@ -2025,7 +2024,6 @@ export const List = ({
         open={showType}
         addEntry={async (...args) => {
           await addEntry(args[0], args[1], args[2]);
-          setScrollDown(true);
         }}
         refetchPoints={refetchPoints}
         canAddLabel={canAddLabel}
