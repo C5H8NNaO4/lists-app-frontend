@@ -2149,7 +2149,11 @@ const Sum = ({ items, includeArchived }) => {
         {`You ` +
           (negArchived < 0 ? `spent ${Math.abs(negArchived)}€` : '') +
           (negArchived < 0 && negNotArchived < 0 ? ' and ' : '') +
-          `${negNotArchived < 0 ? `planned to spend ${negNotArchived}€` : ''}`}
+          `${
+            negNotArchived < 0
+              ? `planned to spend ${Math.abs(negNotArchived)}€`
+              : ''
+          }`}
       </Alert>
     );
   }
