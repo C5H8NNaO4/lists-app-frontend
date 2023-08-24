@@ -2317,11 +2317,7 @@ const TodoItem = (props) => {
 
                   if (!component?.props?.completed && moveToBottom)
                     await setOrder(
-                      arrayMove(
-                        order,
-                        order.indexOf(component?.props?.id),
-                        order?.length
-                      )
+                      arrayMove(order, order.indexOf(component?.props?.id), 0)
                     );
                   await refetchPoints();
                 }}
