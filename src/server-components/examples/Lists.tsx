@@ -746,8 +746,9 @@ export const MyLists = (props) => {
               }
               severity={expenseSum > 0 ? 'success' : 'error'}
             >
-              {`Your archived total is ${expenseSum?.toFixed(2)}€` +
-                (remaining != 0 ? ` (${remaining?.toFixed(2)}€ open)` : '')}
+              {`Your archived total is ${expenseSum?.toFixed(2)}€ ${
+                remaining != 0 ? ` (${remaining?.toFixed(2)}€ open)` : ''
+              } = ${(expenseSum + remaining)?.toFixed(2)}€`}
             </Alert>
             <PastButtonGroup
               value={past}
