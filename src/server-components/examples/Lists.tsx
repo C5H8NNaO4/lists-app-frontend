@@ -2138,21 +2138,30 @@ const Sum = ({ items, includeArchived }) => {
 
   if (pos === 0 && neg === 0) {
     return (
-      <Alert severity={'info'}>{`Click the eye icon to show archived items.`}</Alert>
+      <Alert
+        severity={'info'}
+      >{`Click the eye icon to show archived items.`}</Alert>
     );
   }
   if (pos === 0) {
     return (
-      <Alert severity={'error'}>{`You spent ${Math.abs(negArchived)}€ ${
-        negNotArchived < 0 ? ` and planned to spend ${negNotArchived}€` : ''
-      }`}</Alert>
+      <Alert severity={'error'}>
+        {`You ` +
+          (negArchived < 0 ? `spent ${Math.abs(negArchived)}€` : '') +
+          (negArchived < 0 && negNotArchived < 0 ? ' and ' : '') +
+          `${negNotArchived < 0 ? `planned to spend ${negNotArchived}€` : ''}`}
+      </Alert>
     );
   }
   if (neg === 0) {
     return (
-      <Alert severity={'success'}>{`You gained ${Math.abs(posArchived)}€ ${
-        posNotArchived > 0 ? ` and planned with ${posNotArchived}€` : ''
-      }`}</Alert>
+      <Alert severity={'success'}>
+        {' '}
+        {`You ` +
+          (posArchived > 0 ? `gained ${posArchived}€` : '') +
+          (posArchived > 0 && posNotArchived > 0 ? ' and ' : '') +
+          `${posNotArchived > 0 ? `planned with ${posNotArchived}€` : ''}`}
+      </Alert>
     );
   }
   return (
