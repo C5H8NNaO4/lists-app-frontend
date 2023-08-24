@@ -1601,12 +1601,15 @@ export const List = ({
     }
   }
   const ref = useRef<HTMLElement>();
-  const scrollDownRef = useRef();
+  const scrollDownRef = useRef(0);
 
   useEffect(() => {
-    ref?.current?.scrollTo({ top: ref?.current?.scrollHeight });
+    if (component?.props?.order?.length > scrollDownRef?.current) {
+      ref?.current?.scrollTo({ top: ref?.current?.scrollHeight });
+    }
+    scrollDownRef.current = component?.props?.order?.length;
   }, [component?.props?.order?.length]);
-  
+
   function handleClose() {
     setShowColors(null);
     setShowType(null);
