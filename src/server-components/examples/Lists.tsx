@@ -2108,7 +2108,7 @@ const Sum = ({ items, includeArchived }) => {
   const posArchived = items?.reduce(
     (acc, item) =>
       acc +
-      (item?.props?.value > 0 && item?.props?.archived
+      (item?.props?.value > 0 && item?.props?.archived && includeArchived
         ? Number(item?.props?.value)
         : 0),
     0
@@ -2128,7 +2128,7 @@ const Sum = ({ items, includeArchived }) => {
   const negArchived = items?.reduce(
     (acc, item) =>
       acc +
-      (item?.props?.value < 0 && item?.props?.archived
+      (item?.props?.value < 0 && item?.props?.archived && includeArchived
         ? Number(item?.props?.value)
         : 0),
     0
