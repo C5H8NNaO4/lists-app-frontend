@@ -34,7 +34,7 @@ code {
 
 #bg {
   background: url('/bg.png');
-  background-size: contain;
+  background-size: cover;
 }
 pre {
   background: #1e1f2799;
