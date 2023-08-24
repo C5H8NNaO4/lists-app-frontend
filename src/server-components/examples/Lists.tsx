@@ -1661,7 +1661,7 @@ export const List = ({
       sx={{
         // height: '100%',
         backgroundColor: component?.props?.color
-          ? `${component?.props?.color} !important`
+          ? `${component?.props?.color + '88'} !important`
           : undefined,
       }}
       onMouseOver={() => setHover(true)}
