@@ -9,20 +9,13 @@ import Link from '@mui/material/Link';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Actions, stateContext } from '../provider/StateProvider';
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
-import GoogleLogin from 'react-google-login';
-import { authContext, useServerState } from '@state-less/react-client';
-import {
-  GoogleLoginButton,
-  LoggedInGoogleButton,
-} from './LoggedInGoogleButton';
-import SensorsIcon from '@mui/icons-material/Sensors';
-import { ViewCounter } from '../server-components/examples/ViewCounter';
+import { authContext } from '@state-less/react-client';
+import { GoogleLoginButton } from './LoggedInGoogleButton';
 import { ConnectionCounter } from '../server-components/examples/ConnectionCounter';
 import { navigation } from '../routes';
 
@@ -58,9 +51,7 @@ export default function ButtonAppBar() {
             </Link>
           </Box>
         )}
-        <Box
-          sx={{ display: pathname === '/' ? 'flex' : 'none', flexGrow: 1 }}
-        >
+        <Box sx={{ display: pathname === '/' ? 'flex' : 'none', flexGrow: 1 }}>
           <TextField
             label="Search"
             value={state.search}
@@ -111,12 +102,18 @@ export default function ButtonAppBar() {
           <Box sx={{ display: 'flex' }}>
             <ConnectionCounter />
             <IconButton
-              color={state.animatedBackground ? 'primary' : 'inherit'}
+              color={
+                state.animatedBackground === 2
+                  ? 'success'
+                  : state.animatedBackground === 1
+                  ? 'primary'
+                  : 'inherit'
+              }
               onClick={() => {
                 dispatch({ type: Actions.TOGGLE_ANIMATED_BACKGROUND });
                 localStorage.setItem(
                   'animatedBackgroundUser',
-                  (!state.animatedBackground).toString()
+                  ((state.animatedBackground + 1) % 3).toString()
                 );
               }}
             >

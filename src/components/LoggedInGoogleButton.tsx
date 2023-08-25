@@ -10,7 +10,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 
 const logError = (e) => {
-  console.log ("Google Login error", e)
+  console.log('Google Login error', e);
 };
 
 const isGoogleLoginResponse = (val: any): val is GoogleLoginResponse => {
@@ -76,7 +76,6 @@ export const GoogleLoginButton = () => {
     <GoogleLogin
       clientId={GOOGLE_ID}
       buttonText="Login"
-
       onSuccess={(response) => {
         console.log('Google Login success', response);
         if (!isGoogleLoginResponse(response)) {
@@ -90,10 +89,7 @@ export const GoogleLoginButton = () => {
       }}
       render={(props) => {
         return (
-          <Button
-            color={state.animatedBackground ? 'primary' : 'info'}
-            {...props}
-          >
+          <Button color={state.animatedBackground ? 'info' : 'info'} {...props}>
             <GoogleIcon sx={{ mr: 1 }} />
             Login
           </Button>

@@ -2,7 +2,7 @@ import React, { createContext, Dispatch, useReducer } from 'react';
 
 type State = {
   menuOpen: boolean;
-  animatedBackground: boolean;
+  animatedBackground: number;
   messages: string[];
   alerts: Record<string, string[]>;
   history: HistoryAction[];
@@ -20,8 +20,8 @@ type HistoryAction = {
 const initialState: State = {
   menuOpen: false,
   animatedBackground: localStorage.getItem('animatedBackgroundUser')
-    ? localStorage.getItem('animatedBackgroundUser') === 'true'
-    : localStorage.getItem('animatedBackground') === 'true',
+    ? Number(localStorage.getItem('animatedBackgroundUser'))
+    : Number(localStorage.getItem('animatedBackground')),
   messages: [],
   alerts: {
     info: [],
@@ -62,7 +62,7 @@ const reducer = (state: State, action: Action) => {
     case Actions.TOGGLE_ANIMATED_BACKGROUND:
       return {
         ...state,
-        animatedBackground: !state.animatedBackground,
+        animatedBackground: (~~state.animatedBackground + 1) % 3,
       };
     case Actions.SHOW_MESSAGE:
       return {

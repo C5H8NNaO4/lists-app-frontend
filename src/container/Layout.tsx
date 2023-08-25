@@ -55,7 +55,8 @@ export const Layout = () => {
   const { state, dispatch } = useContext(stateContext);
   const [features, { loading: featuresLoading }] = useComponent('features');
   const { pathname } = useLocation();
-  const [_animated, setAnim] = useState(false);
+  // const [_animated, setAnim] = useState(0);
+  const _animated = state.animatedBackground;
 
   const [time, setTime] = useState(0);
 
@@ -67,11 +68,11 @@ export const Layout = () => {
     }
   }, [time, _animated]);
 
-  useEffect(() => {
-    setTimeout(() => {
-      setAnim(pathname === '/welcome' || state?.animatedBackground);
-    }, 500);
-  }, [state?.animatedBackground, pathname]);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     setAnim(pathname === '/welcome' || state?.animatedBackground);
+  //   }, 0);
+  // }, [state?.animatedBackground, pathname]);
 
   useEffect(() => {
     localStorage.setItem('animatedBackground', features?.props?.animated);
@@ -94,7 +95,8 @@ export const Layout = () => {
     <VantaBackground
       light={SunnyBlueClouds}
       dark={DarkWaves}
-      enabled={_animated}
+      enabled={_animated === 2}
+      bg={_animated > 0}
     >
       <Box
         key={pathname}

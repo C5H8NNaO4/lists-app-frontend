@@ -31,6 +31,7 @@ let instance: VANTA;
 
 type VantaBackgroudProps = {
   enabled?: boolean;
+  bg?: boolean;
   light: any;
   dark: any;
 };
@@ -39,6 +40,7 @@ export const VantaBackground: FunctionComponent<
   PropsWithChildren<VantaBackgroudProps>
 > = ({
   enabled = false,
+  bg = true,
   children,
   light = SunnyBlueClouds,
   dark = DarkFog,
@@ -109,6 +111,7 @@ export const VantaBackground: FunctionComponent<
       id="bg"
       className={clsx(theme.palette.mode, 'fh', {
         animated: enabled,
+        bg,
       })}
       style={{ overflow: 'hidden', height: '100%' }}
     >
