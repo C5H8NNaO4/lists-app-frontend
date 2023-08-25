@@ -23,7 +23,7 @@ export const SettingsPage = () => {
     'defaultListColor',
     '#ffffff'
   );
-  const [colorMenuOpen, setColorMenuOpen] = useState(false);
+  const [colorMenuOpen, setColorMenuOpen] = useState<EventTarget | null>(null);
   return (
     <Container maxWidth="lg" disableGutters>
       <Paper
