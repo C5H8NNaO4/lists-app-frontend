@@ -23,7 +23,7 @@ export const SettingsPage = () => {
     'defaultListColor',
     '#ffffff'
   );
-  const [colorMenuOpen, setColorMenuOpen] = useState<EventTarget | null>(null);
+  const [colorMenuOpen, setColorMenuOpen] = useState<HTMLElement | null>(null);
   return (
     <Container maxWidth="lg" disableGutters>
       <Paper
@@ -44,7 +44,9 @@ export const SettingsPage = () => {
               secondary={defaultListColor}
             />
             <ListItemSecondaryAction>
-              <IconButton onClick={(e) => setColorMenuOpen(e.target)}>
+              <IconButton
+                onClick={(e) => setColorMenuOpen(e.target as HTMLElement)}
+              >
                 <PaletteIcon />
               </IconButton>
             </ListItemSecondaryAction>
@@ -53,7 +55,7 @@ export const SettingsPage = () => {
         <Navigation />
         <ColorMenu
           open={colorMenuOpen}
-          onClose={() => setColorMenuOpen(false)}
+          onClose={() => setColorMenuOpen(null)}
           setColor={setDefaultListColor}
         />
       </Paper>
