@@ -1672,7 +1672,10 @@ export const List = ({
       sx={{
         // height: '100%',
         backgroundColor: component?.props?.color
-          ? `${component?.props?.color + 'AA'} !important`
+          ? `${
+              component?.props?.color +
+              (state.animatedBackground > 0 ? 'CC' : '')
+            } !important`
           : undefined,
       }}
       onMouseOver={() => setHover(true)}
@@ -2375,7 +2378,7 @@ const TodoItem = (props) => {
             )}
             {!edit && (
               <Checkbox
-                color="secondary"
+                color="info"
                 disabled={component?.props?.archived}
                 checked={component?.props.completed}
                 onClick={async () => {

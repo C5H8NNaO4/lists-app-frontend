@@ -106,7 +106,7 @@ export default function ButtonAppBar() {
                 state.animatedBackground === 2
                   ? 'success'
                   : state.animatedBackground === 1
-                  ? 'primary'
+                  ? 'info'
                   : 'inherit'
               }
               onClick={() => {
