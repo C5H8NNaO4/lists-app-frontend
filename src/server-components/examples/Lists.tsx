@@ -1127,7 +1127,7 @@ export const ColorMenu = ({
 }) => {
   const colors = [
     '',
-    'white',
+    '#ffffff',
     '#9e0142',
     '#d53e4f',
     '#f46d43',
