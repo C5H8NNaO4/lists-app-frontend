@@ -9,11 +9,17 @@ export const Warning = ({
   severity = 'warning',
   title,
   action,
+  children,
+  noDismiss = false,
+  sx,
 }: {
   id: string;
   severity?: AlertColor;
   title?: string;
   action?: React.ReactNode;
+  children?: React.ReactNode;
+  noDismiss: boolean;
+  sx?: any;
 }) => {
   const [dismissed, setDismissed] = useLocalStorage(id + 'dismissed', false);
   if (dismissed) {
@@ -21,7 +27,12 @@ export const Warning = ({
   }
   const warning = (
     <Alert
-      sx={{ alignItems: 'center', display: 'flex', justifyContent: 'center' }}
+      sx={{
+        alignItems: 'center',
+        display: 'flex',
+        justifyContent: 'center',
+        ...sx,
+      }}
       severity={severity}
       action={
         <>
@@ -32,13 +43,15 @@ export const Warning = ({
               </Link>
             </Button>
           )}
-          <IconButton onClick={() => setDismissed(true)}>
-            <CloseIcon />
-          </IconButton>
+          {!noDismiss && (
+            <IconButton onClick={() => setDismissed(true)}>
+              <CloseIcon />
+            </IconButton>
+          )}
         </>
       }
     >
-      {title}
+      {title || children}
     </Alert>
   );
 

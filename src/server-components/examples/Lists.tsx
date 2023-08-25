@@ -112,6 +112,7 @@ import { TimePicker } from '@mui/x-date-pickers';
 import { NotificationButton } from '../../components/NotificationButton';
 import { format } from 'date-fns';
 import useBreakpoint from '../../lib/useBreakpoint';
+import { Warning } from '../../components/Warning';
 
 const minWord = (word: string, str: string) => {
   let min = Infinity;
@@ -463,7 +464,7 @@ export const MyLists = (props) => {
             mx: fullWidth ? 0 : 0,
             display: 'flex',
             flexDirection: 'column',
-            gap: 4,
+            gap: 2,
           }}
         >
           {[pinnedColumns, unpinnedColumns].map((optimisticOrder) => {
@@ -643,7 +644,7 @@ export const MyLists = (props) => {
           sx={{
             display: 'flex',
             alignItems: 'center',
-            my: 2,
+            mt: 1,
             flexWrap: 'wrap',
           }}
         >
@@ -656,7 +657,7 @@ export const MyLists = (props) => {
             ></Chip>
           </Tooltip>
           <Labels
-            sx={{ my: 2 }}
+            sx={{ my: 1 }}
             labels={labels}
             active={active}
             inverted={invertFilter}
@@ -736,7 +737,8 @@ export const MyLists = (props) => {
         {((onlyExpenses && expenseSum != 0) ||
           (showExpenses && typeof expenseSum !== 'undefined')) && (
           <>
-            <Alert
+            <Warning
+              noDismiss
               sx={{ alignItems: 'center' }}
               action={
                 <div>
@@ -754,10 +756,10 @@ export const MyLists = (props) => {
               {`Your archived total is ${expenseSum?.toFixed(2)}€ ${
                 remaining != 0 ? ` (${remaining?.toFixed(2)}€ pending)` : ''
               } = ${(expenseSum + remaining)?.toFixed(2)}€`}
-            </Alert>
+            </Warning>
             <PastButtonGroup
               value={past}
-              sx={{ display: { xs: 'block', sm: 'none' } }}
+              sx={{ display: { xs: 'block', sm: 'none' }, mt: 1 }}
             />
           </>
         )}
