@@ -20,7 +20,7 @@ export const navigation = [
   ['/analytics', 'Analytics', 'analytics', 'Analytics', AutoGraphIcon],
   ['/changes', 'Changelog', 'changelog', 'Changelog', ChangeHistoryIcon],
   ['/settings', 'Settings', 'settings', 'Settings', SettingsIcon],
-];
+] as any;
 
 export const routes = [
   <Route path="/" Component={IndexPage} />,
