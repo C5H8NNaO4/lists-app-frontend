@@ -4,8 +4,9 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  IconButtonProps,
 } from '@mui/material';
-import { useContext } from 'react';
+import { Component, ComponentType, ReactNode, useContext } from 'react';
 import { Actions, stateContext } from '../provider/StateProvider';
 import { Link as RouterLink } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
@@ -20,7 +21,7 @@ export const SidebarNavigation = () => {
     >
       <List sx={{ paddingTop: 8, minWidth: 256 }}>
         <List disablePadding>
-          {navigation.map((e) => {
+          {navigation.map((e: any) => {
             return (
               <LinkItem
                 Icon={e[4]}
@@ -47,6 +48,7 @@ type LinkItemProps = {
   to: string;
   children: React.ReactNode;
   sx?: any;
+  Icon: ComponentType<IconButtonProps>;
 };
 
 const LinkItem = ({ to, children, sx, Icon }: LinkItemProps) => {
