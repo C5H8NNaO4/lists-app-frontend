@@ -18,7 +18,7 @@ export const Warning = ({
   title?: string;
   action?: React.ReactNode;
   children?: React.ReactNode;
-  noDismiss: boolean;
+  noDismiss?: boolean;
   sx?: any;
 }) => {
   const [dismissed, setDismissed] = useLocalStorage(id + 'dismissed', false);

@@ -738,6 +738,7 @@ export const MyLists = (props) => {
           (showExpenses && typeof expenseSum !== 'undefined')) && (
           <>
             <Warning
+              id="expenses"
               noDismiss
               sx={{ alignItems: 'center' }}
               action={
