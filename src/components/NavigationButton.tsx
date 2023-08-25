@@ -44,7 +44,7 @@ export const NavigationButton2D = ({
     ][0];
   return (
     <Link to={nextPath} component={RouterLink}>
-      <Button>
+      <Button color='info'>
         {nextPath == '/' && <HomeIcon sx={{ pr: 1 }} />}
         {prev && nextPath !== '/' && <ArrowBackIcon sx={{ pr: 1 }} />}
         {children || nextPath == '/' ? 'Home' : nextPath}

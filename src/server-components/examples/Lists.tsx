@@ -1054,9 +1054,9 @@ const MoreMenu = ({
                 <hr />
                 <Tooltip title="Open Analytics" placement="left">
                   <SwitchButton
+                    color="primary"
                     fullWidth
                     sx={{ justifyContent: 'start', gap: 1 }}
-                    color={undefined}
                     // sx={{ ml: 'auto' }}
                     onClick={() => navigate('/analytics')}
                   >
@@ -1066,7 +1066,8 @@ const MoreMenu = ({
                 </Tooltip>
                 <Tooltip title="Open Settings">
                   <SwitchButton
-                    onClick={() => navigate('/lists/settings')}
+                    color={'primary'}
+                    onClick={() => navigate('/settings')}
                     fullWidth
                     sx={{ justifyContent: 'start', gap: 1 }}
                   >
