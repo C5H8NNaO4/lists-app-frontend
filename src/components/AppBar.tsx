@@ -104,7 +104,7 @@ export default function ButtonAppBar() {
             <IconButton
               color={
                 state.animatedBackground === 2
-                  ? 'success'
+                  ? 'secondary'
                   : state.animatedBackground === 1
                   ? 'info'
                   : 'inherit'

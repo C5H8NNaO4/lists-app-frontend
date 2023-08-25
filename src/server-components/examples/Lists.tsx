@@ -67,6 +67,7 @@ import { Actions, stateContext } from '../../provider/StateProvider';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import SortByAlphaIcon from '@mui/icons-material/SortByAlpha';
+import SortIcon from '@mui/icons-material/Sort';
 import PushPinIcon from '@mui/icons-material/PushPin';
 import ReplayIcon from '@mui/icons-material/Replay';
 import InvertColorsIcon from '@mui/icons-material/InvertColors';
@@ -547,7 +548,7 @@ export const MyLists = (props) => {
   );
 
   const PastButtonGroup = ({ sx, value }) => (
-    <ButtonGroup sx={sx}>
+    <ButtonGroup sx={sx} color="info">
       <Button
         variant={value === 1 ? 'contained' : 'outlined'}
         onClick={() => setPast(1)}
@@ -1018,7 +1019,7 @@ const MoreMenu = ({
                 <Tooltip
                   title={
                     showArchived
-                      ? 'Hide archived lists'
+                      ? 'Hide archived lists.'
                       : 'Show archived lists.'
                   }
                   placement="left"
@@ -1809,9 +1810,9 @@ export const List = ({
           }}
         >
           <CardActions>
-            <Tooltip title="Edit this list">
+            <Tooltip title="Edit this list.">
               <IconButton
-                color={edit ? 'success' : 'primary'}
+                color={edit ? 'success' : 'secondary'}
                 onClick={() => {
                   setTodoTitle('');
                   setEdit(!edit);
@@ -1821,7 +1822,7 @@ export const List = ({
               </IconButton>
             </Tooltip>
             {edit && (
-              <Tooltip title="Delete this list">
+              <Tooltip title="Delete this list.">
                 <IconButton
                   color="error"
                   disabled={!edit}
@@ -1849,7 +1850,7 @@ export const List = ({
             {!edit && (
               <Tooltip title="Set list color.">
                 <IconButton
-                  color={showColors ? 'success' : undefined}
+                  color={showColors ? 'success' : 'info'}
                   // disabled={!edit}
                   onClick={(e) => {
                     setShowColors(e.target as HTMLElement);
@@ -1889,7 +1890,7 @@ export const List = ({
             {!edit && (
               <Tooltip
                 title={
-                  showArchived ? 'Hide archived items.' : 'Show archived items'
+                  showArchived ? 'Hide archived items.' : 'Show archived items.'
                 }
               >
                 <span>
@@ -1911,7 +1912,7 @@ export const List = ({
               <Tooltip title={'List settings.'}>
                 <span>
                   <IconButton
-                    color={showListMenu ? 'success' : undefined}
+                    color={showListMenu ? 'success' : 'info'}
                     onClick={async (e) => {
                       setShowListMenu(!showListMenu);
                     }}
@@ -1921,14 +1922,26 @@ export const List = ({
                 </span>
               </Tooltip>
             )}
-            <Tooltip title="Enable to override manual sort (sorting by archived, lastModified, createdAt)">
+            <Tooltip
+              title={
+                sort === 0
+                  ? 'Manual sorting.'
+                  : sort === -1
+                  ? 'Reversed sorting.'
+                  : 'Sorting by: archived, lastModified, createdAt'
+              }
+            >
               <IconButton
                 color={
                   sort === -1 ? 'error' : sort === 1 ? 'success' : undefined
                 }
                 onClick={toggleSort}
               >
-                <SortByAlphaIcon />
+                <SortIcon
+                  sx={{
+                    transform: sort === -1 ? `rotate(180deg) scaleX(-1)` : ``,
+                  }}
+                />
               </IconButton>
             </Tooltip>
             {!edit && (
@@ -2364,7 +2377,7 @@ const TodoItem = (props) => {
                   {edit && (
                     <IconButton
                       sx={{ gap: 1, justifyContent: 'start' }}
-                      color={showColors ? 'success' : undefined}
+                      color={showColors ? 'success' : 'info'}
                       // disabled={!edit}
                       onClick={(e) => {
                         setShowColors(e.target as HTMLElement);
@@ -2880,7 +2893,7 @@ const ListItemMenu = (props) => {
               >
                 <SwitchButton
                   sx={{ gap: 1, justifyContent: 'start' }}
-                  color={showColors ? 'success' : undefined}
+                  color={showColors ? 'success' : 'info'}
                   // disabled={!edit}
                   onClick={(e) => {
                     setShowColors(e.target as HTMLElement);
