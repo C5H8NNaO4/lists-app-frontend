@@ -1,4 +1,10 @@
-import { Drawer, List, ListItem, ListItemText } from '@mui/material';
+import {
+  Drawer,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+} from '@mui/material';
 import { useContext } from 'react';
 import { Actions, stateContext } from '../provider/StateProvider';
 import { Link as RouterLink } from 'react-router-dom';
@@ -17,9 +23,10 @@ export const SidebarNavigation = () => {
           {navigation.map((e) => {
             return (
               <LinkItem
+                Icon={e[4]}
                 to={e[0]}
                 sx={{
-                  pl:
+                  ml:
                     1 +
                     (e[0] === '/'
                       ? 0
@@ -42,7 +49,7 @@ type LinkItemProps = {
   sx?: any;
 };
 
-const LinkItem = ({ to, children, sx }: LinkItemProps) => {
+const LinkItem = ({ to, children, sx, Icon }: LinkItemProps) => {
   const { pathname } = useLocation();
   return (
     <ListItem
@@ -54,6 +61,11 @@ const LinkItem = ({ to, children, sx }: LinkItemProps) => {
       dense
       disablePadding
     >
+      {Icon && (
+        <ListItemIcon>
+          {<Icon color={to === pathname ? 'secondary' : 'primary'} />}
+        </ListItemIcon>
+      )}
       <ListItemText primary={children} secondary={to} />
     </ListItem>
   );

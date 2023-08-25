@@ -6,13 +6,20 @@ import { ListsAboutPage } from './pages/about';
 import { WelcomePage } from './pages/welcome';
 import { SettingsPage } from './pages/settings';
 
+import HomeIcon from '@mui/icons-material/Home';
+import WbSunnyIcon from '@mui/icons-material/WbSunny';
+import InfoIcon from '@mui/icons-material/Info';
+import AutoGraphIcon from '@mui/icons-material/AutoGraph';
+import ChangeHistoryIcon from '@mui/icons-material/ChangeHistory';
+import SettingsIcon from '@mui/icons-material/Settings';
+
 export const navigation = [
-  ['/', 'Home', '', 'Lists'],
-  ['/welcome', 'Welcome', '', 'Welcome to Lists'],
-  ['/about', 'About', '', 'About Lists'],
-  ['/analytics', 'Analytics', 'analytics', 'Analytics'],
-  ['/changes', 'Changelog', 'changelog', 'Changelog'],
-  ['/settings', 'Settings', 'settings', 'Settings'],
+  ['/', 'Home', '', 'Lists', HomeIcon],
+  ['/welcome', 'Welcome', '', 'Welcome to Lists', WbSunnyIcon],
+  ['/about', 'About', '', 'About Lists', InfoIcon],
+  ['/analytics', 'Analytics', 'analytics', 'Analytics', AutoGraphIcon],
+  ['/changes', 'Changelog', 'changelog', 'Changelog', ChangeHistoryIcon],
+  ['/settings', 'Settings', 'settings', 'Settings', SettingsIcon],
 ];
 
 export const routes = [
