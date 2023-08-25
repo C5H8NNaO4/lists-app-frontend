@@ -444,7 +444,10 @@ export const MyLists = (props) => {
   const currentBreakpoint = getBreakPointName() || 'lg';
   const pinnedColumns = transpose(pinnedOrder, bpsLkp[currentBreakpoint]);
   const unpinnedColumns = transpose(unpinnedOrder, bpsLkp[currentBreakpoint]);
-
+  const [defaultListColor, setDefaultListColor] = useLocalStorage(
+    'defaultListColor',
+    ''
+  );
   const content = (
     <DndContext
       sensors={sensors}
@@ -527,6 +530,7 @@ export const MyLists = (props) => {
                 onClick={() => {
                   component?.props?.add({
                     title,
+                    color: defaultListColor,
                     settings: { defaultType: 'Todo' },
                   });
                   setTitle('');
@@ -733,6 +737,7 @@ export const MyLists = (props) => {
           (showExpenses && typeof expenseSum !== 'undefined')) && (
           <>
             <Alert
+              sx={{ alignItems: 'center' }}
               action={
                 <div>
                   <PastButtonGroup
@@ -776,6 +781,7 @@ export const MyLists = (props) => {
                 onClick={() => {
                   component?.props?.add({
                     title,
+                    color: defaultListColor,
                     settings: { defaultType: 'Todo' },
                   });
                   setTitle('');
@@ -800,6 +806,7 @@ export const MyLists = (props) => {
               onClick={() => {
                 component?.props?.add({
                   title,
+                  color: defaultListColor,
                   settings: { defaultType: 'Todo' },
                 });
                 setTitle('');
@@ -1147,7 +1154,7 @@ export const ColorMenu = ({
       role={undefined}
       placement="bottom"
       transition
-      disablePortal
+      // disablePortal
       {...popperOptions}
       sx={{ zIndex: 10 }}
     >
@@ -1744,77 +1751,7 @@ export const List = ({
       {component?.props?.settings?.defaultType === 'Expense' && (
         <Sum items={component?.children} includeArchived={showArchived} />
       )}
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'start',
-          opacity: hover ? 1 : 0.9,
-          transition: 'opacity 0.2s ease-in',
-          '&:hover': {
-            transition: 'opacity 0.2s ease-out',
-          },
-          ml: 1,
-          mr: 2,
-          mt: 'auto',
-          pt: 2,
-        }}
-      >
-        <TextField
-          fullWidth
-          inputRef={inputRef}
-          value={edit && !labelMode ? listTitle : todoTitle}
-          label={canAddLabel ? 'Add Label' : edit ? 'Edit Title' : 'Add Item'}
-          error={exists}
-          helperText={exists ? 'Item already exists' : ''}
-          onChange={(e) => {
-            edit && !labelMode
-              ? setListTitle(e.target.value)
-              : setTodoTitle(e.target.value);
-          }}
-          onKeyUp={async (e) => {
-            e.stopPropagation();
-            if ((!edit || canAddLabel) && e.key === 'Enter') {
-              await addEntry(e, canAddLabel);
-              await refetchPoints();
-            }
-          }}
-          onKeyDown={(e) => {
-            e.stopPropagation();
-          }}
-          InputProps={{
-            inputProps: {
-              enterKeyHint: 'enter',
-            },
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  onClick={() => {
-                    edit && !labelMode ? setListTitle('') : setTodoTitle('');
-                    setTimeout(() => inputRef.current?.focus(), 0);
-                  }}
-                  disabled={edit ? !listTitle : !todoTitle}
-                >
-                  <IconClear />
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        />
-        {(!edit || canAddLabel) && (
-          <IconButton
-            sx={{ mt: 1 }}
-            disabled={!todoTitle}
-            onClick={async (e) => {
-              console.log('Ref current before');
-              canAddLabel
-                ? await addEntry(e, true)
-                : setShowType(e.target as HTMLElement);
-            }}
-          >
-            <IconMore />
-          </IconButton>
-        )}
-      </Box>
+
       {component?.props?.settings?.pinned && !hover && (
         <CardActionArea
           sx={{
@@ -1856,7 +1793,7 @@ export const List = ({
       {!(component?.props?.settings?.pinned && !hover) && (
         <CardActionArea
           sx={{
-            // mt: 'auto',
+            mt: 'auto',
             opacity: hover && !hideHUD ? 1 : 0,
             transition: 'opacity 200ms ease-in',
             '&:hover': {
@@ -2013,6 +1950,76 @@ export const List = ({
           </CardActions>
         </CardActionArea>
       )}
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'start',
+          opacity: hover ? 1 : 0.9,
+          transition: 'opacity 0.2s ease-in',
+          '&:hover': {
+            transition: 'opacity 0.2s ease-out',
+          },
+          ml: 1,
+          mr: 2,
+          mb: 1,
+        }}
+      >
+        <TextField
+          fullWidth
+          inputRef={inputRef}
+          value={edit && !labelMode ? listTitle : todoTitle}
+          label={canAddLabel ? 'Add Label' : edit ? 'Edit Title' : 'Add Item'}
+          error={exists}
+          helperText={exists ? 'Item already exists' : ''}
+          onChange={(e) => {
+            edit && !labelMode
+              ? setListTitle(e.target.value)
+              : setTodoTitle(e.target.value);
+          }}
+          onKeyUp={async (e) => {
+            e.stopPropagation();
+            if ((!edit || canAddLabel) && e.key === 'Enter') {
+              await addEntry(e, canAddLabel);
+              await refetchPoints();
+            }
+          }}
+          onKeyDown={(e) => {
+            e.stopPropagation();
+          }}
+          InputProps={{
+            inputProps: {
+              enterKeyHint: 'enter',
+            },
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  onClick={() => {
+                    edit && !labelMode ? setListTitle('') : setTodoTitle('');
+                    setTimeout(() => inputRef.current?.focus(), 0);
+                  }}
+                  disabled={edit ? !listTitle : !todoTitle}
+                >
+                  <IconClear />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
+        {(!edit || canAddLabel) && (
+          <IconButton
+            sx={{ mt: 1 }}
+            disabled={!todoTitle}
+            onClick={async (e) => {
+              console.log('Ref current before');
+              canAddLabel
+                ? await addEntry(e, true)
+                : setShowType(e.target as HTMLElement);
+            }}
+          >
+            <IconMore />
+          </IconButton>
+        )}
+      </Box>
       <ConfirmationDialogRaw
         title="Delete List"
         open={showDialog}
