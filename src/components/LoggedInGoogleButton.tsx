@@ -43,7 +43,7 @@ export const LoggedInGoogleButton = () => {
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}
         onClick={handleClick}
-        color={state.animatedBackground ? 'primary' : 'info'}
+        color={state.animatedBackground ? 'info' : 'info'}
       >
         <Avatar
           src={decoded.picture}
