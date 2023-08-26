@@ -122,7 +122,7 @@ export const Layout = () => {
               <Box sx={{mt: 8}} />
             <div
               id="loading-container"
-              style={{ display:'flex', width: '100%', height: '8px' }}
+              style={{ display:'flex', width: '100%' }}
             />
           </header>
         }
