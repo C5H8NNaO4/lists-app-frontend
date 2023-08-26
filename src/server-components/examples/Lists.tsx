@@ -8,6 +8,7 @@ import {
   IconButton,
   ListItemButton,
   List as MUIList,
+  CircularProgress,
   ListItem,
   ListItemIcon,
   ListItemSecondaryAction,
@@ -48,7 +49,11 @@ import CloseIcon from '@mui/icons-material/Close';
 import LabelIcon from '@mui/icons-material/Label';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import { useComponent, useLocalStorage } from '@state-less/react-client';
+import {
+  authContext,
+  useComponent,
+  useLocalStorage,
+} from '@state-less/react-client';
 import {
   useContext,
   useEffect,
@@ -224,6 +229,8 @@ const requestNotificationPermission = async () => {
 };
 export const MyLists = (props) => {
   const [component, { loading, error, refetch }] = useComponent('my-lists', {});
+  const { session } = useContext(authContext);
+
   const [pointsComponent, { refetch: refetchPoints }] = useComponent(
     'my-lists-points',
     {}
@@ -253,6 +260,10 @@ export const MyLists = (props) => {
   const [past, setPast] = useLocalStorage('past', 90);
   const { search } = useLocation();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    refetch();
+  }, [session.id]);
 
   useEffect(() => {
     if (search.includes('?fs') && !state.fullscreen) {
@@ -589,6 +600,14 @@ export const MyLists = (props) => {
       </Button>
     </ButtonGroup>
   );
+
+  if (loading) {
+    return (
+      <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', mt: 2 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
   return (
     <>
       <Container maxWidth="xl">
@@ -2105,8 +2124,11 @@ const TodoItemDetailCard = (props) => {
     component.props.title,
     component.props.setTitle
   );
-  const [note, setNote] = useSyncedState(component.props.note, component.props.setNote);
-  const {state} = useContext(stateContext)
+  const [note, setNote] = useSyncedState(
+    component.props.note,
+    component.props.setNote
+  );
+  const { state } = useContext(stateContext);
   return (
     <Card
       sx={{
@@ -2149,7 +2171,11 @@ const TodoItemDetailCard = (props) => {
         )}
         <sup>
           <em>
-            Note: <a href="https://en.wikipedia.org/wiki/Markdown" target="_blank">Markdown</a> supported
+            Note:{' '}
+            <a href="https://en.wikipedia.org/wiki/Markdown" target="_blank">
+              Markdown
+            </a>{' '}
+            supported
           </em>
         </sup>
       </CardContent>
