@@ -1426,7 +1426,7 @@ const useSyncedState = (defValue, updateFn) => {
     clearTimeout(timeout.current);
     timeout.current = setTimeout(() => {
       updateFn(value);
-    }, 500);
+    }, 1500);
   };
 
   useEffect(() => {
