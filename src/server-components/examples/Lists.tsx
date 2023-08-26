@@ -603,8 +603,10 @@ export const MyLists = (props) => {
 
   if (loading) {
     return (
-      <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', mt: 2 }}>
-        <CircularProgress />
+      <Box
+        sx={{ width: '100%', display: 'flex', justifyContent: 'center', mt: 2 }}
+      >
+        <CircularProgress color="secondary" />
       </Box>
     );
   }
