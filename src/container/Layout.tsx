@@ -119,6 +119,10 @@ export const Layout = () => {
               value={time / 10}
               sx={{ mt: 8 }}
             /> */}
+            <div
+              id="loading-container"
+              style={{ display:'flex', width: '100%', height: '8px' }}
+            />
             <Box sx={{mt: 8}} />
           </header>
         }
@@ -140,10 +144,6 @@ export const Layout = () => {
             </Alert>
           )}
           <div id="app-warnings" />
-          <div
-            id="loading-container"
-            style={{ display:'flex', width: '100%', height: '8px' }}
-          />
 
           {state.messages.map((message) => {
             return (
