@@ -44,6 +44,7 @@ import TrophyIcon from '@mui/icons-material/EmojiEvents';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
+import CloseIcon from '@mui/icons-material/Close';
 import LabelIcon from '@mui/icons-material/Label';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
@@ -114,6 +115,7 @@ import { NotificationButton } from '../../components/NotificationButton';
 import { format } from 'date-fns';
 import useBreakpoint from '../../lib/useBreakpoint';
 import { Warning } from '../../components/Warning';
+import { Markdown } from '../../components/Markdown';
 
 const minWord = (word: string, str: string) => {
   let min = Infinity;
@@ -1467,6 +1469,7 @@ export const List = ({
   const [showArchived, setShowArchived] = useState<boolean>(false);
   const [showType, setShowType] = useState<HTMLElement | null>(null);
   const [sort, setSort] = useState(0);
+  const [selected, setSelected] = useState<string | null>(null);
   const canAddLabel = edit && labelMode;
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -1551,7 +1554,7 @@ export const List = ({
   const [showDialog, setShowDialog] = useState(false);
   const [showListMenu, setShowListMenu] = useState(false);
   const [doArchive, setDoArchive] = useState(false);
-
+  const [showItemMenu, setShowItemMenu] = useState<any>(null);
   const itemLkp = useMemo(
     () =>
       (component?.children || []).reduce((acc, child) => {
@@ -1669,6 +1672,18 @@ export const List = ({
   if (loading) {
     return null;
   }
+
+  if (selected) {
+    return (
+      <TodoItemDetailCard
+        component={selected}
+        setSelected={setSelected}
+        listComponent={component}
+        refetchList={refetchList}
+      />
+    );
+  }
+
   return (
     <Card
       sx={{
@@ -1676,7 +1691,7 @@ export const List = ({
         backgroundColor: component?.props?.color
           ? `${
               component?.props?.color +
-              (state.animatedBackground > 0 ? 'CC' : '')
+              (state.animatedBackground > 0 ? 'D4' : '')
             } !important`
           : undefined,
       }}
@@ -1684,6 +1699,14 @@ export const List = ({
       onMouseLeave={() => setTimeout(setHover, 200, false)}
       elevation={hover ? 3 : component?.props?.settings?.pinned ? 2 : 1}
     >
+      {showItemMenu && (
+        <ListItemMenu
+          component={showItemMenu}
+          open={!!showItemMenu}
+          onClose={() => setShowItemMenu(false)}
+          refetchList={refetchList}
+        ></ListItemMenu>
+      )}
       {error && <Alert severity="error">{error.message}</Alert>}
       <CardHeader title={component?.props?.title}></CardHeader>
 
@@ -1742,11 +1765,13 @@ export const List = ({
                         data={todo}
                         edit={edit && !labelMode}
                         remove={component?.props?.remove}
+                        setSelected={setSelected}
                         lastCompleted={lastCompleted}
                         refetchList={refetchList}
                         refetchPoints={refetchPoints}
                         order={component?.props?.order}
                         setOrder={component?.props?.setOrder}
+                        setShowMenu={setShowItemMenu}
                       />
                     </SortableItem>
                   )}
@@ -2069,6 +2094,289 @@ export const List = ({
   );
 };
 
+const TodoItemDetailCard = (props) => {
+  const { component: todo, listComponent, setSelected, refetchList } = props;
+  const [component] = useComponent(todo.component, {
+    data: todo,
+  });
+  const [hover, setHover] = useState(false);
+  const [edit, setEdit] = useState(false);
+  const [todoTitle, setTodoTitle] = useSyncedState(
+    component.props.title,
+    component.props.setTitle
+  );
+  const [note, setNote] = useSyncedState(component.props.note, component.props.setNote);
+  const {state} = useContext(stateContext)
+  return (
+    <Card
+      sx={{
+        backgroundColor: listComponent?.props?.color
+          ? `${
+              listComponent?.props?.color +
+              (state.animatedBackground > 0 ? 'D4' : '')
+            } !important`
+          : undefined,
+      }}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+    >
+      <CardHeader
+        title={component.props.title}
+        action={
+          <IconButton
+            onClick={async () => {
+              await refetchList();
+              setSelected(null);
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        }
+      />
+      <CardContent sx={{ py: 0 }}>
+        {!note && !edit && (
+          <Alert severity="info">Click the edit button to add a note</Alert>
+        )}
+        {!edit && <Markdown>{note}</Markdown>}
+        {edit && (
+          <TextField
+            multiline
+            rows={5}
+            fullWidth
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+          />
+        )}
+        <sup>
+          <em>
+            Note: <a href="https://en.wikipedia.org/wiki/Markdown" target="_blank">Markdown</a> supported
+          </em>
+        </sup>
+      </CardContent>
+      <ListActions
+        hover={hover}
+        itemComponent={component}
+        component={listComponent}
+        edit={edit}
+        setEdit={setEdit}
+        setTodoTitle={() => {}}
+        refetch={refetchList}
+      />
+    </Card>
+  );
+};
+
+const ListActions = ({
+  hover,
+  hideHUD,
+  edit,
+  setEdit,
+  setTodoTitle,
+  showDialog,
+  setShowDialog,
+  labelMode,
+  setLabelMode,
+  component,
+  itemComponent,
+  refetch,
+  setDoArchive,
+  showArchived,
+  showShowArchived,
+
+  showArchive,
+  setShowArchived,
+
+  sort,
+  toggleSort,
+  showSort,
+}: any) => {
+  const [showColors, setShowColors] = useState<HTMLElement | null>(null);
+  const [showItemMenu, setShowItemMenu] = useState<boolean>(false);
+  const [showListMenu, setShowListMenu] = useState(false);
+  return (
+    <CardActionArea
+      sx={{
+        mt: 'auto',
+        opacity: hover && !hideHUD ? 1 : 0,
+        transition: 'opacity 200ms ease-in',
+        '&:hover': {
+          transition: 'opacity 200ms ease-out',
+        },
+        height: 'min-content',
+      }}
+    >
+      <ColorMenu
+        onClose={() => setShowColors(null)}
+        open={showColors}
+        setColor={component?.props?.setColor}
+      ></ColorMenu>
+      <ListItemMenu
+        component={itemComponent}
+        open={showItemMenu}
+        onClose={() => setShowItemMenu(false)}
+        // refetchList={refetch}
+      ></ListItemMenu>
+      <CardActions>
+        <Tooltip title="Edit this list.">
+          <IconButton
+            color={edit ? 'success' : 'secondary'}
+            onClick={() => {
+              setTodoTitle('');
+              setEdit(!edit);
+            }}
+          >
+            <EditIcon />
+          </IconButton>
+        </Tooltip>
+        {edit && setShowDialog && (
+          <Tooltip title="Delete this list.">
+            <IconButton
+              color="error"
+              disabled={!edit}
+              onClick={() => {
+                setShowDialog(true);
+              }}
+            >
+              <RemoveCircleIcon />
+            </IconButton>
+          </Tooltip>
+        )}
+        {edit && setLabelMode && (
+          <Tooltip title="Add / Remove Labels">
+            <IconButton
+              color={labelMode ? 'success' : undefined}
+              disabled={!edit}
+              onClick={() => {
+                setLabelMode(!labelMode);
+              }}
+            >
+              <LabelIcon />
+            </IconButton>
+          </Tooltip>
+        )}
+        {!edit && (
+          <Tooltip title="Set list color.">
+            <IconButton
+              color={showColors ? 'success' : 'info'}
+              // disabled={!edit}
+              onClick={(e) => {
+                setShowColors(e.target as HTMLElement);
+              }}
+            >
+              <PaletteIcon />
+            </IconButton>
+          </Tooltip>
+        )}
+        {showArchive && (
+          <Tooltip
+            title={
+              edit
+                ? 'Archive this list.'
+                : listArchiveMessageMap[component?.props?.settings?.defaultType]
+            }
+          >
+            <span>
+              <IconButton
+                color={edit ? 'error' : 'primary'}
+                // disabled={!edit}
+
+                onClick={async (e) => {
+                  if (edit) {
+                    await component?.props?.archive();
+                    return;
+                  }
+                  await refetch();
+                  setDoArchive(true);
+                }}
+              >
+                <ArchiveIcon />
+              </IconButton>
+            </span>
+          </Tooltip>
+        )}
+        {!edit && showShowArchived && (
+          <Tooltip
+            title={
+              showArchived ? 'Hide archived items.' : 'Show archived items.'
+            }
+          >
+            <span>
+              <IconButton
+                color={showArchived ? 'success' : undefined}
+                disabled={!component?.children?.some((c) => c?.props?.archived)}
+                onClick={async (e) => {
+                  setShowArchived(!showArchived);
+                }}
+              >
+                <VisibilityIcon />
+              </IconButton>
+            </span>
+          </Tooltip>
+        )}
+        {edit && (
+          <Tooltip title={'List settings.'}>
+            <span>
+              <IconButton
+                color={showListMenu ? 'success' : 'info'}
+                onClick={async (e) => {
+                  itemComponent
+                    ? setShowItemMenu(!showItemMenu)
+                    : setShowListMenu(!showListMenu);
+                }}
+              >
+                <SettingsIcon />
+              </IconButton>
+            </span>
+          </Tooltip>
+        )}
+        {showSort && (
+          <Tooltip
+            title={
+              sort === 0
+                ? 'Manual sorting.'
+                : sort === -1
+                ? 'Reversed sorting.'
+                : 'Sorting by: archived, lastModified, createdAt'
+            }
+          >
+            <IconButton
+              color={sort === -1 ? 'error' : sort === 1 ? 'success' : undefined}
+              onClick={toggleSort}
+            >
+              <SortIcon
+                sx={{
+                  transform: sort === -1 ? `rotate(180deg) scaleX(-1)` : ``,
+                }}
+              />
+            </IconButton>
+          </Tooltip>
+        )}
+        {!edit && (
+          <Tooltip title={'Pin List.'}>
+            <Box sx={{ ml: 'auto' }}>
+              <IconButton
+                color={
+                  component?.props?.settings?.pinned ? 'success' : undefined
+                }
+                onClick={async (e) => {
+                  await component?.props?.togglePinned();
+                  await refetch();
+                }}
+              >
+                <PushPinIcon />
+              </IconButton>
+            </Box>
+          </Tooltip>
+        )}
+        <ListMenu
+          open={showListMenu}
+          component={component}
+          onClose={() => setShowListMenu(false)}
+        />
+      </CardActions>
+    </CardActionArea>
+  );
+};
 const AddMenu = ({ open, onClose, addEntry, refetchPoints, canAddLabel }) => {
   return (
     <Popper
@@ -2254,7 +2562,9 @@ const TodoItem = (props) => {
     refetchList,
     refetchPoints,
     setOrder,
+    setSelected,
     order,
+    setShowMenu,
   } = props;
   const memoizedData = useMemo(() => {
     return data;
@@ -2267,7 +2577,6 @@ const TodoItem = (props) => {
   const handleClose = () => {
     setShowColors(null);
   };
-  const [showMenu, setShowMenu] = useState(false);
   const [interval, times] = limits[component?.props?.valuePoints] || [0, 1];
   const canBeCompleted = checkLimits(
     lastCompleted?.[component?.props?.valuePoints],
@@ -2292,6 +2601,7 @@ const TodoItem = (props) => {
     >
       <span>
         <ListItemButton
+          onClick={() => setSelected(component)}
           selected={dist <= 1}
           dense
           disableGutters
@@ -2395,7 +2705,8 @@ const TodoItem = (props) => {
                 color="info"
                 disabled={component?.props?.archived}
                 checked={component?.props.completed}
-                onClick={async () => {
+                onClick={async (e) => {
+                  e.stopPropagation();
                   await component?.props.toggle();
 
                   if (!component?.props?.completed && moveToBottom)
@@ -2407,16 +2718,16 @@ const TodoItem = (props) => {
               />
             )}
             {edit && (
-              <IconButton onClick={() => setShowMenu(true)}>
+              <IconButton
+                onClick={(e) => {
+                  setShowMenu(component);
+                  e.stopPropagation();
+                }}
+              >
                 <MoreVertIcon />
               </IconButton>
             )}
-            <ListItemMenu
-              component={component}
-              open={showMenu}
-              onClose={() => setShowMenu(false)}
-              refetchList={refetchList}
-            ></ListItemMenu>
+            {/* */}
             <ColorMenu
               onClose={handleClose}
               open={showColors}
@@ -2647,19 +2958,14 @@ const ExpenseItem = (props) => {
                 <MoreVertIcon />
               </IconButton>
             )}
-            <ListItemMenu
-              component={component}
-              open={showMenu}
-              onClose={() => setShowMenu(false)}
-              refetchList={refetchList}
-            ></ListItemMenu>
           </ListItemSecondaryAction>
         </ListItemButton>
-        <ColorMenu
-          onClose={handleClose}
-          open={showColors}
-          setColor={component?.props?.setColor}
-        ></ColorMenu>
+        <ListItemMenu
+          component={component}
+          open={showMenu}
+          onClose={() => setShowMenu(false)}
+          refetchList={refetchList}
+        ></ListItemMenu>
       </span>
     </Tooltip>
   );
@@ -2680,7 +2986,7 @@ const ListItemMenu = (props) => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   return (
-    <Dialog open={open}>
+    <Dialog open={open} disablePortal={false}>
       <Paper sx={{ backgroundColor: 'beige' }}>
         <ClickAwayListener
           onClickAway={(e) => {
