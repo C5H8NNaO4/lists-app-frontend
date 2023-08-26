@@ -114,11 +114,12 @@ export const Layout = () => {
         {
           <header>
             <ButtonAppBar />
-            <LinearProgress
+            {/* <LinearProgress
               variant="determinate"
               value={time / 10}
               sx={{ mt: 8 }}
-            />
+            /> */}
+            <Box sx={{mt: 8}} />
           </header>
         }
         <main>
@@ -139,6 +140,11 @@ export const Layout = () => {
             </Alert>
           )}
           <div id="app-warnings" />
+          <div
+            id="loading-container"
+            style={{ display:'flex', width: '100%', height: '8px' }}
+          />
+
           {state.messages.map((message) => {
             return (
               <Snackbar

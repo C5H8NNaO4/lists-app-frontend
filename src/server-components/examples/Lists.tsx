@@ -39,6 +39,7 @@ import {
   ButtonGroup,
   useMediaQuery,
   useTheme,
+  LinearProgress,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import TrophyIcon from '@mui/icons-material/EmojiEvents';
@@ -121,6 +122,7 @@ import { format } from 'date-fns';
 import useBreakpoint from '../../lib/useBreakpoint';
 import { Warning } from '../../components/Warning';
 import { Markdown } from '../../components/Markdown';
+import { createPortal } from 'react-dom';
 
 const minWord = (word: string, str: string) => {
   let min = Infinity;
@@ -603,14 +605,19 @@ export const MyLists = (props) => {
 
   if (loading) {
     return (
-      <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', mt: 2 }}>
+      <Box
+        sx={{ width: '100%', display: 'flex', justifyContent: 'center', mt: 2 }}
+      >
         <CircularProgress />
+        <AppProgress loading={loading} />
       </Box>
     );
   }
   return (
     <>
       <Container maxWidth="xl">
+        <AppProgress loading={loading} />
+
         {error && <Alert severity="error">{error.message}</Alert>}
         <Box
           sx={{ display: 'flex', width: '100%', mt: 0, alignItems: 'start' }}
@@ -1147,6 +1154,18 @@ export const SwitchButton = forwardRef(
     );
   }
 );
+
+const AppProgress = ({ loading, color }) => {
+  return createPortal(
+    <LinearProgress
+      variant={loading ? 'indeterminate' : 'determinate'}
+      color={color || 'secondary'}
+      value={100}
+      sx={{ width: '100%' }}
+    />,
+    document.getElementById('loading-container') || document.body
+  );
+};
 export const ColorMenu = ({
   open,
   onClose,
