@@ -5,6 +5,7 @@ import {
   Card,
   CardHeader,
   Checkbox,
+  LinearProgressProps,
   IconButton,
   ListItemButton,
   List as MUIList,
@@ -608,7 +609,7 @@ export const MyLists = (props) => {
       <Box
         sx={{ width: '100%', display: 'flex', justifyContent: 'center', mt: 2 }}
       >
-        <CircularProgress />
+        <CircularProgress color='secondary'/>
         <AppProgress loading={loading} />
       </Box>
     );
@@ -1155,7 +1156,7 @@ export const SwitchButton = forwardRef(
   }
 );
 
-const AppProgress = ({ loading, color }) => {
+const AppProgress = ({ loading, color }: {color?: LinearProgressProps["color"], loading?: boolean}) => {
   return createPortal(
     <LinearProgress
       variant={loading ? 'indeterminate' : 'determinate'}
