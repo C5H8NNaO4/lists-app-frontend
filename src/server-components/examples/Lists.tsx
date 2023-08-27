@@ -117,7 +117,7 @@ import SyncIcon from '@mui/icons-material/Sync';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { TimePicker } from '@mui/x-date-pickers';
+import { MobileDatePicker, MobileTimePicker, TimePicker } from '@mui/x-date-pickers';
 import { NotificationButton } from '../../components/NotificationButton';
 import { format } from 'date-fns';
 import useBreakpoint from '../../lib/useBreakpoint';
@@ -1824,6 +1824,7 @@ export const List = ({
                         refetchPoints={refetchPoints}
                         order={component?.props?.order}
                         setOrder={component?.props?.setOrder}
+                        showMenu={showItemMenu}
                         setShowMenu={setShowItemMenu}
                       />
                     </SortableItem>
@@ -2624,6 +2625,7 @@ const TodoItem = (props) => {
     setOrder,
     setSelected,
     order,
+    showMenu,
     setShowMenu,
   } = props;
   const memoizedData = useMemo(() => {
@@ -2633,6 +2635,11 @@ const TodoItem = (props) => {
     data: memoizedData,
   });
 
+  useEffect(() => {
+    if (component?.props?.id === showMenu?.props?.id) {
+      setShowMenu(component);
+    }
+  }, [component])
   const [showColors, setShowColors] = useState<HTMLElement | null>(null);
   const handleClose = () => {
     setShowColors(null);
@@ -3079,14 +3086,15 @@ const ListItemMenu = (props) => {
                     placement={isMobile ? 'top' : 'left'}
                   >
                     <Box sx={{ width: '100%' }}>
-                      <DatePicker
+                      <MobileDatePicker
                         label="Due Date"
                         value={
                           component?.props?.dueDate &&
                           new Date(component?.props?.dueDate)
                         }
-                        onChange={(e) => {
-                          component?.props?.setDueDate(e);
+                        onChange={async (e) => {
+                          await component?.props?.setDueDate(e);
+                          await refetchList();
                         }}
                         slotProps={{
                           textField: {
@@ -3095,9 +3103,10 @@ const ListItemMenu = (props) => {
                               startAdornment: (
                                 <InputAdornment position="start">
                                   <IconButton
-                                    onClick={(e) => {
-                                      component?.props?.setDueDate(null);
+                                    onClick={async (e) => {
                                       e.stopPropagation();
+                                      await component?.props?.setDueDate(null);
+                                      await refetchList();
                                     }}
                                     disabled={!component?.props?.dueDate}
                                   >
@@ -3116,8 +3125,9 @@ const ListItemMenu = (props) => {
                     placement={isMobile ? 'top' : 'left'}
                   >
                     <Box sx={{ width: '100%', mb: 1 }}>
-                      <TimePicker
+                      <MobileTimePicker
                         label="Due Time"
+                        ampm={false}
                         value={
                           component?.props?.dueTime &&
                           new Date(component?.props?.dueTime)
