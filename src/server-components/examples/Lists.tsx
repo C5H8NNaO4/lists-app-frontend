@@ -609,7 +609,7 @@ export const MyLists = (props) => {
       <Box
         sx={{ width: '100%', display: 'flex', justifyContent: 'center', mt: 2 }}
       >
-        <CircularProgress color='secondary'/>
+        <CircularProgress color="secondary" />
         <AppProgress loading={loading} />
       </Box>
     );
@@ -928,6 +928,7 @@ const SyncMenu = ({ open, onClose, setShow }) => {
                 <Tooltip title="Import" placement="left">
                   <Button
                     sx={{ ml: 'auto' }}
+                    color="info"
                     onClick={async (e) => {
                       setShow((show) => ({
                         ...show,
@@ -946,6 +947,7 @@ const SyncMenu = ({ open, onClose, setShow }) => {
                     //     ? 'success'
                     //     : undefined
                     // }
+                    color="info"
                     onClick={async (e) => {
                       setShow((show) => ({
                         ...show,
@@ -1156,7 +1158,13 @@ export const SwitchButton = forwardRef(
   }
 );
 
-const AppProgress = ({ loading, color }: {color?: LinearProgressProps["color"], loading?: boolean}) => {
+const AppProgress = ({
+  loading,
+  color,
+}: {
+  color?: LinearProgressProps['color'];
+  loading?: boolean;
+}) => {
   return createPortal(
     <LinearProgress
       variant={loading ? 'indeterminate' : 'determinate'}
@@ -1202,7 +1210,7 @@ export const ColorMenu = ({
       transition
       // disablePortal
       {...popperOptions}
-      sx={{ zIndex: 10 }}
+      sx={{ zIndex: 1301 }}
     >
       {({ TransitionProps, placement }) => (
         <Grow
@@ -1211,8 +1219,13 @@ export const ColorMenu = ({
             transformOrigin: 'left bottom',
           }}
         >
-          <Paper sx={{ backgroundColor: 'beige' }}>
-            <ClickAwayListener onClickAway={() => onClose('')}>
+          <Paper sx={{ backgroundColor: 'beige', zIndex:2 }}>
+            <ClickAwayListener
+              onClickAway={(e) => {
+                e.stopPropagation();
+                onClose('');
+              }}
+            >
               <Box
                 sx={{
                   display: 'flex',
@@ -1224,7 +1237,8 @@ export const ColorMenu = ({
                 {colors.map((color) => {
                   return (
                     <IconButton
-                      onClick={async () => {
+                      onClick={async (e) => {
+                        e.stopPropagation();
                         await setColor(color);
                         onClose(color);
                       }}
@@ -2177,7 +2191,7 @@ const TodoItemDetailCard = (props) => {
       />
       <CardContent sx={{ py: 0 }}>
         {!note && !edit && (
-          <Alert severity="info">Click the edit button to add a note</Alert>
+          <Alert severity="info">Click the <IconButton onClick={() => setEdit(true)}><EditIcon /></IconButton> button in the bottom left to add a note.</Alert>
         )}
         {!edit && <Markdown>{note}</Markdown>}
         {edit && (
@@ -2454,7 +2468,7 @@ const AddMenu = ({ open, onClose, addEntry, refetchPoints, canAddLabel }) => {
               >
                 {['Todo', 'Counter', 'Expense'].map((type) => {
                   return (
-                    <Tooltip title="Import" placement="left">
+                    <Tooltip title={`Add ${type}`} placement="left">
                       <Button
                         // sx={{ ml: 'auto' }}
                         onClick={async (e) => {
@@ -2731,20 +2745,21 @@ const TodoItem = (props) => {
                       label={component?.props?.valuePoints}
                     ></Chip>
                   )}
-                  {edit && (
-                    <IconButton
-                      sx={{ gap: 1, justifyContent: 'start' }}
-                      color={showColors ? 'success' : 'info'}
-                      // disabled={!edit}
-                      onClick={(e) => {
-                        setShowColors(e.target as HTMLElement);
-                      }}
-                    >
-                      <PaletteIcon />
-                    </IconButton>
-                  )}
                 </span>
               </Tooltip>
+            )}
+            {edit && (
+              <IconButton
+                sx={{ gap: 1, justifyContent: 'start' }}
+                color={showColors ? 'success' : 'info'}
+                // disabled={!edit}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowColors(e.target as HTMLElement);
+                }}
+              >
+                <PaletteIcon />
+              </IconButton>
             )}
             {!edit && (
               <Checkbox
@@ -3032,8 +3047,8 @@ const ListItemMenu = (props) => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   return (
-    <Dialog open={open} disablePortal={false}>
-      <Paper sx={{ backgroundColor: 'beige' }}>
+    <Dialog open={open}>
+      <Paper sx={{ backgroundColor: 'beige', zIndex: 1 }}>
         <ClickAwayListener
           onClickAway={(e) => {
             if (
