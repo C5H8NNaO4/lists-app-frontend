@@ -2727,7 +2727,7 @@ const TodoItem = (props) => {
                     dispatch({
                       type: Actions.SHOW_MESSAGE,
                       value: `Removed ${rem.title}. Undo? (Ctrl+Z)`,
-                      action,
+                      action: reverse,
                     });
                   }}
                 >
