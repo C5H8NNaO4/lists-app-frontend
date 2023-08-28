@@ -1990,7 +1990,7 @@ export const List = ({
                   <IconButton
                     color={showListMenu ? 'success' : 'info'}
                     onClick={async (e) => {
-                      setShowListMenu(!showListMenu);
+                      setShowListMenu(true);
                     }}
                   >
                     <SettingsIcon />
@@ -3340,9 +3340,11 @@ const ListMenu = (props) => {
       <Paper sx={{ backgroundColor: 'beige' }}>
         <ClickAwayListener
           onClickAway={(e) => {
+            console.log(e.target, ![component?.props?.id].includes((e?.target as HTMLElement)?.id))
             if (
               ![component?.props?.id].includes((e?.target as HTMLElement)?.id)
             ) {
+              console.log ("Closing");
               onClose();
             } else {
               e.stopImmediatePropagation();
