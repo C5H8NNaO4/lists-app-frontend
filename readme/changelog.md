@@ -1,6 +1,7 @@
 # 28.08.2023
 
-We fixed a lot of minor bugs in the application.
+We fixed a lot of minor bugs in the application.  
+
     * Import didn't work for when data contained lists without titles
     * Poor contrast with buttons when background turned on
     * Poppers had portals disabled leading
