@@ -80,6 +80,7 @@ import PushPinIcon from '@mui/icons-material/PushPin';
 import ReplayIcon from '@mui/icons-material/Replay';
 import InvertColorsIcon from '@mui/icons-material/InvertColors';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
+import NoteIcon from '@mui/icons-material/Note';
 
 import {
   DndContext,
@@ -2675,9 +2676,7 @@ const TodoItem = (props) => {
   return (
     <Tooltip
       title={
-        component?.props?.note
-          ? (component?.props?.note.slice(0, 100) + (component?.props?.note?.length > 150 ? '...' : ''))
-          : !canBeCompleted && !component?.props?.completed
+        !canBeCompleted && !component?.props?.completed
           ? `You already completed too many items with ${component?.props?.valuePoints} points`
           : ''
       }
@@ -2752,6 +2751,11 @@ const TodoItem = (props) => {
           <ListItemSecondaryAction
             sx={{ display: 'flex', alignItems: 'center' }}
           >
+            {component?.props?.note && (
+              <Tooltip title={`${component?.props?.note}`} placement="left">
+                <NoteIcon sx={{ mr: 1 }}></NoteIcon>
+              </Tooltip>
+            )}
             {(component?.props?.dueDate || component?.props?.dueTime) && (
               <Tooltip
                 title={`${
