@@ -39,7 +39,11 @@ import { SidebarNavigation } from '../components/SidebarNavigation';
 import ChatIcon from '@mui/icons-material/Chat';
 import Snackbar from '@mui/material/Snackbar';
 import HeartIcon from '@mui/icons-material/Favorite';
-import { authContext, useComponent } from '@state-less/react-client';
+import {
+  authContext,
+  useComponent,
+  useLocalStorage,
+} from '@state-less/react-client';
 import { ViewCounter } from '../server-components/examples/ViewCounter';
 
 declare let gtag: Function;
@@ -87,9 +91,23 @@ export const Layout = () => {
     }
   }, [features?.props?.animated]);
 
+  const [cookieConsent, setCookieConsent] = useLocalStorage<boolean | null>(
+    'cookie-consent',
+    null
+  );
   useEffect(() => {
-    gtag('event', 'load', { event_category: 'page' });
-  }, [pathname]);
+    if (cookieConsent && 'gtag' in window) {
+      gtag('event', 'load', { event_category: 'page' });
+    } else {
+      setTimeout(() => {
+        const ele = document.getElementById('test');
+        if (ele !== null)
+          ele.onload = () => {
+            gtag('event', 'load', { event_category: 'page' });
+          };
+      }, 0);
+    }
+  }, [pathname, cookieConsent, 'gtag' in window]);
 
   return (
     <VantaBackground
@@ -143,6 +161,33 @@ export const Layout = () => {
               {time < 1000 ? messages[1] : messages[3]}
             </Alert>
           )}
+          {cookieConsent === null && (
+            <Alert
+              severity="info"
+              action={
+                <>
+                  <Button
+                    color="error"
+                    onClick={() => {
+                      setCookieConsent(false);
+                    }}
+                  >
+                    Deny
+                  </Button>
+                  <Button
+                    color="success"
+                    onClick={() => {
+                      setCookieConsent(true);
+                    }}
+                  >
+                    Accept
+                  </Button>
+                </>
+              }
+            >
+              We use Google Analytics to track page views.
+            </Alert>
+          )}
           <div id="app-warnings" />
 
           {state.messages.map((message) => {
@@ -157,7 +202,7 @@ export const Layout = () => {
                     <SingleClickButton
                       onClick={() => {
                         message?.action?.();
-                        dispatch({ type: Actions.HIDE_MESSAGE })
+                        dispatch({ type: Actions.HIDE_MESSAGE });
                       }}
                     >
                       Undo
