@@ -119,10 +119,10 @@ export const Layout = () => {
               value={time / 10}
               sx={{ mt: 8 }}
             /> */}
-              <Box sx={{mt: 8}} />
+            <Box sx={{ mt: 8 }} />
             <div
               id="loading-container"
-              style={{ display:'flex', width: '100%' }}
+              style={{ display: 'flex', width: '100%' }}
             />
           </header>
         }
@@ -151,7 +151,19 @@ export const Layout = () => {
                 open={true}
                 autoHideDuration={6000}
                 onClose={() => dispatch({ type: Actions.HIDE_MESSAGE })}
-                message={message}
+                message={message.message}
+                action={
+                  message.action ? (
+                    <SingleClickButton
+                      onClick={() => {
+                        message?.action?.();
+                        dispatch({ type: Actions.HIDE_MESSAGE })
+                      }}
+                    >
+                      Undo
+                    </SingleClickButton>
+                  ) : undefined
+                }
               />
             );
           })}
@@ -334,4 +346,14 @@ export const Layout = () => {
       </Box>
     </VantaBackground>
   );
+};
+
+const SingleClickButton = (props) => {
+  const { onClick, ...rest } = props;
+  const [clicked, setClicked] = useState(false);
+  const handleClick = (e) => {
+    onClick(e);
+    setClicked(true);
+  };
+  return <Button disabled={clicked} onClick={handleClick} {...rest} />;
 };

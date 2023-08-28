@@ -117,7 +117,11 @@ import SyncIcon from '@mui/icons-material/Sync';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { MobileDatePicker, MobileTimePicker, TimePicker } from '@mui/x-date-pickers';
+import {
+  MobileDatePicker,
+  MobileTimePicker,
+  TimePicker,
+} from '@mui/x-date-pickers';
 import { NotificationButton } from '../../components/NotificationButton';
 import { format } from 'date-fns';
 import useBreakpoint from '../../lib/useBreakpoint';
@@ -515,6 +519,7 @@ export const MyLists = (props) => {
                                 key={list.component}
                                 list={list.component || list.key}
                                 data={list}
+                                addList={component?.props?.add}
                                 remove={component?.props?.remove}
                                 id={list.id}
                                 refetch={refetch}
@@ -1219,7 +1224,7 @@ export const ColorMenu = ({
             transformOrigin: 'left bottom',
           }}
         >
-          <Paper sx={{ backgroundColor: 'beige', zIndex:2 }}>
+          <Paper sx={{ backgroundColor: 'beige', zIndex: 2 }}>
             <ClickAwayListener
               onClickAway={(e) => {
                 e.stopPropagation();
@@ -1484,6 +1489,7 @@ const transpose = (arr: Array<any>, n: number): Array<any> => {
 export const List = ({
   list,
   data,
+  addList,
   remove,
   id,
   refetch,
@@ -1494,6 +1500,7 @@ export const List = ({
 }: {
   list: string;
   data?: any;
+  addList?: any;
   remove?: any;
   id?: string;
   refetch?: any;
@@ -1588,20 +1595,6 @@ export const List = ({
     if (label) {
       await refetch();
     }
-    const id = res.id;
-    dispatch({
-      type: Actions.SHOW_MESSAGE,
-      value: `Added ${todoTitle}. Undo? (Ctrl+Z)`,
-    });
-    dispatch({
-      type: Actions.RECORD_CHANGE,
-      message: `Added ${todoTitle}. Undo?`,
-      value: {
-        reverse: () => {
-          component.props.remove(id);
-        },
-      },
-    });
   };
 
   const [showDialog, setShowDialog] = useState(false);
@@ -1817,6 +1810,7 @@ export const List = ({
                         todo={todo.key}
                         data={todo}
                         edit={edit && !labelMode}
+                        add={component?.props?.add}
                         remove={component?.props?.remove}
                         setSelected={setSelected}
                         lastCompleted={lastCompleted}
@@ -2123,8 +2117,22 @@ export const List = ({
         title="Delete List"
         open={showDialog}
         id={list}
-        onClose={(confirmed) => {
-          if (confirmed) remove(component?.props?.id);
+        onClose={async (confirmed) => {
+          if (confirmed) {
+            const rem = await remove(component?.props?.id);
+            dispatch({
+              type: Actions.SHOW_MESSAGE,
+              value: `Removed List. Undo? (Ctrl+Z)`,
+            });
+            dispatch({
+              type: Actions.RECORD_CHANGE,
+              value: {
+                reverse: async () => {
+                  await addList(rem);
+                },
+              },
+            });
+          }
           setShowDialog(false);
         }}
       >
@@ -2192,7 +2200,13 @@ const TodoItemDetailCard = (props) => {
       />
       <CardContent sx={{ py: 0 }}>
         {!note && !edit && (
-          <Alert severity="info">Click the <IconButton onClick={() => setEdit(true)}><EditIcon /></IconButton> button in the bottom left to add a note.</Alert>
+          <Alert severity="info">
+            Click the{' '}
+            <IconButton onClick={() => setEdit(true)}>
+              <EditIcon />
+            </IconButton>{' '}
+            button in the bottom left to add a note.
+          </Alert>
         )}
         {!edit && <Markdown>{note}</Markdown>}
         {edit && (
@@ -2444,7 +2458,7 @@ const AddMenu = ({ open, onClose, addEntry, refetchPoints, canAddLabel }) => {
       open={!!open}
       anchorEl={open}
       transition
-      disablePortal
+      
       sx={{ zIndex: 10 }}
       placement="bottom"
     >
@@ -2617,6 +2631,7 @@ const TodoItem = (props) => {
   const {
     todo: todoKey,
     edit,
+    add,
     remove,
     data,
     lastCompleted,
@@ -2639,7 +2654,7 @@ const TodoItem = (props) => {
     if (component?.props?.id === showMenu?.props?.id) {
       setShowMenu(component);
     }
-  }, [component])
+  }, [component]);
   const [showColors, setShowColors] = useState<HTMLElement | null>(null);
   const handleClose = () => {
     setShowColors(null);
@@ -2697,7 +2712,24 @@ const TodoItem = (props) => {
               >
                 <IconButton
                   color="error"
-                  onClick={() => remove(component.props.id)}
+                  onClick={async (e) => {
+                    e.stopPropagation();
+                    const rem = await remove(component.props.id);
+                    const reverse = () => {
+                      add(rem);
+                    }
+                    dispatch({
+                      type: Actions.RECORD_CHANGE,
+                      value: {
+                        reverse,
+                      },
+                    });
+                    dispatch({
+                      type: Actions.SHOW_MESSAGE,
+                      value: `Removed ${rem.title}. Undo? (Ctrl+Z)`,
+                      action: reverse
+                    });
+                  }}
                 >
                   <RemoveCircleIcon />
                 </IconButton>

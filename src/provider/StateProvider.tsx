@@ -3,7 +3,7 @@ import React, { createContext, Dispatch, useReducer } from 'react';
 type State = {
   menuOpen: boolean;
   animatedBackground: number;
-  messages: string[];
+  messages: {message: string, action?: () => void}[];
   alerts: Record<string, string[]>;
   history: HistoryAction[];
   fullscreen: boolean;
@@ -22,7 +22,7 @@ const initialState: State = {
   animatedBackground: localStorage.getItem('animatedBackgroundUser')
     ? Number(localStorage.getItem('animatedBackgroundUser'))
     : Number(localStorage.getItem('animatedBackground')),
-  messages: [],
+  messages: [] as any[],
   alerts: {
     info: [],
     warning: [],
@@ -50,7 +50,7 @@ export const stateContext = createContext({
   dispatch: (() => {}) as Dispatch<any>,
 });
 
-export type Action = { type: Actions; value: any };
+export type Action = { type: Actions; value: any, action?: () => void };
 
 const reducer = (state: State, action: Action) => {
   switch (action.type) {
@@ -67,7 +67,7 @@ const reducer = (state: State, action: Action) => {
     case Actions.SHOW_MESSAGE:
       return {
         ...state,
-        messages: [...state.messages, action.value],
+        messages: [...state.messages, {message: action.value, action: action.action}],
       };
     case Actions.HIDE_MESSAGE:
       return {
