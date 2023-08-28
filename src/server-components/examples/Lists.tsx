@@ -1516,7 +1516,8 @@ export const List = ({
     {
       data,
     }
-  );
+    );
+    const showNItems = component?.props?.settings?.listSize || nItems;
   const { hideHUD } = options as any;
   const [todoTitle, setTodoTitle] = useState('');
   const [listTitle, setListTitle] = useSyncedState(
@@ -1770,7 +1771,7 @@ export const List = ({
             ref={ref as any}
             disablePadding
             sx={{
-              maxHeight: LIST_ITEM_HEIGHT * nItems + 'px',
+              maxHeight: LIST_ITEM_HEIGHT * showNItems + 'px',
 
               overflowY: 'auto',
               overflowX: 'hidden',
@@ -3373,6 +3374,30 @@ const ListMenu = (props) => {
                     })}
                   </Select>
                 </>
+              </Tooltip>
+              <Tooltip title="List size" placement="right">
+                <span>
+                  <FormLabel>
+                    Override default list size
+                  </FormLabel>
+                  <Select
+                  fullWidth
+                    sx={{  ml: 1 }}
+                    id={component?.props?.id + 'list-size'}
+                    onChange={(e) =>
+                      component?.props?.updateSettings({
+                        ...component?.props?.settings,
+                        listSize: e.target.value === '-' ? null : e.target.value,
+                      })
+                    }
+                    value={component?.props?.settings?.listSize ?? '-'}
+                    MenuProps={{ disablePortal: true }}
+                  >
+                    {['-', 3, 5, 10, 15, 20, 999].map((n) => {
+                      return <MenuItem value={n}>{n ?? ''}</MenuItem>;
+                    })}
+                  </Select>
+                </span>
               </Tooltip>
               <Tooltip title="Default Type" placement="right">
                 <>
