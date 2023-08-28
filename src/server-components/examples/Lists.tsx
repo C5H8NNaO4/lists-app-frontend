@@ -2458,7 +2458,6 @@ const AddMenu = ({ open, onClose, addEntry, refetchPoints, canAddLabel }) => {
       open={!!open}
       anchorEl={open}
       transition
-      
       sx={{ zIndex: 10 }}
       placement="bottom"
     >
@@ -2676,7 +2675,9 @@ const TodoItem = (props) => {
   return (
     <Tooltip
       title={
-        !canBeCompleted && !component?.props?.completed
+        component?.props?.note
+          ? (component?.props?.note.slice(0, 100) + (component?.props?.note?.length > 150 ? '...' : ''))
+          : !canBeCompleted && !component?.props?.completed
           ? `You already completed too many items with ${component?.props?.valuePoints} points`
           : ''
       }
@@ -2717,7 +2718,7 @@ const TodoItem = (props) => {
                     const rem = await remove(component.props.id);
                     const reverse = () => {
                       add(rem);
-                    }
+                    };
                     dispatch({
                       type: Actions.RECORD_CHANGE,
                       value: {
@@ -2727,7 +2728,7 @@ const TodoItem = (props) => {
                     dispatch({
                       type: Actions.SHOW_MESSAGE,
                       value: `Removed ${rem.title}. Undo? (Ctrl+Z)`,
-                      action: reverse
+                      action,
                     });
                   }}
                 >
