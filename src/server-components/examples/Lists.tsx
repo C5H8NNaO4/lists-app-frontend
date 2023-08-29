@@ -81,7 +81,7 @@ import ReplayIcon from '@mui/icons-material/Replay';
 import InvertColorsIcon from '@mui/icons-material/InvertColors';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import NoteIcon from '@mui/icons-material/Note';
-
+import NoteOutlinedIcon from '@mui/icons-material/NoteOutlined';
 import {
   DndContext,
   TouchSensor,
@@ -2660,7 +2660,7 @@ const TodoItem = (props) => {
   return (
     <>
       <ListItemMenu
-        component={showMenu}
+        component={component}
         open={!!showMenu}
         onClose={() => setShowMenu(false)}
         refetchList={refetchList}
@@ -2744,7 +2744,7 @@ const TodoItem = (props) => {
             >
               {component?.props?.note && (
                 <Tooltip title={`${component?.props?.note}`} placement="left">
-                  <NoteIcon sx={{ mr: 1 }}></NoteIcon>
+                  <NoteOutlinedIcon sx={{ mr: 1 }}></NoteOutlinedIcon>
                 </Tooltip>
               )}
               {(component?.props?.dueDate || component?.props?.dueTime) && (
@@ -3033,7 +3033,14 @@ const ExpenseItem = (props) => {
                 : ''
             }
           />
-          <ListItemSecondaryAction>
+          <ListItemSecondaryAction sx={{display:'flex', gap: 1, alignItems: 'center'}}>
+          {!component?.props?.archived && (
+            <Tooltip title={`Archive this item.`} placement="left">
+              <IconButton onClick={() => component?.props?.archive()} >
+                <ArchiveIcon sx={{ }}></ArchiveIcon>
+              </IconButton>
+            </Tooltip>
+          )}
             {!edit && !component?.props?.archived && (
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <TextField
@@ -3101,7 +3108,6 @@ const ListItemMenu = (props) => {
             }}
           >
             <Card>
-              QWE
               <CardContent sx={{ display: 'flex', flexDirection: 'column' }}>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                   <Box
