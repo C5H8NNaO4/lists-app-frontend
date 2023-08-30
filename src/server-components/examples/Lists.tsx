@@ -2170,7 +2170,7 @@ const TodoItemDetailCard = (props) => {
         backgroundColor: listComponent?.props?.color
           ? `${
               listComponent?.props?.color +
-              (state.animatedBackground > 0 ? 'D4' : '')
+              (state.animatedBackground > 0 ? 'D3' : '')
             } !important`
           : undefined,
       }}
