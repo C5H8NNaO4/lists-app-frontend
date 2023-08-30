@@ -156,17 +156,32 @@ const limits = {
   '0': [DAY, 1000],
 };
 
+const colors = [
+  '',
+  '#ffffff',
+  '#9e0142',
+  '#d53e4f',
+  '#f46d43',
+  '#fdae61',
+  '#fee08b',
+  '#e6f598',
+  '#abdda4',
+  '#66c2a5',
+  '#3288bd',
+  '#5e4fa2',
+];
+
 const colorMap = {
-  '100': 'darkgreen',
-  '65': 'green',
-  '44': 'blue',
-  '21': 'purple',
-  '13': 'red',
-  '8': 'orange',
-  '5': 'gold',
-  '3': 'silver',
-  '2': '#CD7F32',
-  '1': '#F0F0F0',
+  '100': colors[10],
+  '65': colors[9],
+  '44': colors[8],
+  '21': colors[7],
+  '13': colors[6],
+  '8': colors[5],
+  '5': colors[4],
+  '3': colors[3],
+  '2': colors[2],
+  '1': colors[1],
   '0': 'lightgrey',
 };
 
@@ -1192,21 +1207,6 @@ export const ColorMenu = ({
   onClose: (color?: string) => void;
   setColor: (color: string) => void;
 }) => {
-  const colors = [
-    '',
-    '#ffffff',
-    '#9e0142',
-    '#d53e4f',
-    '#f46d43',
-    '#fdae61',
-    '#fee08b',
-    '#e6f598',
-    '#abdda4',
-    '#66c2a5',
-    '#3288bd',
-    '#5e4fa2',
-  ];
-
   return (
     <Popper
       open={!!open}
@@ -2773,10 +2773,9 @@ const TodoItem = (props) => {
                       <Chip
                         size="small"
                         sx={{
-                          color:
-                            component?.props?.valuePoints > 1
-                              ? 'white'
-                              : 'black',
+                          color: ![1, 21].includes(component?.props?.valuePoints)
+                            ? 'white'
+                            : 'black',
                           backgroundColor:
                             colorMap[component?.props?.valuePoints] ||
                             'lightgrey',
