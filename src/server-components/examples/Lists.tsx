@@ -182,7 +182,7 @@ const checkLimits = (items, todo) => {
   return !reachedLimit;
 };
 
-const LIST_ITEM_HEIGHT = 44;
+const LIST_ITEM_HEIGHT = 40;
 
 const isTouchScreenDevice = () => {
   try {
@@ -1738,7 +1738,7 @@ export const List = ({
         backgroundColor: component?.props?.color
           ? `${
               component?.props?.color +
-              (state.animatedBackground > 0 ? 'D4' : '')
+              (state.animatedBackground > 0 ? 'D3' : '')
             } !important`
           : undefined,
       }}
@@ -1787,6 +1787,7 @@ export const List = ({
                   )}
                   {!canAddLabel && (
                     <SortableItem
+                      padding="2px"
                       key={id}
                       id={id}
                       // enabled={false}
@@ -2539,13 +2540,14 @@ const Sum = ({ items, includeArchived }) => {
   if (pos === 0 && neg === 0) {
     return (
       <Alert
+        sx={{ mt: 1 }}
         severity={'info'}
       >{`Click the eye icon to show archived items.`}</Alert>
     );
   }
   if (pos === 0) {
     return (
-      <Alert severity={'error'}>
+      <Alert sx={{ mt: 1 }} severity={'error'}>
         {`You ` +
           (negArchived < 0 ? `spent ${Math.abs(negArchived)}€` : '') +
           (negArchived < 0 && negNotArchived < 0 ? ' and ' : '') +
@@ -2559,7 +2561,7 @@ const Sum = ({ items, includeArchived }) => {
   }
   if (neg === 0) {
     return (
-      <Alert severity={'success'}>
+      <Alert sx={{ mt: 1 }} severity={'success'}>
         {' '}
         {`You ` +
           (posArchived > 0 ? `gained ${posArchived}€` : '') +
@@ -2570,6 +2572,7 @@ const Sum = ({ items, includeArchived }) => {
   }
   return (
     <Alert
+      sx={{ mt: 1 }}
       severity={posNotArchived < Math.abs(negNotArchived) ? 'error' : 'success'}
     >{`You spent ${Math.abs(
       negNotArchived
@@ -2987,10 +2990,6 @@ const ExpenseItem = (props) => {
       await refetchList();
     }
   );
-  const [showColors, setShowColors] = useState<HTMLElement | null>(null);
-  const handleClose = () => {
-    setShowColors(null);
-  };
 
   if (loading) return null;
 
@@ -3033,14 +3032,16 @@ const ExpenseItem = (props) => {
                 : ''
             }
           />
-          <ListItemSecondaryAction sx={{display:'flex', gap: 1, alignItems: 'center'}}>
-          {!component?.props?.archived && (
-            <Tooltip title={`Archive this item.`} placement="left">
-              <IconButton onClick={() => component?.props?.archive()} >
-                <ArchiveIcon sx={{ }}></ArchiveIcon>
-              </IconButton>
-            </Tooltip>
-          )}
+          <ListItemSecondaryAction
+            sx={{ display: 'flex', gap: 1, alignItems: 'center' }}
+          >
+            {!component?.props?.archived && (
+              <Tooltip title={`Archive this item.`} placement="left">
+                <IconButton onClick={() => component?.props?.archive()}>
+                  <ArchiveIcon sx={{}}></ArchiveIcon>
+                </IconButton>
+              </Tooltip>
+            )}
             {!edit && !component?.props?.archived && (
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <TextField

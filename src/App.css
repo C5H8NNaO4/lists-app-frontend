@@ -48,7 +48,7 @@ pre {
 .light.bg .MuiPaper-root:not(.opaque) {
   /* background-color: #1E1F27AA !important; */
   background-color: #ffffff33;
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(9px);
 }
 
 #bg {

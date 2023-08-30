@@ -4,7 +4,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { useMediaQuery, useTheme, Box } from '@mui/material';
 
 export function SortableItem(props) {
-  const { id, DragHandle, ...rest } = props;
+  const { id, DragHandle, padding, ...rest } = props;
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: props.id });
 
@@ -13,7 +13,7 @@ export function SortableItem(props) {
     transition,
     height: props.fullHeight ? '100%' : undefined,
     overflow: 'hidden',
-    padding: '4px',
+    padding: padding || '4px',
     cursor: 'pointer',
   };
 
