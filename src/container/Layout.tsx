@@ -228,13 +228,10 @@ export const Layout = () => {
                 backgroundColor: 'primary.main',
               }}
             >
-              <Typography
-                variant="body2"
-                color="textSecondary"
-                align="center"
-                sx={{ color: 'white' }}
-              >
-                © 2023 React Server
+              <Typography variant="body2" color="textSecondary" align="center">
+                <Link href="https://state-less.cloud">
+                  © 2023 React Server
+                </Link>
               </Typography>
               <Grid container spacing={1} justifyContent="center">
                 <Grid item xs={12} sm={6} md={4} xl={2}>
