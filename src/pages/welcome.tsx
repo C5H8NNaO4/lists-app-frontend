@@ -52,9 +52,7 @@ export const WelcomePage = () => {
           <Typography variant="h2">
             Boost your productivity with Lists. 🥰
           </Typography>
-          <Markdown src={getRawPath(PAGE_SRC)}>
-            Loading...
-          </Markdown>
+          <Markdown src={getRawPath(PAGE_SRC)}>Loading...</Markdown>
           <Box sx={{ display: 'flex' }}>
             <Button variant="contained" sx={{ mx: 'auto' }}>
               <Link component={RouterLink} to="/" color={'secondary'}>
