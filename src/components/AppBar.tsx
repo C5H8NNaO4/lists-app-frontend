@@ -25,7 +25,6 @@ export default function ButtonAppBar() {
   const { pathname } = useLocation();
 
   const theme = useTheme();
-
   const lessThanSmall = useMediaQuery(theme.breakpoints.down('sm'));
   return (
     <AppBar sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
