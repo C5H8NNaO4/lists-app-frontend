@@ -556,27 +556,37 @@ export const MyLists = (props) => {
             );
           })}
           {optimisticOrder?.length > 0 && fullWidth && (
-            <Box sx={{ position: 'sticky', width: '100%', bottom: 0 }}>
-              <Fab
-                color="secondary"
-                aria-label="add"
-                sx={{
-                  position: 'absolute',
-                  right: 32,
-                  bottom: 32,
-                  // marginBottom: -8,
-                }}
-                onClick={() => {
-                  component?.props?.add({
-                    title,
-                    color: defaultListColor,
-                    settings: { defaultType: 'Todo' },
-                  });
-                  setTitle('');
-                }}
-              >
-                <AddIcon />
-              </Fab>
+            <Box
+              sx={{
+                position: 'sticky',
+                width: '100%',
+                bottom: 0,
+                pt: '32px',
+                display: 'flex',
+              }}
+            >
+              <Tooltip title="Add new list" placement="top">
+                <Fab
+                  color="secondary"
+                  aria-label="add"
+                  sx={{
+                    position: 'relative',
+                    ml: 'auto',
+                    mr: '32px',
+                    // marginBottom: -8,
+                  }}
+                  onClick={() => {
+                    component?.props?.add({
+                      title,
+                      color: defaultListColor,
+                      settings: { defaultType: 'Todo' },
+                    });
+                    setTitle('');
+                  }}
+                >
+                  <AddIcon />
+                </Fab>
+              </Tooltip>
             </Box>
           )}
         </Box>
@@ -826,12 +836,52 @@ export const MyLists = (props) => {
               justifyContent: 'center',
             }}
           >
-            <Box sx={{ mx: 'auto', my: 'auto' }}>
-              {' '}
+            <Box sx={{ mx: 'auto', my: 'auto', display: 'flex', pt: '32px' }}>
+              <Tooltip title="Add new list" placement="top">
+                <Fab
+                  color="secondary"
+                  aria-label="add"
+                  // sx={{ position: 'fixed', right: 16, bottom: 16 }}
+                  onClick={() => {
+                    component?.props?.add({
+                      title,
+                      color: defaultListColor,
+                      settings: { defaultType: 'Todo' },
+                    });
+                    setTitle('');
+                  }}
+                  sx={{
+                    position: 'relative',
+                    ml: 'auto',
+                    mr: '32px',
+                  }}
+                >
+                  <AddIcon />
+                </Fab>
+              </Tooltip>
+            </Box>
+          </Box>
+        )}
+        {optimisticOrder?.length > 0 && !fullWidth && (
+          <Box
+            sx={{
+              position: 'sticky',
+              width: '100%',
+              bottom: 0,
+              display: 'flex',
+              pt: '32px',
+            }}
+          >
+            <Tooltip title="Add new list" placement="top">
               <Fab
                 color="secondary"
                 aria-label="add"
-                // sx={{ position: 'fixed', right: 16, bottom: 16 }}
+                sx={{
+                  position: 'relative',
+                  ml: 'auto',
+                  mr: '32px',
+                  // marginBottom: -8,
+                }}
                 onClick={() => {
                   component?.props?.add({
                     title,
@@ -843,31 +893,7 @@ export const MyLists = (props) => {
               >
                 <AddIcon />
               </Fab>
-            </Box>
-          </Box>
-        )}
-        {optimisticOrder?.length > 0 && !fullWidth && (
-          <Box sx={{ position: 'sticky', width: '100%', bottom: 0 }}>
-            <Fab
-              color="secondary"
-              aria-label="add"
-              sx={{
-                position: 'absolute',
-                right: 32,
-                bottom: 32,
-                // marginBottom: -8,
-              }}
-              onClick={() => {
-                component?.props?.add({
-                  title,
-                  color: defaultListColor,
-                  settings: { defaultType: 'Todo' },
-                });
-                setTitle('');
-              }}
-            >
-              <AddIcon />
-            </Fab>
+            </Tooltip>
           </Box>
         )}
       </Container>
@@ -1747,7 +1773,16 @@ export const List = ({
       elevation={hover ? 3 : component?.props?.settings?.pinned ? 2 : 1}
     >
       {error && <Alert severity="error">{error.message}</Alert>}
-      <CardHeader title={component?.props?.title}></CardHeader>
+      <CardHeader
+        title={
+          component?.props?.title || (
+            <ListTitleTextField
+              setListTitle={setListTitle}
+              inputRef={inputRef}
+            />
+          )
+        }
+      ></CardHeader>
 
       <DndContext
         sensors={sensors}
@@ -2044,12 +2079,14 @@ export const List = ({
           '&:hover': {
             transition: 'opacity 0.2s ease-out',
           },
+          gap: 1,
           ml: 1,
           mr: 2,
           mb: 1,
         }}
       >
         <TextField
+          color="secondary"
           fullWidth
           inputRef={inputRef}
           value={edit && !labelMode ? listTitle : todoTitle}
@@ -2091,18 +2128,32 @@ export const List = ({
           }}
         />
         {(!edit || canAddLabel) && (
-          <IconButton
-            sx={{ mt: 1 }}
-            disabled={!todoTitle}
-            onClick={async (e) => {
-              console.log('Ref current before');
-              canAddLabel
-                ? await addEntry(e, true)
-                : setShowType(e.target as HTMLElement);
-            }}
-          >
-            <IconMore />
-          </IconButton>
+          <Tooltip title="Add new item" placement="top">
+            <IconButton
+              color="primary"
+              sx={{
+                mt: 1,
+                backgroundColor: 'success.main',
+                color: 'black',
+                boxShadow:
+                  todoTitle &&
+                  `0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12)`,
+                '&:hover': {
+                  backgroundColor: 'success.main',
+                  filter: 'brightness(0.8)',
+                },
+              }}
+              disabled={!todoTitle}
+              onClick={async (e) => {
+                console.log('Ref current before');
+                canAddLabel
+                  ? await addEntry(e, true)
+                  : setShowType(e.target as HTMLElement);
+              }}
+            >
+              <AddIcon />
+            </IconButton>
+          </Tooltip>
         )}
       </Box>
       <ConfirmationDialogRaw
@@ -2148,6 +2199,23 @@ export const List = ({
   );
 };
 
+const ListTitleTextField = ({ setListTitle, inputRef }) => {
+  const ref = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    ref?.current?.focus();
+  }, []);
+  return (
+    <TextField
+      color="secondary"
+      inputProps={{ ref: ref }}
+      size="small"
+      label="Edit Title"
+      onChange={(e) => {
+        setListTitle(e.target.value);
+      }}
+    ></TextField>
+  );
+};
 const TodoItemDetailCard = (props) => {
   const { component: todo, listComponent, setSelected, refetchList } = props;
   const [component] = useComponent(todo.component, {
@@ -2773,7 +2841,9 @@ const TodoItem = (props) => {
                       <Chip
                         size="small"
                         sx={{
-                          color: ![1, 21].includes(component?.props?.valuePoints)
+                          color: ![1, 21].includes(
+                            component?.props?.valuePoints
+                          )
                             ? 'white'
                             : 'black',
                           backgroundColor:
