@@ -560,7 +560,7 @@ export const MyLists = (props) => {
               sx={{
                 position: 'sticky',
                 width: '100%',
-                bottom: 0,
+                bottom: '32px',
                 pt: '32px',
                 display: 'flex',
               }}
