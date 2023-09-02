@@ -867,7 +867,7 @@ export const MyLists = (props) => {
             sx={{
               position: 'sticky',
               width: '100%',
-              bottom: 0,
+              bottom: '32px',
               display: 'flex',
               pt: '32px',
             }}
@@ -1482,7 +1482,7 @@ export const ExportMenu = ({ open, onClose, exportData }) => {
   );
 };
 
-const useSyncedState = (defValue, updateFn) => {
+const useSyncedState = (defValue, updateFn, successFn) => {
   const timeout = useRef<any>(null);
   const [localValue, setLocalValue] = useState(defValue);
 
@@ -1490,8 +1490,9 @@ const useSyncedState = (defValue, updateFn) => {
     setLocalValue(value);
 
     clearTimeout(timeout.current);
-    timeout.current = setTimeout(() => {
-      updateFn(value);
+    timeout.current = setTimeout(async () => {
+      await updateFn(value);
+      successFn(value);
     }, 1500);
   };
 
@@ -1543,12 +1544,19 @@ export const List = ({
       data,
     }
   );
+
+  const onListItemSet = () => {
+    if (inputRef?.current) {
+      inputRef?.current?.focus();
+    }
+  };
   const showNItems = component?.props?.settings?.listSize || nItems;
   const { hideHUD } = options as any;
   const [todoTitle, setTodoTitle] = useState('');
   const [listTitle, setListTitle] = useSyncedState(
     component?.props?.title,
-    component?.props?.setTitle
+    component?.props?.setTitle,
+    onListItemSet
   );
   const [edit, setEdit] = useState(false);
   const [labelMode, setLabelMode] = useState(false);
