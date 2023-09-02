@@ -1482,7 +1482,7 @@ export const ExportMenu = ({ open, onClose, exportData }) => {
   );
 };
 
-const useSyncedState = (defValue, updateFn, successFn) => {
+const useSyncedState = (defValue, updateFn, successFn?) => {
   const timeout = useRef<any>(null);
   const [localValue, setLocalValue] = useState(defValue);
 
@@ -1492,7 +1492,7 @@ const useSyncedState = (defValue, updateFn, successFn) => {
     clearTimeout(timeout.current);
     timeout.current = setTimeout(async () => {
       await updateFn(value);
-      successFn(value);
+      successFn?.(value);
     }, 1500);
   };
 
