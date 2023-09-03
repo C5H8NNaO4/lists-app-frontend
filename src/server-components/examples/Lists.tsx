@@ -1059,7 +1059,7 @@ const MoreMenu = ({
                   placement="left"
                 >
                   <SwitchButton
-                    color={fullWidth ? 'success' : undefined}
+                    color={fullWidth ? 'success' : 'info'}
                     // sx={{ ml: 'auto' }}
                     onClick={() => setFullWidth(!fullWidth)}
                     fullWidth
@@ -1080,7 +1080,7 @@ const MoreMenu = ({
                   <SwitchButton
                     fullWidth
                     sx={{ justifyContent: 'start', gap: 1 }}
-                    color={state.fullscreen ? 'success' : undefined}
+                    color={state.fullscreen ? 'success' : 'info'}
                     // sx={{ ml: 'auto' }}
                     onClick={() => {
                       dispatch({ type: Actions.TOGGLE_FULLSCREEN });
@@ -1105,7 +1105,7 @@ const MoreMenu = ({
                   <SwitchButton
                     fullWidth
                     sx={{ justifyContent: 'start', gap: 1 }}
-                    color={showArchived ? 'success' : undefined}
+                    color={showArchived ? 'success' : 'info'}
                     // sx={{ ml: 'auto' }}
                     onClick={() => {
                       setShowArchived(!showArchived);
@@ -1119,7 +1119,7 @@ const MoreMenu = ({
                   <SwitchButton
                     fullWidth
                     sx={{ justifyContent: 'start', gap: 1 }}
-                    color={showExpenses ? 'success' : undefined}
+                    color={showExpenses ? 'success' : 'info'}
                     // sx={{ ml: 'auto' }}
                     onClick={() => {
                       setShowExpenses(!showExpenses);
@@ -1568,7 +1568,8 @@ export const List = ({
   const [selected, setSelected] = useState<string | null>(null);
   const canAddLabel = edit && labelMode;
   const inputRef = useRef<HTMLInputElement | null>(null);
-
+  const addButtonRef = useRef<HTMLButtonElement | null>(null);
+  const [adding, setAdding] = useState(false);
   const toggleSort = async () => {
     await refetchList();
     const nextSort = ((sort + 2) % 3) - 1;
@@ -1598,8 +1599,9 @@ export const List = ({
   );
 
   const addEntry = async (e, label, rest?) => {
+    setAdding(true);
     setTodoTitle('');
-    if (todoTitle === '' && !rest?.title) return;
+    // if (todoTitle === '' && !rest?.title) return;
     const fn = label ? component.props.addLabel : component.props.add;
     const arg = {
       title: rest?.title || todoTitle,
@@ -1631,6 +1633,7 @@ export const List = ({
     if (label) {
       await refetch();
     }
+    setAdding(false);
   };
 
   const [showDialog, setShowDialog] = useState(false);
@@ -1868,7 +1871,7 @@ export const List = ({
         <Sum items={component?.children} includeArchived={showArchived} />
       )}
 
-      {component?.props?.settings?.pinned && !hover && (
+      {!hover && (
         <CardActionArea
           sx={{
             mt: 'auto',
@@ -1876,6 +1879,19 @@ export const List = ({
         >
           <CardActions sx={{ display: 'flex' }}>
             {!edit && (
+              <AddIconButton
+                id={component?.props?.id}
+                canAddLabel={canAddLabel}
+                open={showType}
+                setOpen={setShowType}
+                hover={hover}
+                todoTitle={todoTitle}
+                addEntry={addEntry}
+                refetchPoints={refetchPoints}
+                disabled={adding}
+              />
+            )}
+            {!edit && component?.props?.settings?.pinned && (
               <Tooltip
                 title={
                   component?.props?.settings?.pinned
@@ -1906,7 +1922,7 @@ export const List = ({
         </CardActionArea>
       )}
 
-      {!(component?.props?.settings?.pinned && !hover) && (
+      {hover && (
         <CardActionArea
           sx={{
             mt: 'auto',
@@ -1919,6 +1935,19 @@ export const List = ({
           }}
         >
           <CardActions>
+            {!edit && (
+              <AddIconButton
+                id={component?.props?.id}
+                hover={hover}
+                canAddLabel={canAddLabel}
+                open={showType}
+                setOpen={setShowType}
+                todoTitle={todoTitle}
+                addEntry={addEntry}
+                refetchPoints={refetchPoints}
+                disabled={adding}
+              />
+            )}
             <Tooltip title="Edit this list.">
               <IconButton
                 color={edit ? 'success' : 'secondary'}
@@ -2078,92 +2107,93 @@ export const List = ({
           </CardActions>
         </CardActionArea>
       )}
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'start',
-          opacity: hover ? 1 : 0.9,
-          transition: 'opacity 0.2s ease-in',
-          '&:hover': {
-            transition: 'opacity 0.2s ease-out',
-          },
-          gap: 1,
-          ml: 1,
-          mr: 2,
-          mb: 1,
-        }}
-      >
-        <TextField
-          color="secondary"
-          fullWidth
-          inputRef={inputRef}
-          value={edit && !labelMode ? listTitle : todoTitle}
-          label={canAddLabel ? 'Add Label' : edit ? 'Edit Title' : 'Add Item'}
-          error={exists}
-          helperText={exists ? 'Item already exists' : ''}
-          onChange={(e) => {
-            edit && !labelMode
-              ? setListTitle(e.target.value)
-              : setTodoTitle(e.target.value);
-          }}
-          onKeyUp={async (e) => {
-            e.stopPropagation();
-            if ((!edit || canAddLabel) && e.key === 'Enter') {
-              await addEntry(e, canAddLabel);
-              await refetchPoints();
-            }
-          }}
-          onKeyDown={(e) => {
-            e.stopPropagation();
-          }}
-          InputProps={{
-            inputProps: {
-              enterKeyHint: 'enter',
+      {edit && canAddLabel && (
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'start',
+            opacity: hover ? 1 : 0.9,
+            transition: 'opacity 0.2s ease-in',
+            '&:hover': {
+              transition: 'opacity 0.2s ease-out',
             },
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  onClick={() => {
-                    edit && !labelMode ? setListTitle('') : setTodoTitle('');
-                    setTimeout(() => inputRef.current?.focus(), 0);
-                  }}
-                  disabled={edit ? !listTitle : !todoTitle}
-                >
-                  <IconClear />
-                </IconButton>
-              </InputAdornment>
-            ),
+            gap: 1,
+            ml: 1,
+            mr: 2,
+            mb: 1,
           }}
-        />
-        {(!edit || canAddLabel) && (
-          <Tooltip title="Add new item" placement="top">
-            <IconButton
-              color="primary"
-              sx={{
-                mt: 1,
-                backgroundColor: 'success.main',
-                color: 'black',
-                boxShadow:
-                  todoTitle &&
-                  `0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12)`,
-                '&:hover': {
+        >
+          <TextField
+            color="secondary"
+            fullWidth
+            inputRef={inputRef}
+            value={edit && !labelMode ? listTitle : todoTitle}
+            label={canAddLabel ? 'Add Label' : edit ? 'Edit Title' : 'Add Item'}
+            error={exists}
+            helperText={exists ? 'Item already exists' : ''}
+            onChange={(e) => {
+              edit && !labelMode
+                ? setListTitle(e.target.value)
+                : setTodoTitle(e.target.value);
+            }}
+            onKeyUp={async (e) => {
+              e.stopPropagation();
+              if ((!edit || canAddLabel) && e.key === 'Enter') {
+                await addEntry(e, canAddLabel);
+                await refetchPoints();
+              }
+            }}
+            onKeyDown={(e) => {
+              e.stopPropagation();
+            }}
+            InputProps={{
+              inputProps: {
+                enterKeyHint: 'enter',
+              },
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={() => {
+                      edit && !labelMode ? setListTitle('') : setTodoTitle('');
+                      setTimeout(() => inputRef.current?.focus(), 0);
+                    }}
+                    disabled={edit ? !listTitle : !todoTitle}
+                  >
+                    <IconClear />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
+          {(!edit || canAddLabel) && (
+            <Tooltip title="Add new item" placement="top">
+              <IconButton
+                sx={{
+                  mt: 1,
                   backgroundColor: 'success.main',
-                  filter: 'brightness(0.8)',
-                },
-              }}
-              disabled={!todoTitle}
-              onClick={async (e) => {
-                console.log('Ref current before');
-                canAddLabel
-                  ? await addEntry(e, true)
-                  : setShowType(e.target as HTMLElement);
-              }}
-            >
-              <AddIcon />
-            </IconButton>
-          </Tooltip>
-        )}
-      </Box>
+                  color: 'black',
+                  boxShadow:
+                    todoTitle &&
+                    `0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12)`,
+                  '&:hover': {
+                    backgroundColor: 'success.main',
+                    filter: 'brightness(0.8)',
+                  },
+                }}
+                disabled={!todoTitle}
+                onClick={async (e) => {
+                  console.log('Ref current before');
+                  canAddLabel
+                    ? await addEntry(e, true)
+                    : setShowType(e.target as HTMLElement);
+                }}
+              >
+                <AddIcon />
+              </IconButton>
+            </Tooltip>
+          )}
+        </Box>
+      )}
       <ConfirmationDialogRaw
         title="Delete List"
         open={showDialog}
@@ -2194,8 +2224,102 @@ export const List = ({
         open={showColors}
         setColor={component?.props?.setColor}
       ></ColorMenu>
+    </Card>
+  );
+};
+
+const AddIconButton = ({
+  id,
+  open,
+  setOpen,
+  canAddLabel,
+  hover,
+  todoTitle,
+  addEntry,
+  refetchPoints,
+  disabled,
+}) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const addButtonRef = useRef<HTMLButtonElement | null>(null);
+  const [showType, setShowType] = useState<HTMLButtonElement | null>(null);
+  useEffect(() => {
+    if (open === id) {
+      setShowType(addButtonRef.current);
+    } else {
+      setShowType(null);
+    }
+    return () => {
+      setShowType(null);
+    };
+  }, [open]);
+
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const addedRef = useRef(false);
+  const down = () => {
+    setOpen(null);
+    timeoutRef.current = setTimeout(() => {
+      // timeoutRef.current = null;
+      isMobile ? setOpen(id) : addEntry(null, null);
+      addedRef.current = true;
+    }, 250);
+  };
+  const up = (e) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+      // setShowType(null);
+    }
+    e.stopPropagation();
+  };
+
+  useEffect(() => {
+    window.oncontextmenu = () => {
+      return false;
+    };
+  });
+  return (
+    <>
+      {/* <Tooltip title="Add new item" placement="top"> */}
+      <IconButton
+        disabled={disabled}
+        onTouchStart={down}
+        onTouchEnd={up}
+        ref={addButtonRef}
+        sx={{
+          mt: 1,
+          backgroundColor: (hover && 'success.main') || undefined,
+          color: 'black',
+          boxShadow:
+            todoTitle &&
+            `0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12)`,
+          '&:hover': {
+            backgroundColor: 'success.main',
+            filter: 'brightness(0.8)',
+          },
+        }}
+        onClick={async (e) => {
+          if (addedRef.current) {
+            addedRef.current = false;
+            return;
+          }
+          console.log('Ref current before', e, e.currentTarget, e.target);
+          canAddLabel
+            ? await addEntry(e, true)
+            : isMobile
+            ? addEntry(null, null)
+            : setOpen(id);
+        }}
+      >
+        {disabled ? <CircularProgress size={24} /> : <AddIcon />}
+      </IconButton>
+      {/* </Tooltip> */}
       <AddMenu
-        onClose={handleClose}
+        onClose={() => {
+          setShowType(null);
+          setOpen(null);
+        }}
         open={showType}
         addEntry={async (...args) => {
           await addEntry(args[0], args[1], args[2]);
@@ -2203,10 +2327,9 @@ export const List = ({
         refetchPoints={refetchPoints}
         canAddLabel={canAddLabel}
       />
-    </Card>
+    </>
   );
 };
-
 const ListTitleTextField = ({ setListTitle, inputRef }) => {
   const ref = useRef<HTMLInputElement>(null);
   useEffect(() => {
@@ -2722,18 +2845,21 @@ const TodoItem = (props) => {
   const handleClose = () => {
     setShowColors(null);
   };
+  const [title, setTitle] = useSyncedState(
+    component?.props?.title,
+    component?.props?.setTitle
+  );
   const [interval, times] = limits[component?.props?.valuePoints] || [0, 1];
   const canBeCompleted = checkLimits(
     lastCompleted?.[component?.props?.valuePoints],
     component
   );
-  const [moveToBottom, setMoveToBottom] = useLocalStorage(
-    'moveToBottom',
-    false
-  );
+  const [moveToBottom] = useLocalStorage('moveToBottom', false);
+
   const dist = state.search
     ? minWord(component?.props?.title, state.search)
     : Infinity;
+
   if (loading) return null;
 
   return (
@@ -2753,7 +2879,10 @@ const TodoItem = (props) => {
       >
         <span>
           <ListItemButton
-            onClick={() => setSelected(component)}
+            onClick={() => {
+              if (!component?.props?.title) return;
+              setSelected(component);
+            }}
             selected={dist <= 1}
             dense
             disableGutters
@@ -2809,7 +2938,9 @@ const TodoItem = (props) => {
             )}
             <ListItemText
               primary={
-                component?.props?.completed ? (
+                !component?.props?.title ? (
+                  <ListItemTitle setTitle={setTitle} />
+                ) : component?.props?.completed ? (
                   <s>{component.props.title}</s>
                 ) : (
                   component.props.title
@@ -2878,7 +3009,7 @@ const TodoItem = (props) => {
                   <PaletteIcon />
                 </IconButton>
               )}
-              {!edit && (
+              {!edit && component?.props?.title && (
                 <Checkbox
                   color="info"
                   disabled={component?.props?.archived}
@@ -2923,6 +3054,25 @@ const TodoItem = (props) => {
   );
 };
 
+const ListItemTitle = ({ setTitle }) => {
+  const ref = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    ref?.current?.focus();
+    return () => {
+      document.body.focus();
+    };
+  }, []);
+  return (
+    <TextField
+      color="secondary"
+      label="Edit Title"
+      inputRef={ref}
+      size="small"
+      onChange={(e) => setTitle(e.target.value)}
+      onClick={(e) => e.stopPropagation()}
+    ></TextField>
+  );
+};
 const CounterItem = (props) => {
   const { dispatch, state } = useContext(stateContext);
   const {
@@ -2939,6 +3089,10 @@ const CounterItem = (props) => {
   });
   const [showMenu, setShowMenu] = useState(false);
   const [interval, times] = limits[component?.props?.valuePoints] || [0, 1];
+  const [title, setTitle] = useSyncedState(
+    component?.props?.title,
+    component?.props?.setTitle
+  );
   const canBeCompleted = checkLimits(
     lastCompleted?.[component?.props?.valuePoints],
     component
@@ -2956,6 +3110,7 @@ const CounterItem = (props) => {
       <span>
         <ListItemButton
           dense
+          disableGutters
           sx={{
             opacity: component?.props?.archived ? 0.5 : 1,
             pl: edit ? 0 : 2,
@@ -2974,7 +3129,9 @@ const CounterItem = (props) => {
           )}
           <ListItemText
             primary={
-              component?.props?.completed ? (
+              !component?.props?.title ? (
+                <ListItemTitle setTitle={setTitle} />
+              ) : component?.props?.completed ? (
                 <s>{component.props.title}</s>
               ) : (
                 component.props.title
@@ -2992,7 +3149,7 @@ const CounterItem = (props) => {
             }
           />
           <ListItemSecondaryAction>
-            {!edit && (
+            {!edit && component?.props?.title && (
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <IconButton
                   disabled={component?.props?.archived}
@@ -3059,13 +3216,17 @@ const ExpenseItem = (props) => {
   const [component, { loading, error }] = useComponent(todoId, {
     data,
   });
+  const [title, setTitle] = useSyncedState(
+    component?.props?.title,
+    component?.props?.setTitle
+  );
   const [showMenu, setShowMenu] = useState(false);
   const [value, setValue] = useSyncedState(
     component?.props?.value,
     async (val) => {
       await component?.props?.setValue(val);
-      await refetchList();
-    }
+    },
+    refetchList
   );
 
   if (loading) return null;
@@ -3075,9 +3236,12 @@ const ExpenseItem = (props) => {
       <span>
         <ListItemButton
           dense
+          disableGutters
           sx={{
             opacity: component?.props?.archived ? 0.5 : 1,
             pl: edit ? 0 : 2,
+            display: 'flex',
+            gap: 1,
           }}
         >
           {edit && (
@@ -3092,7 +3256,9 @@ const ExpenseItem = (props) => {
           )}
           <ListItemText
             primary={
-              component?.props?.completed ? (
+              !component?.props?.title ? (
+                <ListItemTitle setTitle={setTitle} />
+              ) : component?.props?.completed ? (
                 <s>{component.props.title}</s>
               ) : (
                 component.props.title
@@ -3109,33 +3275,45 @@ const ExpenseItem = (props) => {
                 : ''
             }
           />
+
           <ListItemSecondaryAction
             sx={{ display: 'flex', gap: 1, alignItems: 'center' }}
           >
-            {!component?.props?.archived && (
-              <Tooltip title={`Archive this item.`} placement="left">
-                <IconButton onClick={() => component?.props?.archive()}>
-                  <ArchiveIcon sx={{}}></ArchiveIcon>
-                </IconButton>
-              </Tooltip>
-            )}
-            {!edit && !component?.props?.archived && (
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <TextField
-                  sx={{ width: '100px' }}
-                  data-no-dnd="true"
-                  size="small"
-                  value={value}
-                  onChange={(e) => setValue(e.target.value)}
-                  type="number"
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">€</InputAdornment>
-                    ),
-                  }}
-                />
-              </Box>
-            )}
+            {!edit &&
+              !component?.props?.archived &&
+              component?.props?.title && (
+                <ListItemText sx={{ display: 'flex', alignItems: 'center' }}>
+                  <TextField
+                    color="secondary"
+                    sx={{ width: '100px' }}
+                    data-no-dnd="true"
+                    size="small"
+                    value={value}
+                    onChange={(e) => setValue(e.target.value)}
+                    type="number"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">€</InputAdornment>
+                      ),
+                    }}
+                  />
+                </ListItemText>
+              )}
+            {!component?.props?.archived &&
+              component?.props?.title &&
+              !!component?.props?.value && (
+                <Tooltip title={`Archive this item.`} placement="left">
+                  <IconButton
+                    onClick={async () => {
+                      await component?.props?.archive();
+                      await refetchList();
+                    }}
+                  >
+                    <ArchiveIcon sx={{}}></ArchiveIcon>
+                  </IconButton>
+                </Tooltip>
+              )}
+
             {component?.props?.archived && <Typography>{value}€</Typography>}
             {edit && (
               <IconButton onClick={() => setShowMenu(true)}>
