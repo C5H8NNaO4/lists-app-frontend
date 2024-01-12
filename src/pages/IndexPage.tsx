@@ -32,9 +32,9 @@ export const IndexPage = () => {
         }
       />
       <Warning
-        id="data-loss"
-        title={`Please backup / sync your data frequently as there's currently no database
-      connected to the server. Data-loss may occur in unexpected circumstances.`}
+        id="database"
+        severity="success"
+        title={`We now have a postgres database connected to the backend. We still need to implement a backup system, but for now, your data is safe.`}
       />
       <MyLists />
     </div>
