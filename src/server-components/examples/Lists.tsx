@@ -423,7 +423,7 @@ export const MyLists = (props) => {
     return (
       acc +
       list.children.reduce((acc, expense) => {
-        if (!expense?.props?.archived) return acc;
+        if (!expense?.props?.archived && !expense?.props?.cost) return acc;
         if (list.props?.archived && !showArchived) return acc;
         if (expense?.props.archived < Date.now() - DAY * past) return acc;
         return (
