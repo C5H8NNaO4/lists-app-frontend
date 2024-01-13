@@ -3037,7 +3037,6 @@ const CounterItem = (props) => {
                     primary={
                       component?.props?.count * component?.props?.cost + '€'
                     }
-                    secondary={component?.props?.cost + '€'}
                   />
                 )}
                 <IconButton
