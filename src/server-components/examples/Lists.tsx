@@ -499,11 +499,36 @@ export const MyLists = (props) => {
         <Box
           sx={{
             mx: fullWidth ? 0 : 0,
+            mt: 1,
             display: 'flex',
             flexDirection: 'column',
-            gap: 2,
+            gap: 1,
           }}
         >
+          <Tooltip title="Add new list" placement="top">
+            <Button
+              variant="contained"
+              color="primary"
+              aria-label="add"
+              // sx={{ position: 'fixed', right: 16, bottom: 16 }}
+              onClick={() => {
+                component?.props?.add({
+                  title,
+                  color: defaultListColor,
+                  settings: { defaultType: 'Todo' },
+                });
+                setTitle('');
+              }}
+              sx={{
+                position: 'relative',
+                mx: 'auto',
+                display: { xs: 'flex', md: 'none' },
+              }}
+            >
+              <AddIcon />
+              New List
+            </Button>
+          </Tooltip>
           {[pinnedColumns, unpinnedColumns].map((optimisticOrder) => {
             return (
               <Grid container rowSpacing={1} columnSpacing={0}>
@@ -555,6 +580,7 @@ export const MyLists = (props) => {
               </Grid>
             );
           })}
+
           {optimisticOrder?.length > 0 && fullWidth && (
             <Box
               sx={{
@@ -739,7 +765,32 @@ export const MyLists = (props) => {
               </IconButton>
             </Tooltip>
           )}
-          <Tooltip title="Synchronize Data." placement="bottom">
+          <Tooltip title="Add new list" placement="top">
+            <Button
+              variant="contained"
+              color="primary"
+              aria-label="add"
+              // sx={{ position: 'fixed', right: 16, bottom: 16 }}
+              onClick={() => {
+                component?.props?.add({
+                  title,
+                  color: defaultListColor,
+                  settings: { defaultType: 'Todo' },
+                });
+                setTitle('');
+              }}
+              sx={{
+                position: 'relative',
+                ml: 'auto',
+                mr: '32px',
+                display: { xs: 'none', md: 'flex' },
+              }}
+            >
+              <AddIcon />
+              New List
+            </Button>
+          </Tooltip>
+          <Tooltip title="Enable Notifications." placement="bottom">
             <NotificationButton />
           </Tooltip>
           <Tooltip title="Synchronize Data." placement="bottom">
@@ -860,40 +911,6 @@ export const MyLists = (props) => {
                 </Fab>
               </Tooltip>
             </Box>
-          </Box>
-        )}
-        {optimisticOrder?.length > 0 && !fullWidth && (
-          <Box
-            sx={{
-              position: 'sticky',
-              width: '100%',
-              bottom: '32px',
-              display: 'flex',
-              pt: '32px',
-            }}
-          >
-            <Tooltip title="Add new list" placement="top">
-              <Fab
-                color="secondary"
-                aria-label="add"
-                sx={{
-                  position: 'relative',
-                  ml: 'auto',
-                  mr: '32px',
-                  // marginBottom: -8,
-                }}
-                onClick={() => {
-                  component?.props?.add({
-                    title,
-                    color: defaultListColor,
-                    settings: { defaultType: 'Todo' },
-                  });
-                  setTitle('');
-                }}
-              >
-                <AddIcon />
-              </Fab>
-            </Tooltip>
           </Box>
         )}
       </Container>
