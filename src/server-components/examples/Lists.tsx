@@ -580,41 +580,6 @@ export const MyLists = (props) => {
               </Grid>
             );
           })}
-
-          {optimisticOrder?.length > 0 && fullWidth && (
-            <Box
-              sx={{
-                position: 'sticky',
-                width: '100%',
-                bottom: '32px',
-                pt: '32px',
-                display: 'flex',
-              }}
-            >
-              <Tooltip title="Add new list" placement="top">
-                <Fab
-                  color="secondary"
-                  aria-label="add"
-                  sx={{
-                    position: 'relative',
-                    ml: 'auto',
-                    mr: '32px',
-                    // marginBottom: -8,
-                  }}
-                  onClick={() => {
-                    component?.props?.add({
-                      title,
-                      color: defaultListColor,
-                      settings: { defaultType: 'Todo' },
-                    });
-                    setTitle('');
-                  }}
-                >
-                  <AddIcon />
-                </Fab>
-              </Tooltip>
-            </Box>
-          )}
         </Box>
       </SortableContext>
     </DndContext>
