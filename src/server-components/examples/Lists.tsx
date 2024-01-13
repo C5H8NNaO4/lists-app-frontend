@@ -3043,7 +3043,9 @@ const CounterItem = (props) => {
                   <ListItemText
                     sx={{ ml: 'auto' }}
                     primary={
-                      component?.props?.count * component?.props?.cost + '€'
+                      (
+                        component?.props?.count * component?.props?.cost
+                      ).toFixed(2) + '€'
                     }
                     secondary={component?.props?.cost + '€'}
                   />
