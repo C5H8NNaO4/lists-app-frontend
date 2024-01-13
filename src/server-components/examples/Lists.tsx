@@ -1868,6 +1868,17 @@ export const List = ({
         <Sum items={component?.children} includeArchived={showArchived} />
       )}
 
+      {component?.props?.settings?.defaultType === 'Counter' && (
+        <Sum
+          items={component?.children}
+          includeArchived={showArchived}
+          prop="cost"
+          multiplyKey={'count'}
+          final
+          invert
+        />
+      )}
+
       {component?.props?.settings?.pinned && !hover && (
         <CardActionArea
           sx={{
@@ -2573,43 +2584,59 @@ const AddMenu = ({ open, onClose, addEntry, refetchPoints, canAddLabel }) => {
   );
 };
 
-const Sum = ({ items, includeArchived }) => {
-  const posNotArchived = items?.reduce(
-    (acc, item) =>
-      acc +
-      (item?.props?.value > 0 && !item?.props?.archived
-        ? Number(item?.props?.value)
-        : 0),
-    0
-  );
-  const posArchived = items?.reduce(
-    (acc, item) =>
-      acc +
-      (item?.props?.value > 0 && item?.props?.archived && includeArchived
-        ? Number(item?.props?.value)
-        : 0),
-    0
-  );
+export type SumProps = {
+  items: any[];
+  includeArchived: boolean;
+  prop?: string;
+  multiplyKey?: string | null;
+  invert?: boolean;
+  final?: boolean;
+};
+
+const Sum = ({
+  items,
+  includeArchived,
+  prop = 'value',
+  multiplyKey = null,
+  invert = false,
+  final = false,
+}: SumProps) => {
+  const posNotArchived = items?.reduce((acc, item) => {
+    let cost = (invert ? -1 : 1) * Number(item?.props?.[prop]);
+    if (multiplyKey) {
+      cost *= item?.props?.[multiplyKey];
+    }
+    return acc + (cost > 0 && !item?.props?.archived ? cost : 0);
+  }, 0);
+  const posArchived = items?.reduce((acc, item) => {
+    let cost = (invert ? -1 : 1) * Number(item?.props?.[prop]);
+    if (multiplyKey) {
+      cost *= item?.props?.[multiplyKey];
+    }
+    return (
+      acc + (cost > 0 && item?.props?.archived && includeArchived ? cost : 0)
+    );
+  }, 0);
 
   const pos = includeArchived ? posNotArchived + posArchived : posNotArchived;
 
-  const negNotArchived = items?.reduce(
-    (acc, item) =>
-      acc +
-      (item?.props?.value < 0 && !item?.props?.archived
-        ? Number(item?.props?.value)
-        : 0),
-    0
-  );
+  const negNotArchived = items?.reduce((acc, item) => {
+    let cost = (invert ? -1 : 1) * Number(item?.props?.[prop]);
+    if (multiplyKey) {
+      cost *= item?.props?.[multiplyKey];
+    }
+    return acc + (cost < 0 && !item?.props?.archived ? cost : 0);
+  }, 0);
 
-  const negArchived = items?.reduce(
-    (acc, item) =>
-      acc +
-      (item?.props?.value < 0 && item?.props?.archived && includeArchived
-        ? Number(item?.props?.value)
-        : 0),
-    0
-  );
+  const negArchived = items?.reduce((acc, item) => {
+    let cost = (invert ? -1 : 1) * Number(item?.props?.[prop]);
+    if (multiplyKey) {
+      cost *= item?.props?.[multiplyKey];
+    }
+    return (
+      acc + (cost < 0 && item?.props?.archived && includeArchived ? cost : 0)
+    );
+  }, 0);
 
   const neg = includeArchived ? negNotArchived + negArchived : negNotArchived;
 
@@ -2625,11 +2652,17 @@ const Sum = ({ items, includeArchived }) => {
     return (
       <Alert sx={{ mt: 1 }} severity={'error'}>
         {`You ` +
-          (negArchived < 0 ? `spent ${Math.abs(negArchived)}€` : '') +
+          (negArchived < 0
+            ? `spent ${Math.abs(negArchived)}€ previously`
+            : '') +
           (negArchived < 0 && negNotArchived < 0 ? ' and ' : '') +
           `${
             negNotArchived < 0
-              ? `planned to spend ${Math.abs(negNotArchived)}€`
+              ? final
+                ? `${negArchived === 0 ? 'spent' : ''} ${Math.abs(
+                    negNotArchived
+                  )}€ ${negArchived < 0 ? 'at the moment.' : ''}`
+                : `planned to spend ${Math.abs(negNotArchived)}€`
               : ''
           }`}
       </Alert>
@@ -2638,7 +2671,6 @@ const Sum = ({ items, includeArchived }) => {
   if (neg === 0) {
     return (
       <Alert sx={{ mt: 1 }} severity={'success'}>
-        {' '}
         {`You ` +
           (posArchived > 0 ? `gained ${posArchived}€` : '') +
           (posArchived > 0 && posNotArchived > 0 ? ' and ' : '') +
@@ -2954,7 +2986,7 @@ const CounterItem = (props) => {
       }
     >
       <span>
-        <ListItemButton
+        <ListItem
           dense
           sx={{
             opacity: component?.props?.archived ? 0.5 : 1,
@@ -2991,13 +3023,26 @@ const CounterItem = (props) => {
                 : ''
             }
           />
+
           <ListItemSecondaryAction>
             {!edit && (
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                {component?.props?.cost > 0 && (
+                  <ListItemText
+                    sx={{ ml: 'auto' }}
+                    primary={
+                      component?.props?.count * component?.props?.cost + '€'
+                    }
+                    secondary={component?.props?.cost + '€'}
+                  />
+                )}
                 <IconButton
                   disabled={component?.props?.archived}
                   size="small"
-                  onClick={() => component?.props?.decrease()}
+                  onClick={() => {
+                    component?.props?.decrease();
+                    refetchList();
+                  }}
                 >
                   <RemoveIcon></RemoveIcon>
                 </IconButton>
@@ -3005,7 +3050,10 @@ const CounterItem = (props) => {
                 <IconButton
                   disabled={component?.props?.archived}
                   size="small"
-                  onClick={() => component?.props?.increase()}
+                  onClick={() => {
+                    component?.props?.increase();
+                    refetchList();
+                  }}
                 >
                   <AddIcon></AddIcon>
                 </IconButton>
@@ -3039,7 +3087,7 @@ const CounterItem = (props) => {
               refetchList={refetchList}
             ></ListItemMenu>
           </ListItemSecondaryAction>
-        </ListItemButton>
+        </ListItem>
       </span>
     </Tooltip>
   );
@@ -3166,6 +3214,10 @@ const ListItemMenu = (props) => {
     component?.props?.setTitle
   );
 
+  const [syncedCost, setCost] = useSyncedState(
+    component?.props?.cost || 0,
+    component?.props?.setCost
+  );
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -3384,6 +3436,17 @@ const ListItemMenu = (props) => {
                       })}
                     </Select>
                   </FormControl>
+                </Tooltip>
+                <Tooltip
+                  sx={{ mt: 1 }}
+                  title="Tie a cost to an item to calculate total expenses."
+                  placement={isMobile ? 'top' : 'left'}
+                >
+                  <TextField
+                    label="Cost"
+                    value={syncedCost}
+                    onChange={(e) => setCost(Number(e.target.value))}
+                  />
                 </Tooltip>
               </CardContent>
               <CardActions>
