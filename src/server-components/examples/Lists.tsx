@@ -2601,56 +2601,44 @@ const Sum = ({
   invert = false,
   final = false,
 }: SumProps) => {
-  const posNotArchived = items
-    ?.reduce((acc, item) => {
-      let cost = (invert ? -1 : 1) * Number(item?.props?.[prop]);
-      if (multiplyKey) {
-        cost *= item?.props?.[multiplyKey];
-      }
-      return acc + (cost > 0 && !item?.props?.archived ? cost : 0);
-    }, 0)
-    .toFixed(2);
-  const posArchived = items
-    ?.reduce((acc, item) => {
-      let cost = (invert ? -1 : 1) * Number(item?.props?.[prop]);
-      if (multiplyKey) {
-        cost *= item?.props?.[multiplyKey];
-      }
-      return (
-        acc + (cost > 0 && item?.props?.archived && includeArchived ? cost : 0)
-      );
-    }, 0)
-    .toFixed(2);
+  const posNotArchived = items?.reduce((acc, item) => {
+    let cost = (invert ? -1 : 1) * Number(item?.props?.[prop]);
+    if (multiplyKey) {
+      cost *= item?.props?.[multiplyKey];
+    }
+    return acc + (cost > 0 && !item?.props?.archived ? cost : 0);
+  }, 0);
+  const posArchived = items?.reduce((acc, item) => {
+    let cost = (invert ? -1 : 1) * Number(item?.props?.[prop]);
+    if (multiplyKey) {
+      cost *= item?.props?.[multiplyKey];
+    }
+    return (
+      acc + (cost > 0 && item?.props?.archived && includeArchived ? cost : 0)
+    );
+  }, 0);
 
-  const pos = includeArchived
-    ? (posNotArchived + posArchived).toFixed(2)
-    : posNotArchived;
+  const pos = includeArchived ? posNotArchived + posArchived : posNotArchived;
 
-  const negNotArchived = items
-    ?.reduce((acc, item) => {
-      let cost = (invert ? -1 : 1) * Number(item?.props?.[prop]);
-      if (multiplyKey) {
-        cost *= item?.props?.[multiplyKey];
-      }
-      return acc + (cost < 0 && !item?.props?.archived ? cost : 0);
-    }, 0)
-    .toFixed(2);
+  const negNotArchived = items?.reduce((acc, item) => {
+    let cost = (invert ? -1 : 1) * Number(item?.props?.[prop]);
+    if (multiplyKey) {
+      cost *= item?.props?.[multiplyKey];
+    }
+    return acc + (cost < 0 && !item?.props?.archived ? cost : 0);
+  }, 0);
 
-  const negArchived = items
-    ?.reduce((acc, item) => {
-      let cost = (invert ? -1 : 1) * Number(item?.props?.[prop]);
-      if (multiplyKey) {
-        cost *= item?.props?.[multiplyKey];
-      }
-      return (
-        acc + (cost < 0 && item?.props?.archived && includeArchived ? cost : 0)
-      );
-    }, 0)
-    .toFixed(2);
+  const negArchived = items?.reduce((acc, item) => {
+    let cost = (invert ? -1 : 1) * Number(item?.props?.[prop]);
+    if (multiplyKey) {
+      cost *= item?.props?.[multiplyKey];
+    }
+    return (
+      acc + (cost < 0 && item?.props?.archived && includeArchived ? cost : 0)
+    );
+  }, 0);
 
-  const neg = includeArchived
-    ? (negNotArchived + negArchived).toFixed(2)
-    : negNotArchived;
+  const neg = includeArchived ? negNotArchived + negArchived : negNotArchived;
 
   if (pos === 0 && neg === 0) {
     return (
@@ -2665,7 +2653,7 @@ const Sum = ({
       <Alert sx={{ mt: 1 }} severity={'error'}>
         {`You ` +
           (negArchived < 0
-            ? `spent ${Math.abs(negArchived)}€ previously`
+            ? `spent ${Math.abs(negArchived).toFixed(2)}€ previously`
             : '') +
           (negArchived < 0 && negNotArchived < 0 ? ' and ' : '') +
           `${
@@ -2673,8 +2661,8 @@ const Sum = ({
               ? final
                 ? `${negArchived === 0 ? 'spent' : ''} ${Math.abs(
                     negNotArchived
-                  )}€ ${negArchived < 0 ? 'at the moment.' : ''}`
-                : `planned to spend ${Math.abs(negNotArchived)}€`
+                  ).toFixed(2)}€ ${negArchived < 0 ? 'at the moment.' : ''}`
+                : `planned to spend ${Math.abs(negNotArchived).toFixed(2)}€`
               : ''
           }`}
       </Alert>
@@ -2684,9 +2672,13 @@ const Sum = ({
     return (
       <Alert sx={{ mt: 1 }} severity={'success'}>
         {`You ` +
-          (posArchived > 0 ? `gained ${posArchived}€` : '') +
+          (posArchived > 0 ? `gained ${posArchived.toFixed(2)}€` : '') +
           (posArchived > 0 && posNotArchived > 0 ? ' and ' : '') +
-          `${posNotArchived > 0 ? `planned with ${posNotArchived}€` : ''}`}
+          `${
+            posNotArchived > 0
+              ? `planned with ${posNotArchived.toFixed(2)}€`
+              : ''
+          }`}
       </Alert>
     );
   }
@@ -2694,9 +2686,9 @@ const Sum = ({
     <Alert
       sx={{ mt: 1 }}
       severity={posNotArchived < Math.abs(negNotArchived) ? 'error' : 'success'}
-    >{`You spent ${Math.abs(
-      negNotArchived
-    )}€ and gained ${posNotArchived}€`}</Alert>
+    >{`You spent ${Math.abs(negNotArchived).toFixed(
+      2
+    )}€ and gained ${posNotArchived.toFixed(2)}€`}</Alert>
   );
 };
 export interface ConfirmationDialogRawProps {
@@ -3043,9 +3035,7 @@ const CounterItem = (props) => {
                   <ListItemText
                     sx={{ ml: 'auto' }}
                     primary={
-                      (
-                        component?.props?.count * component?.props?.cost
-                      ).toFixed(2) + '€'
+                      component?.props?.count * component?.props?.cost + '€'
                     }
                     secondary={component?.props?.cost + '€'}
                   />
