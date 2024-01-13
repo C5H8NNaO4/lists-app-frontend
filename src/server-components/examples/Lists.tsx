@@ -2601,44 +2601,56 @@ const Sum = ({
   invert = false,
   final = false,
 }: SumProps) => {
-  const posNotArchived = items?.reduce((acc, item) => {
-    let cost = (invert ? -1 : 1) * Number(item?.props?.[prop]);
-    if (multiplyKey) {
-      cost *= item?.props?.[multiplyKey];
-    }
-    return acc + (cost > 0 && !item?.props?.archived ? cost : 0);
-  }, 0);
-  const posArchived = items?.reduce((acc, item) => {
-    let cost = (invert ? -1 : 1) * Number(item?.props?.[prop]);
-    if (multiplyKey) {
-      cost *= item?.props?.[multiplyKey];
-    }
-    return (
-      acc + (cost > 0 && item?.props?.archived && includeArchived ? cost : 0)
-    );
-  }, 0);
+  const posNotArchived = items
+    ?.reduce((acc, item) => {
+      let cost = (invert ? -1 : 1) * Number(item?.props?.[prop]);
+      if (multiplyKey) {
+        cost *= item?.props?.[multiplyKey];
+      }
+      return acc + (cost > 0 && !item?.props?.archived ? cost : 0);
+    }, 0)
+    .toFixed(2);
+  const posArchived = items
+    ?.reduce((acc, item) => {
+      let cost = (invert ? -1 : 1) * Number(item?.props?.[prop]);
+      if (multiplyKey) {
+        cost *= item?.props?.[multiplyKey];
+      }
+      return (
+        acc + (cost > 0 && item?.props?.archived && includeArchived ? cost : 0)
+      );
+    }, 0)
+    .toFixed(2);
 
-  const pos = includeArchived ? posNotArchived + posArchived : posNotArchived;
+  const pos = includeArchived
+    ? (posNotArchived + posArchived).toFixed(2)
+    : posNotArchived;
 
-  const negNotArchived = items?.reduce((acc, item) => {
-    let cost = (invert ? -1 : 1) * Number(item?.props?.[prop]);
-    if (multiplyKey) {
-      cost *= item?.props?.[multiplyKey];
-    }
-    return acc + (cost < 0 && !item?.props?.archived ? cost : 0);
-  }, 0);
+  const negNotArchived = items
+    ?.reduce((acc, item) => {
+      let cost = (invert ? -1 : 1) * Number(item?.props?.[prop]);
+      if (multiplyKey) {
+        cost *= item?.props?.[multiplyKey];
+      }
+      return acc + (cost < 0 && !item?.props?.archived ? cost : 0);
+    }, 0)
+    .toFixed(2);
 
-  const negArchived = items?.reduce((acc, item) => {
-    let cost = (invert ? -1 : 1) * Number(item?.props?.[prop]);
-    if (multiplyKey) {
-      cost *= item?.props?.[multiplyKey];
-    }
-    return (
-      acc + (cost < 0 && item?.props?.archived && includeArchived ? cost : 0)
-    );
-  }, 0);
+  const negArchived = items
+    ?.reduce((acc, item) => {
+      let cost = (invert ? -1 : 1) * Number(item?.props?.[prop]);
+      if (multiplyKey) {
+        cost *= item?.props?.[multiplyKey];
+      }
+      return (
+        acc + (cost < 0 && item?.props?.archived && includeArchived ? cost : 0)
+      );
+    }, 0)
+    .toFixed(2);
 
-  const neg = includeArchived ? negNotArchived + negArchived : negNotArchived;
+  const neg = includeArchived
+    ? (negNotArchived + negArchived).toFixed(2)
+    : negNotArchived;
 
   if (pos === 0 && neg === 0) {
     return (
@@ -3444,7 +3456,7 @@ const ListItemMenu = (props) => {
                 >
                   <TextField
                     label="Cost"
-                    value={syncedCost}
+                    value={syncedCost.toFixed(2)}
                     onChange={(e) => setCost(Number(e.target.value))}
                   />
                 </Tooltip>
