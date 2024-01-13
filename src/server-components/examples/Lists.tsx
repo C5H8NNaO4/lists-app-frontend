@@ -414,7 +414,9 @@ export const MyLists = (props) => {
   );
 
   const onlyExpenses = filtered?.every(
-    (list) => list.props.settings.defaultType === 'Expense'
+    (list) =>
+      list.props.settings.defaultType === 'Expense' ||
+      list.props.settings.defaultType === 'Counter'
   );
 
   const expenseSum = filtered?.reduce((acc, list) => {
@@ -424,7 +426,15 @@ export const MyLists = (props) => {
         if (!expense?.props?.archived) return acc;
         if (list.props?.archived && !showArchived) return acc;
         if (expense?.props.archived < Date.now() - DAY * past) return acc;
-        return acc + Number(expense.props.value || 0);
+        return (
+          acc +
+          Number(
+            expense.props.value ||
+              (expense.props.cost > 0
+                ? -1 * expense.props.cost * expense.props.count
+                : 0)
+          )
+        );
       }, 0)
     );
   }, 0);
