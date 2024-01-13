@@ -3042,9 +3042,9 @@ const CounterItem = (props) => {
                 <IconButton
                   disabled={component?.props?.archived}
                   size="small"
-                  onClick={() => {
-                    component?.props?.decrease();
-                    refetchList();
+                  onClick={async () => {
+                    await component?.props?.decrease();
+                    await refetchList();
                   }}
                 >
                   <RemoveIcon></RemoveIcon>
@@ -3053,9 +3053,9 @@ const CounterItem = (props) => {
                 <IconButton
                   disabled={component?.props?.archived}
                   size="small"
-                  onClick={() => {
-                    component?.props?.increase();
-                    refetchList();
+                  onClick={async () => {
+                    await component?.props?.increase();
+                    await refetchList();
                   }}
                 >
                   <AddIcon></AddIcon>
