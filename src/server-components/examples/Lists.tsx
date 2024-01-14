@@ -3338,6 +3338,7 @@ const ListItemMenu = (props) => {
                             new Date(component?.props?.dueTime)
                           }
                           onChange={(e) => {
+                            console.log('SETTING TIME ', e);
                             component?.props?.setDueTime(e);
                           }}
                           slotProps={{

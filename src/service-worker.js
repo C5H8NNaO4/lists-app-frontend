@@ -17,7 +17,17 @@ self.addEventListener('push', function (event) {
         });
       }
       lastNotificationData[json.id] = json;
-      showLocalNotification(json.title, json.body, self.registration, options);
+      showLocalNotification(
+        json.title,
+        json.body.replace(
+          '%s',
+          new Date(json.time).toLocaleTimeString('de-DE', {
+            hour12: false,
+          })
+        ),
+        self.registration,
+        options
+      );
     } catch (error) {
       showLocalNotification('Error', event.data.text(), self.registration);
     }
