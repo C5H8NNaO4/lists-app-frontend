@@ -124,7 +124,7 @@ import {
   TimePicker,
 } from '@mui/x-date-pickers';
 import { NotificationButton } from '../../components/NotificationButton';
-import { format } from 'date-fns';
+import { format, startOfDay, subDays } from 'date-fns';
 import useBreakpoint from '../../lib/useBreakpoint';
 import { Warning } from '../../components/Warning';
 import { Markdown } from '../../components/Markdown';
@@ -425,7 +425,14 @@ export const MyLists = (props) => {
       list.children.reduce((acc, expense) => {
         if (!expense?.props?.archived && !expense?.props?.cost) return acc;
         if (list.props?.archived && !showArchived) return acc;
-        if (expense?.props.archived < Date.now() - DAY * past) return acc;
+        console.log('Expense', expense);
+        if (
+          expense?.props.archived &&
+          expense?.props?.[
+            expense?.props?.type === 'Counter' ? 'createdAt' : 'archived'
+          ] < startOfDay(subDays(new Date(), past - 1))
+        )
+          return acc;
         return (
           acc +
           Number(
@@ -1724,6 +1731,8 @@ export const List = ({
             await c?.props?.archive();
         }
       } else if (component?.props?.settings?.defaultType === 'Counter') {
+        // TODO: Move this serverside
+
         const delProm: Array<Promise<any>> = [];
         const createProm: Array<Promise<any>> = [];
         for (const c of component?.children || []) {
@@ -1731,6 +1740,7 @@ export const List = ({
             delProm.push(c?.props?.archive());
           }
         }
+
         await Promise.all(delProm);
         for (const c of component?.children || []) {
           if (c?.props?.count != 0 && !c?.props?.archived) {
