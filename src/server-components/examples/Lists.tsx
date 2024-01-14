@@ -1782,7 +1782,7 @@ export const List = ({
         // height: '100%',
         backgroundColor:
           !component?.props?.title && !component?.props?.color
-            ? '#00ffff99'
+            ? '#00ffff99 !important'
             : component?.props?.color
             ? `${
                 component?.props?.color +
