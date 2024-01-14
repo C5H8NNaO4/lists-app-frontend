@@ -1780,16 +1780,27 @@ export const List = ({
     <Card
       sx={{
         // height: '100%',
-        backgroundColor: component?.props?.color
-          ? `${
-              component?.props?.color +
-              (state.animatedBackground > 0 ? 'D3' : '')
-            } !important`
-          : undefined,
+        backgroundColor:
+          !component?.props?.title && !component?.props?.color
+            ? '#00ffff99'
+            : component?.props?.color
+            ? `${
+                component?.props?.color +
+                (state.animatedBackground > 0 ? 'D3' : '')
+              } !important`
+            : undefined,
       }}
       onMouseOver={() => setHover(true)}
       onMouseLeave={() => setTimeout(setHover, 200, false)}
-      elevation={hover ? 3 : component?.props?.settings?.pinned ? 2 : 1}
+      elevation={
+        !component?.props?.title
+          ? 5
+          : hover
+          ? 3
+          : component?.props?.settings?.pinned
+          ? 2
+          : 1
+      }
     >
       {error && <Alert severity="error">{error.message}</Alert>}
       <CardHeader
@@ -2240,6 +2251,7 @@ const ListTitleTextField = ({ setListTitle, inputRef }) => {
       inputProps={{ ref: ref }}
       size="small"
       label="Edit Title"
+      placeholder="List title"
       onChange={(e) => {
         setListTitle(e.target.value);
       }}
