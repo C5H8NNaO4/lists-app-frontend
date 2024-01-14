@@ -1724,19 +1724,26 @@ export const List = ({
             await c?.props?.archive();
         }
       } else if (component?.props?.settings?.defaultType === 'Counter') {
-        const promises: Array<Promise<any>> = [];
+        const delProm: Array<Promise<any>> = [];
+        const createProm: Array<Promise<any>> = [];
         for (const c of component?.children || []) {
           if (c?.props?.count != 0 && !c?.props?.archived) {
-            promises.push(
-              c?.props?.archive(),
+            delProm.push(c?.props?.archive());
+          }
+        }
+        await Promise.all(delProm);
+        for (const c of component?.children || []) {
+          if (c?.props?.count != 0 && !c?.props?.archived) {
+            createProm.push(
               addEntry(null, null, {
                 type: 'Counter',
                 title: c?.props?.title,
+                cost: c?.props?.cost,
               })
             );
           }
         }
-        await Promise.all(promises);
+        await Promise.all(createProm);
       }
       setDoArchive(false);
       await refetch();
