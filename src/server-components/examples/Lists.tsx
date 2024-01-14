@@ -848,7 +848,7 @@ export const MyLists = (props) => {
               }
               severity={expenseSum > 0 ? 'success' : 'error'}
             >
-              {`Your archived total is ${expenseSum?.toFixed(2)}€ ${
+              {`Your spending total is ${expenseSum?.toFixed(2)}€ ${
                 remaining != 0 ? ` (${remaining?.toFixed(2)}€ pending)` : ''
               } = ${(expenseSum + remaining)?.toFixed(2)}€`}
             </Warning>
@@ -1561,7 +1561,9 @@ export const List = ({
   const [labelMode, setLabelMode] = useState(false);
   const [hover, setHover] = useState(false);
   const [showColors, setShowColors] = useState<HTMLElement | null>(null);
-  const [showArchived, setShowArchived] = useState<boolean>(false);
+  const [showArchived, setShowArchived] = useState<boolean>(
+    component?.props?.settings?.defaultType === 'Expense'
+  );
   const [showType, setShowType] = useState<HTMLElement | null>(null);
   const [sort, setSort] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
@@ -2649,7 +2651,11 @@ const Sum = ({
 
   const neg = includeArchived ? negNotArchived + negArchived : negNotArchived;
 
-  if (pos === 0 && neg === 0) {
+  if (
+    items?.length > 0 &&
+    !items?.some((c) => !!c?.props?.archived) &&
+    !includeArchived
+  ) {
     return (
       <Alert
         sx={{ mt: 1 }}
@@ -2657,27 +2663,29 @@ const Sum = ({
       >{`Click the eye icon to show archived items.`}</Alert>
     );
   }
-  if (pos === 0) {
+  if (pos === 0 && neg < 0) {
     return (
       <Alert sx={{ mt: 1 }} severity={'error'}>
-        {`You ` +
+        {`` +
           (negArchived < 0
-            ? `spent ${Math.abs(negArchived).toFixed(2)}€ previously`
+            ? `Previous spendings: ${Math.abs(negArchived).toFixed(2)}€`
             : '') +
-          (negArchived < 0 && negNotArchived < 0 ? ' and ' : '') +
+          (negArchived < 0 && negNotArchived < 0 ? '. ' : '.') +
           `${
             negNotArchived < 0
               ? final
-                ? `${negArchived === 0 ? 'spent' : ''} ${Math.abs(
-                    negNotArchived
-                  ).toFixed(2)}€ ${negArchived < 0 ? 'at the moment.' : ''}`
-                : `planned to spend ${Math.abs(negNotArchived).toFixed(2)}€`
+                ? `${
+                    negArchived === 0 ? 'Running total: ' : 'Running total: '
+                  } ${Math.abs(negNotArchived).toFixed(2)}€ ${
+                    negArchived < 0 ? '.' : ' '
+                  }`
+                : `Planned spendings ${Math.abs(negNotArchived).toFixed(2)}€`
               : ''
           }`}
       </Alert>
     );
   }
-  if (neg === 0) {
+  if (neg === 0 && pos > 0) {
     return (
       <Alert sx={{ mt: 1 }} severity={'success'}>
         {`You ` +
@@ -2691,13 +2699,22 @@ const Sum = ({
       </Alert>
     );
   }
+
+  if (neg === 0 && pos === 0) {
+    return (
+      <Alert
+        sx={{ mt: 1 }}
+        severity={'info'}
+      >{`Add items to track your expenses`}</Alert>
+    );
+  }
   return (
     <Alert
       sx={{ mt: 1 }}
-      severity={posNotArchived < Math.abs(negNotArchived) ? 'error' : 'success'}
-    >{`You spent ${Math.abs(negNotArchived).toFixed(
+      severity={pos < Math.abs(neg) ? 'error' : 'success'}
+    >{`Spendings: ${Math.abs(neg).toFixed(2)}€. Gains: ${pos.toFixed(
       2
-    )}€ and gained ${posNotArchived.toFixed(2)}€`}</Alert>
+    )}€`}</Alert>
   );
 };
 export interface ConfirmationDialogRawProps {
