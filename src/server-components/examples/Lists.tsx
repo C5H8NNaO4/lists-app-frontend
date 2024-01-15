@@ -654,7 +654,7 @@ export const MyLists = (props) => {
     );
   }
   return (
-    <>
+    <Box sx={{ display: 'flex' }}>
       <Container maxWidth="xl">
         <AppProgress loading={loading} />
 
@@ -920,7 +920,7 @@ export const MyLists = (props) => {
         open={show.export}
         exportData={component?.props?.exportUserData}
       />
-    </>
+    </Box>
   );
 };
 
@@ -1737,14 +1737,15 @@ export const List = ({
 
         const delProm: Array<Promise<any>> = [];
         const createProm: Array<Promise<any>> = [];
-        for (const c of component?.children || []) {
+        const children = (component?.children || []).slice();
+        for (const c of children || []) {
           if (c?.props?.count != 0 && !c?.props?.archived) {
             delProm.push(c?.props?.archive());
           }
         }
 
         await Promise.all(delProm);
-        for (const c of component?.children || []) {
+        for (const c of children || []) {
           if (c?.props?.count != 0 && !c?.props?.archived) {
             createProm.push(
               addEntry(null, null, {
@@ -3488,7 +3489,7 @@ const ListItemMenu = (props) => {
                 >
                   <TextField
                     label="Cost"
-                    value={syncedCost.toFixed(2)}
+                    value={syncedCost}
                     onChange={(e) => setCost(Number(e.target.value))}
                   />
                 </Tooltip>
