@@ -654,7 +654,7 @@ export const MyLists = (props) => {
     );
   }
   return (
-    <Box sx={{ display: 'flex' }}>
+    <>
       <Container maxWidth="xl">
         <AppProgress loading={loading} />
 
@@ -920,7 +920,7 @@ export const MyLists = (props) => {
         open={show.export}
         exportData={component?.props?.exportUserData}
       />
-    </Box>
+    </>
   );
 };
 
