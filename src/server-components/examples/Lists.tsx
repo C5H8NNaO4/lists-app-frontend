@@ -3490,7 +3490,7 @@ const ListItemMenu = (props) => {
                   <TextField
                     label="Cost"
                     value={syncedCost}
-                    onChange={(e) => setCost(Number(e.target.value))}
+                    onChange={(e) => setCost(e.target.value)}
                   />
                 </Tooltip>
               </CardContent>
