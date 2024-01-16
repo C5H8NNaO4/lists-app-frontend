@@ -3260,7 +3260,7 @@ const ListItemMenu = (props) => {
 
   const [syncedCost, setCost] = useSyncedState(
     component?.props?.cost || 0,
-    component?.props?.setCost
+    (n) => component?.props?.setCost(Number(n))
   );
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
