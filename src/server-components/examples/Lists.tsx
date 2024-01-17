@@ -3018,11 +3018,8 @@ const CounterItem = (props) => {
           disabled={!component?.props.completed && !edit && !canBeCompleted}
         >
           {edit && (
-            <ListItemIcon
-              color="error"
-              onClick={() => remove(component.props.id)}
-            >
-              <RemoveCircleIcon color='error'/>
+            <ListItemIcon onClick={() => remove(component.props.id)}>
+              <RemoveCircleIcon color="error" />
             </ListItemIcon>
           )}
           <ListItemText

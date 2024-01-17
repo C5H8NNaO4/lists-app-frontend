@@ -7,25 +7,25 @@ import { StateProvider } from './provider/StateProvider';
 import { ThemeProvider } from './provider/ThemeProvider';
 import { AuthProvider, useLocalStorage } from '@state-less/react-client';
 import { Meta } from './components/Meta';
-import { Helmet } from "react-helmet"
+import { Helmet } from 'react-helmet';
+import { useEffect } from 'react';
 
 function App() {
   const [cookieConsent] = useLocalStorage('cookie-consent', null);
+  useEffect(() => {
+    console.log('App rendering');
+  }, []);
   return (
     <div className="App">
       {cookieConsent === true && (
         <Helmet>
           <script src="https://www.googletagmanager.com/gtag/js?id=G-C3F4656WLD"></script>
 
-          <script
-            id="gtm-script"
-           src='/gtag-1.js'
-            
-          ></script>
+          <script id="gtm-script" src="/gtag-1.js"></script>
           <script
             id="test"
             type="application/javascript"
-            src='/gtag-2.js'
+            src="/gtag-2.js"
           ></script>
         </Helmet>
       )}

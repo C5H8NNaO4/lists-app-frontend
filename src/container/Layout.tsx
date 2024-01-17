@@ -58,7 +58,7 @@ const messages = [
 export const Layout = () => {
   const { state, dispatch } = useContext(stateContext);
   const [features, { loading: featuresLoading }] = useComponent('features');
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   // const [_animated, setAnim] = useState(0);
   const _animated = state.animatedBackground;
 
@@ -72,12 +72,6 @@ export const Layout = () => {
     }
   }, [time, _animated]);
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     setAnim(pathname === '/welcome' || state?.animatedBackground);
-  //   }, 0);
-  // }, [state?.animatedBackground, pathname]);
-
   useEffect(() => {
     localStorage.setItem('animatedBackground', features?.props?.animated);
     if (
@@ -90,6 +84,15 @@ export const Layout = () => {
       });
     }
   }, [features?.props?.animated]);
+
+  useEffect(() => {
+    console.log('ANIM', _animated, search);
+    if (_animated === 0 && search.includes('bg=1')) {
+      dispatch({
+        type: Actions.SET_BG,
+      });
+    }
+  }, []);
 
   const [cookieConsent, setCookieConsent] = useLocalStorage<boolean | null>(
     'cookie-consent',
