@@ -1734,29 +1734,9 @@ export const List = ({
         }
       } else if (component?.props?.settings?.defaultType === 'Counter') {
         // TODO: Move this serverside
-
-        const delProm: Array<Promise<any>> = [];
-        const createProm: Array<Promise<any>> = [];
-        const children = (component?.children || []).slice();
-        for (const c of children || []) {
-          if (c?.props?.count != 0 && !c?.props?.archived) {
-            delProm.push(c?.props?.archive());
-          }
-        }
-
-        await Promise.all(delProm);
-        for (const c of children || []) {
-          if (c?.props?.count != 0 && !c?.props?.archived) {
-            createProm.push(
-              addEntry(null, null, {
-                type: 'Counter',
-                title: c?.props?.title,
-                cost: c?.props?.cost,
-              })
-            );
-          }
-        }
-        await Promise.all(createProm);
+        console.log('Recreating');
+        await component?.props?.recreate?.();
+        console.log('Recreated');
       }
       setDoArchive(false);
       await refetch();
