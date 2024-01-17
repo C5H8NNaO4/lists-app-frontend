@@ -260,7 +260,7 @@ export const MyLists = (props) => {
   );
   const { state, dispatch } = useContext(stateContext);
   const [title, setTitle] = useState('');
-  const [fullWidth, setFullWidth] = useLocalStorage('fullWidth', true);
+  const [fullWidth, setFullWidth] = useLocalStorage('fullWidth', false);
   const [active, setActive] = useLocalStorage<string[]>('activeFilter', []);
   const [showArchived, setShowArchived] = useState(false);
   const [showExpenses, setShowExpenses] = useLocalStorage(
