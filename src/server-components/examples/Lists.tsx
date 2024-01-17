@@ -3013,18 +3013,16 @@ const CounterItem = (props) => {
           dense
           sx={{
             opacity: component?.props?.archived ? 0.5 : 1,
-            pl: edit ? 0 : 2,
+            pl: edit ? 2 : 2,
           }}
           disabled={!component?.props.completed && !edit && !canBeCompleted}
         >
           {edit && (
-            <ListItemIcon>
-              <IconButton
-                color="error"
-                onClick={() => remove(component.props.id)}
-              >
-                <RemoveCircleIcon />
-              </IconButton>
+            <ListItemIcon
+              color="error"
+              onClick={() => remove(component.props.id)}
+            >
+              <RemoveCircleIcon color='error'/>
             </ListItemIcon>
           )}
           <ListItemText
