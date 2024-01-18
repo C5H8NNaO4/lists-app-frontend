@@ -278,7 +278,8 @@ export const AnalyticsPage = (props) => {
               onClick={(e) => {
                 setVisibility((visibility) => ({
                   ...visibility,
-                  [dataKey]: visibility[dataKey] === false ? true : false,
+                  [dataKey.trim()]:
+                    visibility[dataKey.trim()] === false ? true : false,
                 }));
               }}
               style={style}
