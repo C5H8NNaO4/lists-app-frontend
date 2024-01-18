@@ -134,6 +134,7 @@ export const AnalyticsPage = (props) => {
         }, {});
       return deepmerge(acc, dates);
     }, {});
+
   const months = Object.keys(categories || {});
   const pieData = months.map((month) =>
     Object.keys((categories || {})[month] || {})
@@ -246,6 +247,28 @@ export const AnalyticsPage = (props) => {
     });
 
   const [active, setActive] = useState(null);
+
+  const countersLineChart = (
+    <LineChart data={countersDataDays}>
+      <CartesianGrid strokeDasharray="3 3" />
+      <Tooltip
+        content={({ payload }) => (
+          <CustomTooltip active={active} payload={payload} />
+        )}
+      />
+      <XAxis dataKey="date" tickFormatter={DateFormatter('dd.MM')} />
+      <Legend
+        onClick={(e) => {
+          setActive(e.dataKey === active ? null : e.dataKey);
+        }}
+      />
+
+      {Object.keys(dataDays[0] || {}).map((key, i) => {
+        if (key === 'date' || (active && key !== active)) return null;
+        return <Line dataKey={key} stroke={colors[i]} />;
+      })}
+    </LineChart>
+  );
   const burndownChart = (
     <LineChart data={lastWeek}>
       <CartesianGrid strokeDasharray="3 3" />
@@ -388,8 +411,12 @@ export const AnalyticsPage = (props) => {
             <ResponsiveContainer width="100%" height={250}>
               {barChartDaily}
             </ResponsiveContainer>
+            <ResponsiveContainer width="100%" height={250}>
+              {countersLineChart}
+            </ResponsiveContainer>
           </>
         )}
+
         {lastWeek?.length && (
           <>
             <Typography variant="h2" component="h2" gutterBottom>
