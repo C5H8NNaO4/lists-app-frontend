@@ -128,6 +128,7 @@ import {
   endOfDay,
   format,
   formatDuration,
+  getDate,
   getHours,
   getTime,
   hoursToMilliseconds,
@@ -1762,13 +1763,25 @@ export const List = ({
   const sums = useMemo(
     () =>
       component?.children
+        ?.sort(
+          (a, b) =>
+            a.props.lastModified?.localeCompare?.(b.props?.lastModified) || 0
+        )
         ?.filter((itm) => itm.props.type === 'Counter')
         .reduce((acc, item) => {
+          const date = getDate(
+            item?.props?.archived ||
+              item?.props?.lastModified ||
+              item?.props?.createdAt
+          );
           return {
             ...acc,
             [item?.props?.title]: {
               sum: (acc[item?.props?.title]?.sum || 0) + item?.props?.count,
-              n: (acc[item?.props?.title]?.n || 0) + 1,
+              n:
+                (acc[item?.props?.title]?.n || 0) +
+                (acc[item?.props?.title]?.date === date ? 0 : 1),
+              date,
             },
           };
         }, {}),
