@@ -316,7 +316,7 @@ export const AnalyticsPage = (props) => {
         )}
       />
       <XAxis dataKey="date" tickFormatter={DateFormatter('dd.MM')} />
-      <Legend content={renderCustomLegend} />
+      <Legend content={renderCustomLegend as any} />
 
       {Object.keys(
         dataDays.reduce((acc, cur) => ({ ...acc, ...cur }), {}) || {}
