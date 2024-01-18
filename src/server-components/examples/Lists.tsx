@@ -2888,10 +2888,11 @@ const TodoItem = (props) => {
     : Infinity;
   if (loading) return null;
   const deps = component?.props?.dependencies || [];
-  const depsCompleted = deps?.every((dep) => dep?.completed);
-  const canBeCompleted =
-    checkLimits(lastCompleted?.[component?.props?.valuePoints], component) &&
-    depsCompleted;
+
+  const canBeCompleted = checkLimits(
+    lastCompleted?.[component?.props?.valuePoints],
+    component
+  );
   return (
     <>
       <ListItemMenu
@@ -3049,9 +3050,6 @@ const TodoItem = (props) => {
                         arrayMove(order, order.indexOf(component?.props?.id), 0)
                       );
                     await refetchPoints?.();
-                    if (dependency) {
-                      await refetchList();
-                    }
                   }}
                 />
               )}
