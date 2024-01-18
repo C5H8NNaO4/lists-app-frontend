@@ -86,7 +86,6 @@ export const Layout = () => {
   }, [features?.props?.animated]);
 
   useEffect(() => {
-    console.log('ANIM', _animated, search);
     if (_animated === 0 && search.includes('bg=1')) {
       dispatch({
         type: Actions.SET_BG,

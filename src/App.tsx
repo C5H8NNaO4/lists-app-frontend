@@ -6,15 +6,11 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { StateProvider } from './provider/StateProvider';
 import { ThemeProvider } from './provider/ThemeProvider';
 import { AuthProvider, useLocalStorage } from '@state-less/react-client';
-import { Meta } from './components/Meta';
 import { Helmet } from 'react-helmet';
-import { useEffect } from 'react';
 
 function App() {
   const [cookieConsent] = useLocalStorage('cookie-consent', null);
-  useEffect(() => {
-    console.log('App rendering');
-  }, []);
+
   return (
     <div className="App">
       {cookieConsent === true && (

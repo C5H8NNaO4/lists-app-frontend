@@ -1,4 +1,4 @@
-import { Avatar, Button, useMediaQuery, useTheme} from '@mui/material';
+import { Avatar, Button, useMediaQuery, useTheme } from '@mui/material';
 import { authContext } from '@state-less/react-client';
 import { useContext, useState } from 'react';
 import GoogleLogin, { GoogleLoginResponse } from 'react-google-login';
@@ -37,7 +37,7 @@ export const LoggedInGoogleButton = () => {
   }
 
   const decoded = session.strategies.google.decoded;
-  console.log ("DECODED", decoded)
+
   return (
     <>
       <Button
@@ -80,7 +80,6 @@ export const GoogleLoginButton = () => {
       clientId={GOOGLE_ID}
       buttonText="Login"
       onSuccess={(response) => {
-        console.log('Google Login success', response);
         if (!isGoogleLoginResponse(response)) {
           return;
         }

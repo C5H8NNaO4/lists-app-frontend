@@ -41,6 +41,7 @@ import {
   useMediaQuery,
   useTheme,
   LinearProgress,
+  Autocomplete,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import TrophyIcon from '@mui/icons-material/EmojiEvents';
@@ -140,6 +141,7 @@ import useBreakpoint from '../../lib/useBreakpoint';
 import { Warning } from '../../components/Warning';
 import { Markdown } from '../../components/Markdown';
 import { createPortal } from 'react-dom';
+import { getAllTodosFromAllLists } from '../../lib/lists';
 
 const minWord = (word: string, str: string) => {
   let min = Infinity;
@@ -436,7 +438,6 @@ export const MyLists = (props) => {
       list.children.reduce((acc, expense) => {
         if (!expense?.props?.archived && !expense?.props?.cost) return acc;
         if (list.props?.archived && !showArchived) return acc;
-        console.log('Expense', expense);
         if (
           expense?.props.archived &&
           expense?.props?.[
@@ -597,6 +598,7 @@ export const MyLists = (props) => {
                                 lastCompleted={
                                   pointsComponent?.props?.lastCompleted
                                 }
+                                parent={component}
                               />
                             </SortableItem>
                           );
@@ -1538,6 +1540,7 @@ export const List = ({
   lastCompleted,
   refetchPoints,
   options = {},
+  parent,
 }: {
   list: string;
   data?: any;
@@ -1549,6 +1552,7 @@ export const List = ({
   lastCompleted?: any;
   refetchPoints?: any;
   options?: any;
+  parent?: any;
 }) => {
   const { dispatch, state } = useContext(stateContext);
   const [component, { loading, error, refetch: refetchList }] = useComponent(
@@ -1747,10 +1751,7 @@ export const List = ({
             await c?.props?.archive();
         }
       } else if (component?.props?.settings?.defaultType === 'Counter') {
-        // TODO: Move this serverside
-        console.log('Recreating');
         await component?.props?.recreate?.();
-        console.log('Recreated');
       }
       setDoArchive(false);
       await refetch();
@@ -1951,6 +1952,7 @@ export const List = ({
                             ? average[todo.props.title]
                             : undefined
                         }
+                        root={parent}
                       />
                     </SortableItem>
                   )}
@@ -2260,7 +2262,6 @@ export const List = ({
               }}
               disabled={!todoTitle}
               onClick={async (e) => {
-                console.log('Ref current before');
                 canAddLabel
                   ? await addEntry(e, true)
                   : setShowType(e.target as HTMLElement);
@@ -2857,13 +2858,19 @@ const TodoItem = (props) => {
     setOrder,
     setSelected,
     order,
+    root,
+    dependency,
+    refetchParent,
   } = props;
   const memoizedData = useMemo(() => {
     return data;
   }, []);
-  const [component, { loading, error }] = useComponent(todoKey, {
-    data: memoizedData,
-  });
+  const [component, { loading, error, refetch: refetchTodo }] = useComponent(
+    todoKey,
+    {
+      data: memoizedData,
+    }
+  );
 
   const [showColors, setShowColors] = useState<HTMLElement | null>(null);
   const [showMenu, setShowMenu] = useState(false);
@@ -2871,10 +2878,7 @@ const TodoItem = (props) => {
     setShowColors(null);
   };
   const [interval, times] = limits[component?.props?.valuePoints] || [0, 1];
-  const canBeCompleted = checkLimits(
-    lastCompleted?.[component?.props?.valuePoints],
-    component
-  );
+
   const [moveToBottom, setMoveToBottom] = useLocalStorage(
     'moveToBottom',
     false
@@ -2883,7 +2887,11 @@ const TodoItem = (props) => {
     ? minWord(component?.props?.title, state.search)
     : Infinity;
   if (loading) return null;
-
+  const deps = component?.props?.dependencies || [];
+  const depsCompleted = deps?.every((dep) => dep?.completed);
+  const canBeCompleted =
+    checkLimits(lastCompleted?.[component?.props?.valuePoints], component) &&
+    depsCompleted;
   return (
     <>
       <ListItemMenu
@@ -2891,6 +2899,7 @@ const TodoItem = (props) => {
         open={!!showMenu}
         onClose={() => setShowMenu(false)}
         refetchList={refetchList}
+        root={root}
       ></ListItemMenu>
       <Tooltip
         title={
@@ -2916,7 +2925,7 @@ const TodoItem = (props) => {
                 : component?.props?.archived
                 ? 0.5
                 : 1,
-              pl: edit ? 0 : 2,
+              pl: dependency ? 4 : edit ? 0 : 2,
             }}
             disabled={!component?.props.completed && !edit && !canBeCompleted}
           >
@@ -3039,7 +3048,10 @@ const TodoItem = (props) => {
                       await setOrder(
                         arrayMove(order, order.indexOf(component?.props?.id), 0)
                       );
-                    await refetchPoints();
+                    await refetchPoints?.();
+                    if (dependency) {
+                      await refetchList();
+                    }
                   }}
                 />
               )}
@@ -3067,6 +3079,18 @@ const TodoItem = (props) => {
           </ListItemButton>
         </span>
       </Tooltip>
+      {deps?.length > 0 &&
+        deps.map((dep) => {
+          return (
+            <TodoItem
+              key={dep.id}
+              todo={dep.id}
+              dependency={true}
+              refetchParent={refetchTodo}
+              refetchList={refetchList}
+            ></TodoItem>
+          );
+        })}
     </>
   );
 };
@@ -3323,7 +3347,7 @@ const ExpenseItem = (props) => {
 };
 const ListItemMenu = (props) => {
   const { dispatch, state } = useContext(stateContext);
-  const { component, open, onClose, refetchList } = props;
+  const { component, open, onClose, refetchList, root } = props;
   const [showColors, setShowColors] = useState<HTMLElement | null>(null);
   const handleClose = () => {
     setShowColors(null);
@@ -3339,7 +3363,8 @@ const ListItemMenu = (props) => {
   );
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
+  const suggestions = getAllTodosFromAllLists(root?.children || []);
+  const [dependency, setDependency] = useState(null);
   return (
     <div>
       <Dialog open={open}>
@@ -3427,7 +3452,6 @@ const ListItemMenu = (props) => {
                             new Date(component?.props?.dueTime)
                           }
                           onChange={(e) => {
-                            console.log('SETTING TIME ', e);
                             component?.props?.setDueTime(e);
                           }}
                           slotProps={{
@@ -3569,6 +3593,29 @@ const ListItemMenu = (props) => {
                     onChange={(e) => setCost(e.target.value)}
                   />
                 </Tooltip>
+                {(component?.props?.dependencies || [])?.map((dep) => {
+                  {
+                    return <Chip label={dep.title}></Chip>;
+                  }
+                })}
+                <Box sx={{ mt: 1 }}>
+                  <Autocomplete
+                    options={suggestions || []}
+                    getOptionLabel={(option) =>
+                      `${option.list} - ${option?.title}`
+                    }
+                    renderInput={(params) => (
+                      <TextField {...params} label="Dependencies" />
+                    )}
+                    onChange={(e, v) => setDependency(v)}
+                  />
+
+                  <Button
+                    onClick={() => component?.props?.addDependency(dependency)}
+                  >
+                    Add
+                  </Button>
+                </Box>
               </CardContent>
               <CardActions>
                 <IconButton
@@ -3617,14 +3664,9 @@ const ListMenu = (props) => {
       <Paper sx={{ backgroundColor: 'beige' }}>
         <ClickAwayListener
           onClickAway={(e) => {
-            console.log(
-              e.target,
-              ![component?.props?.id].includes((e?.target as HTMLElement)?.id)
-            );
             if (
               ![component?.props?.id].includes((e?.target as HTMLElement)?.id)
             ) {
-              console.log('Closing');
               onClose();
             } else {
               e.stopImmediatePropagation();
