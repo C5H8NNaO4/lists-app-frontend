@@ -101,7 +101,7 @@ export const AnalyticsPage = (props) => {
     })
     .map((key) => countersMonth[key]);
 
-  const countersDataDays = Object.keys(countersMonth || {})
+  const countersDataDays = Object.keys(countersDays || {})
     .sort((a, b) => {
       return a.localeCompare(b);
     })
