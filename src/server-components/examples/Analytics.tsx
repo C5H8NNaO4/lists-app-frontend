@@ -266,7 +266,7 @@ export const AnalyticsPage = (props) => {
       <div className="customized-legend">
         {payload.map((entry) => {
           const { dataKey, color } = entry;
-          const active = visibility[dataKey] === false;
+          const active = visibility[dataKey.trim()] === false;
           const style = {
             marginRight: 10,
             color: active ? '#AAA' : '#000',
