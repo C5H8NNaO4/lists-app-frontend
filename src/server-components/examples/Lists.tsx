@@ -1281,7 +1281,10 @@ export const ColorMenu = ({
                       onClick={async (e) => {
                         e.stopPropagation();
                         await setColor(color);
-                        onClose(color);
+                        // await setColor(color);
+                        setTimeout(() => {
+                          onClose(color);
+                        }, 100);
                       }}
                     >
                       <Box
@@ -3067,7 +3070,7 @@ const CounterItem = (props) => {
     refetchPoints,
     average,
   } = props;
-  const [component, { loading, error }] = useComponent(todoId, {
+  const [component, { loading, error, refetch }] = useComponent(todoId, {
     data,
   });
   const [showMenu, setShowMenu] = useState(false);
@@ -3092,6 +3095,10 @@ const CounterItem = (props) => {
           sx={{
             opacity: component?.props?.archived ? 0.5 : 1,
             pl: edit ? 2 : 2,
+            backgroundColor: `${
+              component?.props?.color +
+              (state.animatedBackground > 0 ? 'D3' : '')
+            } !important`,
           }}
           disabled={!component?.props.completed && !edit && !canBeCompleted}
         >
@@ -3179,14 +3186,14 @@ const CounterItem = (props) => {
                 <MoreVertIcon />
               </IconButton>
             )}
-            <ListItemMenu
-              component={component}
-              open={showMenu}
-              onClose={() => setShowMenu(false)}
-              refetchList={refetchList}
-            ></ListItemMenu>
           </ListItemSecondaryAction>
         </ListItem>
+        <ListItemMenu
+          component={component}
+          open={showMenu}
+          onClose={() => setShowMenu(false)}
+          refetchList={refetchList}
+        ></ListItemMenu>
       </span>
     </Tooltip>
   );
