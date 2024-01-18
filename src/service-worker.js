@@ -1,4 +1,4 @@
-const host = import.meta.env.REACT_APP_SW_HOST;
+const host = import.meta.env.VITE_SW_HOST;
 let lastNotificationData = {};
 self.addEventListener('push', function (event) {
   if (event.data) {
