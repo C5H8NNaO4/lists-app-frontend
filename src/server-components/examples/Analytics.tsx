@@ -366,7 +366,7 @@ export const AnalyticsPage = (props) => {
     <BarChart data={sumData}>
       <CartesianGrid strokeDasharray="3 3" />
       <Tooltip
-        cursor={{ fill: 'transparent' }}
+        cursor={{ fill: '#FFFFFF00' }}
         content={({ payload }) => <CustomTooltip payload={payload} />}
       />
 
@@ -383,7 +383,7 @@ export const AnalyticsPage = (props) => {
     <BarChart data={countersData}>
       <CartesianGrid strokeDasharray="3 3" />
       <Tooltip
-        cursor={{ fill: 'transparent' }}
+        cursor={{ fill: '#FFFFFF00' }}
         content={({ payload }) => <CustomTooltip payload={payload} />}
       />
       <XAxis dataKey="date" tickFormatter={DateFormatter('dd.MM.yy')} />
@@ -398,7 +398,7 @@ export const AnalyticsPage = (props) => {
     <BarChart data={countersDataDays}>
       <CartesianGrid strokeDasharray="3 3" />
       <Tooltip
-        cursor={{ fill: 'transparent' }}
+        cursor={{ fill: '#FFFFFF00' }}
         content={({ payload }) => <CustomTooltip payload={payload} />}
       />
       <XAxis dataKey="date" tickFormatter={DateFormatter('dd.MM.yy')} />
