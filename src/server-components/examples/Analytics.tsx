@@ -266,7 +266,7 @@ export const AnalyticsPage = (props) => {
       <div className="customized-legend">
         {payload.map((entry) => {
           const { dataKey, color } = entry;
-          const active = visibility[dataKey];
+          const active = visibility[dataKey] === false;
           const style = {
             marginRight: 10,
             color: active ? '#AAA' : '#000',
@@ -278,12 +278,8 @@ export const AnalyticsPage = (props) => {
               onClick={(e) => {
                 setVisibility((visibility) => ({
                   ...visibility,
-                  [dataKey]: !visibility[dataKey],
+                  [dataKey]: visibility[dataKey] === false ? true : false,
                 }));
-                console.log({
-                  ...visibility,
-                  [dataKey]: !visibility[dataKey],
-                });
               }}
               style={style}
             >
