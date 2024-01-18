@@ -275,7 +275,7 @@ export const AnalyticsPage = (props) => {
       />
 
       {Object.keys(
-        dataDays.reduce((acc, cur) => ({ ...acc, ...cur })) || {}
+        dataDays.reduce((acc, cur) => ({ ...acc, ...cur }), {}) || {}
       ).map((key, i) => {
         if (key === 'date' || (active && key !== active)) return null;
         return <Line dataKey={key} stroke={colors[i]} />;
