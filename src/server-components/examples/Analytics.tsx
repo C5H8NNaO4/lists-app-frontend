@@ -30,20 +30,43 @@ import {
 } from 'date-fns';
 import { useState } from 'react';
 
+// const colors = [
+//   '#9e0142',
+//   '#d53e4f',
+//   '#f46d43',
+//   '#fdae61',
+//   '#fee08b',
+//   '#e6f598',
+//   '#abdda4',
+//   '#66c2a5',
+//   '#3288bd',
+//   '#5e4fa2',
+//   'black',
+// ];
+
 const colors = [
-  '#9e0142',
-  '#d53e4f',
-  '#f46d43',
-  '#fdae61',
-  '#fee08b',
-  '#e6f598',
-  '#abdda4',
-  '#66c2a5',
-  '#3288bd',
-  '#5e4fa2',
+  '#001F3F',
+  '#0074E4',
+  '#00AEEF',
+  '#FFFFFF',
+  '#D3D3D3',
+  '#333333',
+  '#FF4136',
+  '#FF851B',
+  '#FFDC00',
+  '#2ECC40',
+  '#4CAF50',
+  '#F012BE',
+  '#B10DC9',
+  '#85144b',
+  '#3D9970',
+  '#AAAAAA',
+  '#FF6347',
+  '#39CCCC',
+  '#7FDBFF',
+  '#F0DB4F',
   'black',
 ];
-
 const DateFormatter = (formatStr) => (value) => {
   try {
     return format(new Date(value), formatStr);
