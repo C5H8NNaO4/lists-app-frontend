@@ -45,16 +45,11 @@ import { useState } from 'react';
 // ];
 
 const colors = [
-  '#001F3F',
-  '#0074E4',
-  '#00AEEF',
-  '#FFFFFF',
-  '#D3D3D3',
   '#333333',
   '#FF4136',
   '#FF851B',
   '#FFDC00',
-  '#2ECC40',
+  '#45B69C',
   '#4CAF50',
   '#F012BE',
   '#B10DC9',
@@ -65,6 +60,12 @@ const colors = [
   '#39CCCC',
   '#7FDBFF',
   '#F0DB4F',
+  '#001F3F',
+  '#0074E4',
+  '#00AEEF',
+  '#FFFFFF',
+  '#D3D3D3',
+
   'black',
 ];
 const DateFormatter = (formatStr) => (value) => {
@@ -349,6 +350,7 @@ export const AnalyticsPage = (props) => {
         if (key === 'date') return null;
         return (
           <Line
+            strokeWidth={2}
             dataKey={visible ? key : ' ' + key}
             connectNulls
             stroke={colors[i]}
@@ -374,7 +376,7 @@ export const AnalyticsPage = (props) => {
 
       {Object.keys(lastWeek[0] || {}).map((key, i) => {
         if (key === 'date' || (active && key !== active)) return null;
-        return <Line dataKey={key} stroke={colors[i]} />;
+        return <Line strokeWidth={2} dataKey={key} stroke={colors[i]} />;
       })}
     </LineChart>
   );
