@@ -95,7 +95,7 @@ export const AnalyticsPage = (props) => {
 
     return deepmerge(acc, childs);
   }, {});
-  window.childs = component?.children;
+  (window as any).childs = component?.children;
   console.log('COUNTERS DAYS', countersDays);
   const countersData = Object.keys(countersMonth || {})
     .sort((a, b) => {
