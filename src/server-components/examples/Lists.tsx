@@ -1746,6 +1746,31 @@ export const List = ({
     return null;
   }
 
+  const sums = useMemo(
+    () =>
+      component?.children
+        ?.filter((itm) => itm.props.type === 'Counter')
+        .reduce((acc, item) => {
+          return {
+            ...acc,
+            [item?.props?.title]: {
+              sum: (acc[item?.props?.title]?.sum || 0) + item?.props?.count,
+              n: (acc[item?.props?.title]?.n || 0) + 1,
+            },
+          };
+        }, {}),
+    [component?.children]
+  );
+  const average = useMemo(
+    () =>
+      Object.keys(sums || {}).reduce((acc, key) => {
+        const { sum, n } = sums[key];
+        if (n < 2) return acc;
+        return { ...acc, [key]: sum / n };
+      }, {}),
+    [sums]
+  );
+
   if (selected) {
     return (
       <TodoItemDetailCard
@@ -1858,6 +1883,11 @@ export const List = ({
                         refetchPoints={refetchPoints}
                         order={component?.props?.order}
                         setOrder={component?.props?.setOrder}
+                        average={
+                          todo.props.type === 'Counter'
+                            ? average[todo.props.title]
+                            : undefined
+                        }
                       />
                     </SortableItem>
                   )}
@@ -2988,6 +3018,7 @@ const CounterItem = (props) => {
     lastCompleted,
     refetchList,
     refetchPoints,
+    average,
   } = props;
   const [component, { loading, error }] = useComponent(todoId, {
     data,
@@ -3065,7 +3096,9 @@ const CounterItem = (props) => {
                 >
                   <RemoveIcon></RemoveIcon>
                 </IconButton>
-                {component?.props?.count}
+                <Tooltip title={average ? `Ø ${average}` : ''}>
+                  {component?.props?.count}
+                </Tooltip>
                 <IconButton
                   disabled={component?.props?.archived}
                   size="small"
@@ -3258,6 +3291,7 @@ const ListItemMenu = (props) => {
           >
             <Card>
               <CardContent sx={{ display: 'flex', flexDirection: 'column' }}>
+                <Typography>{component?.props?.id}</Typography>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                   <Box
                     sx={{ gap: 1, flexDirection: 'column', display: 'flex' }}
