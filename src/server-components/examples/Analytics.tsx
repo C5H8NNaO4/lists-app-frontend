@@ -321,7 +321,7 @@ export const AnalyticsPage = (props) => {
       {Object.keys(
         dataDays.reduce((acc, cur) => ({ ...acc, ...cur }), {}) || {}
       ).map((key, i) => {
-        const visible = visibility[key];
+        const visible = visibility[key] !== false;
         if (key === 'date') return null;
         return (
           <Line
