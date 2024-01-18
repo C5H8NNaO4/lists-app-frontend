@@ -124,7 +124,15 @@ import {
   TimePicker,
 } from '@mui/x-date-pickers';
 import { NotificationButton } from '../../components/NotificationButton';
-import { format, startOfDay, subDays } from 'date-fns';
+import {
+  endOfDay,
+  format,
+  getHours,
+  getTime,
+  hoursToMilliseconds,
+  startOfDay,
+  subDays,
+} from 'date-fns';
 import useBreakpoint from '../../lib/useBreakpoint';
 import { Warning } from '../../components/Warning';
 import { Markdown } from '../../components/Markdown';
@@ -1771,6 +1779,7 @@ export const List = ({
     [sums]
   );
 
+  const [r, setR] = useState(0);
   if (selected) {
     return (
       <TodoItemDetailCard
@@ -1781,6 +1790,12 @@ export const List = ({
       />
     );
   }
+
+  useEffect(() => {
+    setTimeout(() => {
+      setR(r + 1);
+    }, 60 * 1000);
+  }, [r]);
 
   return (
     <Card
@@ -1819,6 +1834,22 @@ export const List = ({
           )
         }
       ></CardHeader>
+
+      {component?.props?.settings?.defaultType === 'Counter' &&
+        component?.props?.settings?.startOfDay &&
+        component?.props?.settings?.endOfDay && (
+          <LinearProgress
+            variant="determinate"
+            color="secondary"
+            value={
+              (100 /
+                (getTime(new Date(component?.props?.settings?.endOfDay)) -
+                  getTime(new Date(component?.props?.settings?.startOfDay)))) *
+              (getTime(Date.now()) -
+                getTime(new Date(component?.props?.settings?.startOfDay)))
+            }
+          />
+        )}
 
       <DndContext
         sensors={sensors}
@@ -3644,6 +3675,27 @@ const ListMenu = (props) => {
                       return <MenuItem value={n}>{n}</MenuItem>;
                     })}
                   </Select>
+                  <FormLabel>Start / End of the day</FormLabel>
+                  <LocalizationProvider dateAdapter={AdapterDateFns}>
+                    <MobileTimePicker
+                      value={new Date(component?.props?.settings?.startOfDay)}
+                      onChange={(e) => {
+                        component?.props?.updateSettings({
+                          ...component?.props?.settings,
+                          startOfDay: e?.toISOString() || null,
+                        });
+                      }}
+                    />
+                    <MobileTimePicker
+                      value={new Date(component?.props?.settings?.endOfDay)}
+                      onChange={(e) => {
+                        component?.props?.updateSettings({
+                          ...component?.props?.settings,
+                          endOfDay: e?.toISOString() || null,
+                        });
+                      }}
+                    />
+                  </LocalizationProvider>
                 </>
               </Tooltip>
             </Box>
