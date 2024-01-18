@@ -276,7 +276,11 @@ export const AnalyticsPage = (props) => {
             <span
               className="legend-item"
               onClick={(e) => {
-                setVisibility({
+                setVisibility((visibility) => ({
+                  ...visibility,
+                  [dataKey]: !visibility[dataKey],
+                }));
+                console.log({
                   ...visibility,
                   [dataKey]: !visibility[dataKey],
                 });
