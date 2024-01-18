@@ -108,6 +108,7 @@ export const AnalyticsPage = (props) => {
     .map((key) => countersDays[key]);
 
   const data = ((countersMonth && Object.values(countersMonth)) || []).flat();
+  const dataDays = ((countersDays && Object.values(countersDays)) || []).flat();
 
   const categories = component?.children
     ?.filter((list) => {
@@ -358,7 +359,7 @@ export const AnalyticsPage = (props) => {
       <Tooltip content={({ payload }) => <CustomTooltip payload={payload} />} />
       <XAxis dataKey="date" tickFormatter={DateFormatter('dd.MM.yy')} />
       <Legend />
-      {Object.keys(data[0] || {}).map((key, i) => {
+      {Object.keys(dataDays[0] || {}).map((key, i) => {
         if (key === 'date') return null;
         return <Bar dataKey={key} fill={colors[i]} />;
       })}
@@ -378,6 +379,7 @@ export const AnalyticsPage = (props) => {
             </ResponsiveContainer>
           </>
         )}
+        {/* TODO: Refactor to be more generic */}
         {countersDataDays?.length && (
           <>
             <Typography variant="h2" component="h2" gutterBottom>
