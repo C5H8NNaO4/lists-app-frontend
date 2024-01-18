@@ -300,7 +300,7 @@ export const AnalyticsPage = (props) => {
                   />
                 )}
               </Surface>
-              <span>{dataKey}</span>
+              <span>{dataKey.trim()}</span>
             </span>
           );
         })}
