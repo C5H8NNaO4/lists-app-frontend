@@ -82,7 +82,12 @@ export const AnalyticsPage = (props) => {
       })
       .reduce((acc, todo) => {
         const date = startOfDay(
-          new Date(todo.props.createdAt || todo.props.archived || Date.now())
+          new Date(
+            todo.props.lastModified ||
+              todo.props.createdAt ||
+              todo.props.archived ||
+              Date.now()
+          )
         ).getTime();
         acc[date] = {
           ...acc[date],
@@ -95,8 +100,7 @@ export const AnalyticsPage = (props) => {
 
     return deepmerge(acc, childs);
   }, {});
-  (window as any).childs = component?.children;
-  console.log('COUNTERS DAYS', countersDays);
+
   const countersData = Object.keys(countersMonth || {})
     .sort((a, b) => {
       return a.localeCompare(b);
