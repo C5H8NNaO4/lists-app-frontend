@@ -17,6 +17,8 @@ import {
 import { Paper, ListItem, ListItemText } from '@mui/material';
 import deepmerge from 'deepmerge';
 import {
+  differenceInDays,
+  differenceInMonths,
   format,
   getMonth,
   startOfDay,
@@ -50,7 +52,7 @@ const DateFormatter = (formatStr) => (value) => {
 export const AnalyticsPage = (props) => {
   const [component, { loading, error, refetch }] = useComponent('my-lists', {});
 
-  const counters = component?.children.reduce((acc, list) => {
+  const countersMonth = component?.children.reduce((acc, list) => {
     const childs = list.children
       .filter((todo) => 'count' in todo.props)
       .reduce((acc, todo) => {
@@ -68,13 +70,44 @@ export const AnalyticsPage = (props) => {
 
     return deepmerge(acc, childs);
   }, {});
-  const countersData = Object.keys(counters || {})
+
+  const countersDays = component?.children.reduce((acc, list) => {
+    const childs = list.children
+      .filter((todo) => {
+        const diff = differenceInMonths(
+          new Date(todo.props.createdAt || todo.props.archived || Date.now()),
+          Date.now()
+        );
+        return 'count' in todo.props && diff === 0;
+      })
+      .reduce((acc, todo) => {
+        const date = startOfDay(
+          new Date(todo.props.createdAt || todo.props.archived || Date.now())
+        ).getTime();
+        acc[date] = {
+          ...acc[date],
+          [todo.props.title]:
+            (acc?.[date]?.[todo.props.title] || 0) + todo.props.count,
+          date,
+        };
+        return acc;
+      }, {});
+
+    return deepmerge(acc, childs);
+  }, {});
+  const countersData = Object.keys(countersMonth || {})
     .sort((a, b) => {
       return a.localeCompare(b);
     })
-    .map((key) => counters[key]);
+    .map((key) => countersMonth[key]);
 
-  const data = ((counters && Object.values(counters)) || []).flat();
+  const countersDataDays = Object.keys(countersMonth || {})
+    .sort((a, b) => {
+      return a.localeCompare(b);
+    })
+    .map((key) => countersDays[key]);
+
+  const data = ((countersMonth && Object.values(countersMonth)) || []).flat();
 
   const categories = component?.children
     ?.filter((list) => {
@@ -319,6 +352,18 @@ export const AnalyticsPage = (props) => {
       })}
     </BarChart>
   );
+  const barChartDaily = (
+    <BarChart data={countersDataDays}>
+      <CartesianGrid strokeDasharray="3 3" />
+      <Tooltip content={({ payload }) => <CustomTooltip payload={payload} />} />
+      <XAxis dataKey="date" tickFormatter={DateFormatter('dd.MM.yy')} />
+      <Legend />
+      {Object.keys(data[0] || {}).map((key, i) => {
+        if (key === 'date') return null;
+        return <Bar dataKey={key} fill={colors[i]} />;
+      })}
+    </BarChart>
+  );
   return (
     <>
       <Container maxWidth="xl">
@@ -330,6 +375,16 @@ export const AnalyticsPage = (props) => {
             </Typography>
             <ResponsiveContainer width="100%" height={250}>
               {barChart}
+            </ResponsiveContainer>
+          </>
+        )}
+        {countersDataDays?.length && (
+          <>
+            <Typography variant="h2" component="h2" gutterBottom>
+              Daily Counters
+            </Typography>
+            <ResponsiveContainer width="100%" height={250}>
+              {barChartDaily}
             </ResponsiveContainer>
           </>
         )}
