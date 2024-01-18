@@ -75,7 +75,12 @@ export const AnalyticsPage = (props) => {
     const childs = list.children
       .filter((todo) => {
         const diff = differenceInMonths(
-          new Date(todo.props.createdAt || todo.props.archived || Date.now()),
+          new Date(
+            todo.props.lastModified ||
+              todo.props.createdAt ||
+              todo.props.archived ||
+              Date.now()
+          ),
           Date.now()
         );
         return 'count' in todo.props && diff === 0;
@@ -269,7 +274,9 @@ export const AnalyticsPage = (props) => {
         }}
       />
 
-      {Object.keys(dataDays[0] || {}).map((key, i) => {
+      {Object.keys(
+        dataDays.reduce((acc, cur) => ({ ...acc, ...cur })) || {}
+      ).map((key, i) => {
         if (key === 'date' || (active && key !== active)) return null;
         return <Line dataKey={key} stroke={colors[i]} />;
       })}
