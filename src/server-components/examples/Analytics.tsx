@@ -11,6 +11,8 @@ import {
   Pie,
   PieChart,
   ResponsiveContainer,
+  Surface,
+  Symbols,
   Tooltip,
   XAxis,
 } from 'recharts';
@@ -257,6 +259,53 @@ export const AnalyticsPage = (props) => {
     });
 
   const [active, setActive] = useState(null);
+  const [visibility, setVisibility] = useState({});
+
+  const renderCustomLegend = ({ payload }) => {
+    return (
+      <div className="customized-legend">
+        {payload.map((entry) => {
+          const { dataKey, color } = entry;
+          const active = visibility[dataKey];
+          const style = {
+            marginRight: 10,
+            color: active ? '#AAA' : '#000',
+          };
+
+          return (
+            <span
+              className="legend-item"
+              onClick={(e) => {
+                setVisibility({
+                  ...visibility,
+                  [dataKey]: !visibility[dataKey],
+                });
+              }}
+              style={style}
+            >
+              <Surface
+                width={10}
+                height={10}
+                viewBox={{ x: 0, y: 0, width: 10, height: 10 }}
+              >
+                <Symbols cx={5} cy={5} type="circle" size={50} fill={color} />
+                {active && (
+                  <Symbols
+                    cx={5}
+                    cy={5}
+                    type="circle"
+                    size={25}
+                    fill={'#FFF'}
+                  />
+                )}
+              </Surface>
+              <span>{dataKey}</span>
+            </span>
+          );
+        })}
+      </div>
+    );
+  };
 
   const countersLineChart = (
     <LineChart data={countersDataDays}>
@@ -267,17 +316,20 @@ export const AnalyticsPage = (props) => {
         )}
       />
       <XAxis dataKey="date" tickFormatter={DateFormatter('dd.MM')} />
-      <Legend
-        onClick={(e) => {
-          setActive(e.dataKey === active ? null : e.dataKey);
-        }}
-      />
+      <Legend content={renderCustomLegend} />
 
       {Object.keys(
         dataDays.reduce((acc, cur) => ({ ...acc, ...cur }), {}) || {}
       ).map((key, i) => {
-        if (key === 'date' || (active && key !== active)) return null;
-        return <Line dataKey={key} connectNulls stroke={colors[i]} />;
+        const visible = visibility[key];
+        if (key === 'date') return null;
+        return (
+          <Line
+            dataKey={visible ? key : ' ' + key}
+            connectNulls
+            stroke={colors[i]}
+          />
+        );
       })}
     </LineChart>
   );
