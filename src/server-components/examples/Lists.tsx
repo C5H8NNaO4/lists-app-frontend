@@ -127,9 +127,11 @@ import { NotificationButton } from '../../components/NotificationButton';
 import {
   endOfDay,
   format,
+  formatDuration,
   getHours,
   getTime,
   hoursToMilliseconds,
+  intervalToDuration,
   startOfDay,
   subDays,
 } from 'date-fns';
@@ -1797,6 +1799,10 @@ export const List = ({
     }, 60 * 1000);
   }, [r]);
 
+  const timeLeft = intervalToDuration({
+    start: new Date(Date.now()),
+    end: new Date(component?.props?.settings?.endOfDay || Date.now()),
+  });
   return (
     <Card
       sx={{
@@ -1838,17 +1844,27 @@ export const List = ({
       {component?.props?.settings?.defaultType === 'Counter' &&
         component?.props?.settings?.startOfDay &&
         component?.props?.settings?.endOfDay && (
-          <LinearProgress
-            variant="determinate"
-            color="secondary"
-            value={
-              (100 /
-                (getTime(new Date(component?.props?.settings?.endOfDay)) -
-                  getTime(new Date(component?.props?.settings?.startOfDay)))) *
-              (getTime(Date.now()) -
-                getTime(new Date(component?.props?.settings?.startOfDay)))
-            }
-          />
+          <Tooltip
+            title={`${timeLeft.hours
+              ?.toString()
+              .padStart(2, '0')}:${timeLeft.minutes
+              ?.toString()
+              .padStart(2, '0')} left in the day.`}
+          >
+            <LinearProgress
+              variant="determinate"
+              color="secondary"
+              value={
+                (100 /
+                  (getTime(new Date(component?.props?.settings?.endOfDay)) -
+                    getTime(
+                      new Date(component?.props?.settings?.startOfDay)
+                    ))) *
+                (getTime(Date.now()) -
+                  getTime(new Date(component?.props?.settings?.startOfDay)))
+              }
+            />
+          </Tooltip>
         )}
 
       <DndContext
