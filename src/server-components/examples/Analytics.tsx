@@ -88,10 +88,9 @@ export const AnalyticsPage = (props) => {
       .reduce((acc, todo) => {
         const date = startOfDay(
           new Date(
-            todo.props.lastModified ||
-              todo.props.createdAt ||
-              todo.props.archived ||
-              Date.now()
+            todo.props.archived
+              ? todo.props.archived
+              : todo.props.lastModified || todo.props.createdAt || Date.now()
           )
         ).getTime();
         acc[date] = {
