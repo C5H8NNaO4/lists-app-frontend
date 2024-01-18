@@ -395,10 +395,12 @@ export const AnalyticsPage = (props) => {
       <Tooltip content={({ payload }) => <CustomTooltip payload={payload} />} />
       <XAxis dataKey="date" tickFormatter={DateFormatter('dd.MM.yy')} />
       <Legend />
-      {Object.keys(dataDays[0] || {}).map((key, i) => {
-        if (key === 'date') return null;
-        return <Bar dataKey={key} fill={colors[i]} />;
-      })}
+      {Object.keys(dataDays.reduce((acc, cur) => ({ ...acc, ...cur }), {})).map(
+        (key, i) => {
+          if (key === 'date') return null;
+          return <Bar dataKey={key} fill={colors[i]} />;
+        }
+      )}
     </BarChart>
   );
   return (
