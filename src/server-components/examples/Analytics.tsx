@@ -277,7 +277,7 @@ export const AnalyticsPage = (props) => {
         dataDays.reduce((acc, cur) => ({ ...acc, ...cur }), {}) || {}
       ).map((key, i) => {
         if (key === 'date' || (active && key !== active)) return null;
-        return <Line dataKey={key} stroke={colors[i]} />;
+        return <Line dataKey={key} connectNulls stroke={colors[i]} />;
       })}
     </LineChart>
   );
