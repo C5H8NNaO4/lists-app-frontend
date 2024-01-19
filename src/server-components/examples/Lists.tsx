@@ -146,6 +146,8 @@ import { Warning } from '../../components/Warning';
 import { Markdown } from '../../components/Markdown';
 import { createPortal } from 'react-dom';
 import { getAllTodosFromAllLists } from '../../lib/lists';
+import ContentCopy from '@mui/icons-material/ContentCopy';
+import copy from 'copy-to-clipboard';
 
 const minWord = (word: string, str: string) => {
   let min = Infinity;
@@ -1895,6 +1897,36 @@ export const List = ({
               inputRef={inputRef}
             />
           )
+        }
+        action={
+          <IconButton
+            sx={{
+              opacity: 0,
+              '&:hover': {
+                opacity: 1,
+              },
+            }}
+            onClick={() => {
+              const content = component?.props?.children?.reduce(
+                (str, item) => {
+                  return (
+                    str +
+                    `- [${item.props.completed ? 'X' : ' '}] ${
+                      item.props.title
+                    }`
+                  );
+                },
+                ''
+              );
+              copy(content);
+              dispatch({
+                type: Actions.SHOW_MESSAGE,
+                message: 'Copied to clipboard.',
+              });
+            }}
+          >
+            <ContentCopy />
+          </IconButton>
         }
       ></CardHeader>
 
