@@ -113,12 +113,10 @@ export const AnalyticsPage = (props) => {
         return 'count' in todo.props && diff === 0;
       })
       .reduce((acc, todo) => {
-        const start = startOfDay(
-          new Date(
-            todo.props.archived
-              ? todo.props.archived
-              : todo.props.lastModified || todo.props.createdAt || Date.now()
-          )
+        const start = new Date(
+          todo.props.archived
+            ? todo.props.archived
+            : todo.props.lastModified || todo.props.createdAt || Date.now()
         );
         if (
           getHours(start) > 0 &&
@@ -126,7 +124,7 @@ export const AnalyticsPage = (props) => {
         ) {
           start.setDate(start.getDate() - 1);
         }
-        const date = start.getTime();
+        const date = startOfDay(start).getTime();
         acc[date] = {
           ...acc[date],
           [todo.props.title]:
