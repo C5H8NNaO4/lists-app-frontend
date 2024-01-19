@@ -540,30 +540,32 @@ export const MyLists = (props) => {
             gap: 1,
           }}
         >
-          <Tooltip title="Add new list" placement="top">
-            <Button
-              variant="contained"
-              color="primary"
-              aria-label="add"
-              // sx={{ position: 'fixed', right: 16, bottom: 16 }}
-              onClick={() => {
-                component?.props?.add({
-                  title,
-                  color: defaultListColor,
-                  settings: { defaultType: 'Todo' },
-                });
-                setTitle('');
-              }}
-              sx={{
-                position: 'relative',
-                mx: 'auto',
-                display: { xs: 'flex', md: 'none' },
-              }}
-            >
-              <AddIcon />
-              New List
-            </Button>
-          </Tooltip>
+          {optimisticOrder?.length > 0 && (
+            <Tooltip title="Add new list" placement="top">
+              <Button
+                variant="contained"
+                color="primary"
+                aria-label="add"
+                // sx={{ position: 'fixed', right: 16, bottom: 16 }}
+                onClick={() => {
+                  component?.props?.add({
+                    title,
+                    color: defaultListColor,
+                    settings: { defaultType: 'Todo' },
+                  });
+                  setTitle('');
+                }}
+                sx={{
+                  position: 'relative',
+                  mx: 'auto',
+                  display: { xs: 'flex', md: 'none' },
+                }}
+              >
+                <AddIcon />
+                New List
+              </Button>
+            </Tooltip>
+          )}
           {[pinnedColumns, unpinnedColumns].map((optimisticOrder) => {
             return (
               <Grid container rowSpacing={1} columnSpacing={0}>
