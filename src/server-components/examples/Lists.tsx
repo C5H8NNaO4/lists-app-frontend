@@ -2834,7 +2834,7 @@ const Sum = ({
   }
   if (pos === 0 && neg < 0) {
     return (
-      <Alert sx={{ mt: 1 }} severity={'error'}>
+      <Alert icon={<AttachMoneyIcon />} sx={{ mt: 1 }} severity={'error'}>
         {`` +
           (negArchived < 0
             ? `Previous spendings: ${Math.abs(negArchived).toFixed(2)}€`

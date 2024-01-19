@@ -3,6 +3,7 @@ import { useLocalStorage } from '@state-less/react-client';
 import { createPortal } from 'react-dom';
 import { Link as RouterLink } from 'react-router-dom';
 import CloseIcon from '@mui/icons-material/Close';
+import { ReactNode } from 'react-markdown/lib/ast-to-react';
 
 export const Warning = ({
   id,
@@ -13,6 +14,7 @@ export const Warning = ({
   noDismiss = false,
   noPortal = false,
   showMore = true,
+  icon,
   sx,
 }: {
   id: string;
@@ -23,6 +25,7 @@ export const Warning = ({
   noDismiss?: boolean;
   noPortal?: boolean;
   showMore?: boolean;
+  icon?: ReactNode;
   sx?: any;
 }) => {
   const [dismissed, setDismissed] = useLocalStorage(id + 'dismissed', false);
@@ -31,6 +34,7 @@ export const Warning = ({
   }
   const warning = (
     <Alert
+      icon={icon}
       sx={{
         alignItems: 'center',
         display: 'flex',
