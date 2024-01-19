@@ -1907,21 +1907,16 @@ export const List = ({
               },
             }}
             onClick={() => {
-              const content = component?.props?.children?.reduce(
-                (str, item) => {
-                  return (
-                    str +
-                    `- [${item.props.completed ? 'X' : ' '}] ${
-                      item.props.title
-                    }`
-                  );
-                },
-                ''
-              );
+              const content = component?.children?.reduce((str, item) => {
+                return (
+                  str +
+                  `- [${item.props.completed ? 'X' : ' '}] ${item.props.title}`
+                );
+              }, '');
               copy(content);
               dispatch({
                 type: Actions.SHOW_MESSAGE,
-                message: 'Copied to clipboard.',
+                value: 'Copied to clipboard.',
               });
             }}
           >
