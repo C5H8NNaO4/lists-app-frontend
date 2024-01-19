@@ -1821,16 +1821,20 @@ export const List = ({
     );
   }
 
-  const endOfDayTime = new Date(component?.props?.settings?.endOfDay);
-  const startOfDayTime = new Date(component?.props?.settings?.startOfDay);
-  const endOfDay = setSeconds(
+  const endOfDayTime = new Date(
+    component?.props?.settings?.endOfDay || endOfDay(Date.now()).getTime()
+  );
+  const startOfDayTime = new Date(
+    component?.props?.settings?.startOfDay || startOfDay(Date.now()).getTime()
+  );
+  const endOfDayDate = setSeconds(
     setMinutes(
       setHours(new Date(), getHours(endOfDayTime)),
       getMinutes(endOfDayTime)
     ),
     0
   );
-  const startOfDay = setSeconds(
+  const startOfDayDate = setSeconds(
     setMinutes(
       setHours(new Date(), getHours(startOfDayTime)),
       getMinutes(startOfDayTime)
@@ -1838,13 +1842,13 @@ export const List = ({
     0
   );
 
-  if (getHours(endOfDay) === 0 && getMinutes(endOfDay) === 0) {
-    endOfDay.setDate(new Date().getDate() + 1);
+  if (getHours(endOfDayDate) === 0 && getMinutes(endOfDayDate) === 0) {
+    endOfDayDate.setDate(new Date().getDate() + 1);
   }
 
   const timeLeft = intervalToDuration({
     start: new Date(Date.now()),
-    end: endOfDay,
+    end: endOfDayDate,
   });
   return (
     <Card
@@ -1898,8 +1902,8 @@ export const List = ({
               variant="determinate"
               color="secondary"
               value={
-                (100 / (getTime(endOfDay) - getTime(startOfDay))) *
-                (getTime(Date.now()) - getTime(startOfDay))
+                (100 / (getTime(endOfDayDate) - getTime(startOfDayDate))) *
+                (getTime(Date.now()) - getTime(startOfDayDate))
               }
             />
           </Tooltip>
