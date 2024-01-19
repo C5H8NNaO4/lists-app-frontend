@@ -1966,13 +1966,7 @@ export const List = ({
           >
             <LinearProgress
               variant="determinate"
-              color={
-                avgCons > 100
-                  ? 'error'
-                  : avgCons < dayPrc
-                  ? 'success'
-                  : 'warning'
-              }
+              color={avgCons > 100 ? 'error' : 'success'}
               value={avgCons}
             />
           </Tooltip>
