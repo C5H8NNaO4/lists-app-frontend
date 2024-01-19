@@ -54,11 +54,13 @@ export const WelcomePage = () => {
           </Typography>
           <Markdown src={getRawPath(PAGE_SRC)}>Loading...</Markdown>
           <Box sx={{ display: 'flex' }}>
-            <Button variant="contained" sx={{ mx: 'auto' }}>
-              <Link component={RouterLink} to="/" color={'secondary'}>
-                Try it now
-              </Link>
-            </Button>
+            <Link
+              component={RouterLink}
+              sx={{ mx: 'auto', color: 'success.main' }}
+              to="/"
+            >
+              <b>Try it now</b>
+            </Link>
           </Box>
         </Paper>
         <Grid container spacing={2} sx={{ my: 1 }}>

@@ -60,7 +60,7 @@ export const Layout = () => {
   const [features, { loading: featuresLoading }] = useComponent('features');
   const { pathname, search } = useLocation();
   // const [_animated, setAnim] = useState(0);
-  const _animated = state.animatedBackground;
+  const _animated = state.animatedBackground || 0;
 
   const [time, setTime] = useState(0);
 
@@ -86,6 +86,7 @@ export const Layout = () => {
   }, [features?.props?.animated]);
 
   useEffect(() => {
+    console.log('INCLUDES BG', _animated, search.includes('bg=1'));
     if (_animated === 0 && search.includes('bg=1')) {
       dispatch({
         type: Actions.SET_BG,
