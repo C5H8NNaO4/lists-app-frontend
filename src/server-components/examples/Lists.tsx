@@ -1957,7 +1957,7 @@ export const List = ({
         component?.props?.settings?.endOfDay && (
           <Tooltip
             arrow
-            open={Boolean(hoverTitle)}
+            open={hoverTitle ? true : undefined}
             title={
               hoverTitle
                 ? `${hoverTitle}: ${avgCons?.toFixed(2)}%`
