@@ -22,6 +22,7 @@ import {
   differenceInDays,
   differenceInMonths,
   format,
+  getHours,
   getMonth,
   startOfDay,
   startOfMonth,
@@ -112,13 +113,18 @@ export const AnalyticsPage = (props) => {
         return 'count' in todo.props && diff === 0;
       })
       .reduce((acc, todo) => {
-        const date = startOfDay(
-          new Date(
-            todo.props.archived
-              ? todo.props.archived
-              : todo.props.lastModified || todo.props.createdAt || Date.now()
-          )
-        ).getTime();
+        const start = new Date(
+          todo.props.archived
+            ? todo.props.archived
+            : todo.props.lastModified || todo.props.createdAt || Date.now()
+        );
+        if (
+          getHours(start) > 0 &&
+          getHours(start) < getHours(new Date(list.props.settings.startOfDay))
+        ) {
+          start.setDate(start.getDate() - 1);
+        }
+        const date = startOfDay(start).getTime();
         acc[date] = {
           ...acc[date],
           [todo.props.title]:
