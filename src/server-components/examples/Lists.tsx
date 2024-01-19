@@ -1757,9 +1757,6 @@ export const List = ({
       await refetch();
     })();
   }, [doArchive]);
-  if (loading) {
-    return null;
-  }
 
   const sums = useMemo(
     () =>
@@ -1799,6 +1796,16 @@ export const List = ({
   );
 
   const [r, setR] = useState(0);
+  useEffect(() => {
+    setTimeout(() => {
+      setR(r + 1);
+    }, 60 * 1000);
+  }, [r]);
+
+  if (loading) {
+    return null;
+  }
+
   if (selected) {
     return (
       <TodoItemDetailCard
@@ -1809,12 +1816,6 @@ export const List = ({
       />
     );
   }
-
-  useEffect(() => {
-    setTimeout(() => {
-      setR(r + 1);
-    }, 60 * 1000);
-  }, [r]);
 
   const timeLeft = intervalToDuration({
     start: new Date(Date.now()),
