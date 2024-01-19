@@ -122,7 +122,7 @@ export const AnalyticsPage = (props) => {
           getHours(start) > 0 &&
           getHours(start) < getHours(new Date(list.props.settings.startOfDay))
         ) {
-          start.setDate(start.getDate() - (todo.props.archived ? 1 : 0));
+          start.setDate(start.getDate() - (todo.props.archived ? 1 : 0);
         }
         const date = startOfDay(start).getTime();
         acc[date] = {
@@ -151,7 +151,7 @@ export const AnalyticsPage = (props) => {
 
   const data = ((countersMonth && Object.values(countersMonth)) || []).flat();
   const dataDays = ((countersDays && Object.values(countersDays)) || []).flat();
-
+  const dataDaysLkp = dataDays.reduce((acc, cur) => ({ ...acc, ...cur }), {});
   const categories = component?.children
     ?.filter((list) => {
       return list.props.settings.defaultType === 'Expense';
@@ -487,9 +487,10 @@ export const AnalyticsPage = (props) => {
       />
       <XAxis dataKey="date" tickFormatter={DateFormatter('dd.MM.yy')} />
       <Legend />
-      {Object.keys(dataDays.reduce((acc, cur) => ({ ...acc, ...cur }), {})).map(
+      {Object.keys(dataDaysLkp).map(
         (key, i) => {
           if (key === 'date') return null;
+          if (dataDaysLkp[key] === 0) return null;
           return <Bar dataKey={key} fill={colors[i]} />;
         }
       )}
