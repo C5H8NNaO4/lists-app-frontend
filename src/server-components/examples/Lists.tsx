@@ -1899,29 +1899,33 @@ export const List = ({
           )
         }
         action={
-          <IconButton
-            sx={{
-              opacity: 0,
-              '&:hover': {
-                opacity: 1,
-              },
-            }}
-            onClick={() => {
-              const content = component?.children?.reduce((str, item) => {
-                return (
-                  str +
-                  `- [${item.props.completed ? 'X' : ' '}] ${item.props.title}`
-                );
-              }, '');
-              copy(content);
-              dispatch({
-                type: Actions.SHOW_MESSAGE,
-                value: 'Copied to clipboard.',
-              });
-            }}
-          >
-            <ContentCopy />
-          </IconButton>
+          component?.props?.settings?.defaultType === 'Todo' ? undefined : (
+            <IconButton
+              sx={{
+                opacity: 0,
+                '&:hover': {
+                  opacity: 1,
+                },
+              }}
+              onClick={() => {
+                const content = component?.children?.reduce((str, item) => {
+                  return (
+                    str +
+                    `- [${item.props.completed ? 'X' : ' '}] ${
+                      item.props.title
+                    }\n`
+                  );
+                }, '');
+                copy(content);
+                dispatch({
+                  type: Actions.SHOW_MESSAGE,
+                  value: 'Copied to clipboard.',
+                });
+              }}
+            >
+              <ContentCopy />
+            </IconButton>
+          )
         }
       ></CardHeader>
 
@@ -2865,9 +2869,10 @@ const Sum = ({
   if (neg === 0 && pos === 0) {
     return (
       <Warning
-        id={counter ? 'track-costs' : 'track-expenses'}
+        id={counter ? 'track-costs-2' : 'track-expenses-2'}
         sx={{ mt: 1 }}
         severity={'info'}
+        noPortal
       >{`Add ${counter ? 'costs' : 'items'} to track your expenses`}</Warning>
     );
   }

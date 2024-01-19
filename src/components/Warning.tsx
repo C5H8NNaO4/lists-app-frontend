@@ -11,6 +11,7 @@ export const Warning = ({
   action,
   children,
   noDismiss = false,
+  noPortal = false,
   sx,
 }: {
   id: string;
@@ -19,6 +20,7 @@ export const Warning = ({
   action?: React.ReactNode;
   children?: React.ReactNode;
   noDismiss?: boolean;
+  noPortal?: boolean;
   sx?: any;
 }) => {
   const [dismissed, setDismissed] = useLocalStorage(id + 'dismissed', false);
@@ -55,6 +57,9 @@ export const Warning = ({
     </Alert>
   );
 
+  if (noPortal) {
+    return warning;
+  }
   return createPortal(
     warning,
     document.getElementById('app-warnings') || document.body
