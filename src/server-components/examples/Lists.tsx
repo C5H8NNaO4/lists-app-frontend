@@ -2019,6 +2019,7 @@ export const List = ({
           multiplyKey={'count'}
           final
           invert
+          counter
         />
       )}
 
@@ -2743,6 +2744,7 @@ const Sum = ({
   multiplyKey = null,
   invert = false,
   final = false,
+  counter = false,
 }: SumProps) => {
   const posNotArchived = items?.reduce((acc, item) => {
     let cost = (invert ? -1 : 1) * Number(item?.props?.[prop]);
@@ -2834,10 +2836,11 @@ const Sum = ({
 
   if (neg === 0 && pos === 0) {
     return (
-      <Alert
+      <Warning
+        id={counter ? 'track-costs' : 'track-expenses'}
         sx={{ mt: 1 }}
         severity={'info'}
-      >{`Add items to track your expenses`}</Alert>
+      >{`Add ${counter ? 'costs' : 'items'} to track your expenses`}</Warning>
     );
   }
   return (
