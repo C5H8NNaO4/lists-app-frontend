@@ -2819,14 +2819,17 @@ const Sum = ({
 
   if (
     items?.length > 0 &&
-    !items?.some((c) => !!c?.props?.archived) &&
+    items?.some((c) => !!c?.props?.archived) &&
     !includeArchived
   ) {
     return (
-      <Alert
+      <Warning
+        id="show-archived"
         sx={{ mt: 1 }}
         severity={'info'}
-      >{`Click the eye icon to show archived items.`}</Alert>
+        noPortal
+        showMore={false}
+      >{`Click the eye icon to show archived items.`}</Warning>
     );
   }
   if (pos === 0 && neg < 0) {
