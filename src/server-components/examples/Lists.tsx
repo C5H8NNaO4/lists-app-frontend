@@ -1793,7 +1793,7 @@ export const List = ({
     () =>
       Object.keys(sums || {}).reduce((acc, key) => {
         const { sum, n } = sums[key];
-        if (n < 2) return acc;
+        // if (n < 2) return acc;
         return { ...acc, [key]: sum / n };
       }, {}),
     [sums]
@@ -1846,6 +1846,16 @@ export const List = ({
     endOfDayDate.setDate(new Date().getDate() + 1);
   }
 
+  const nonArchived = component?.children?.filter(
+    (itm) => !itm.props?.archived
+  );
+  const countSum = nonArchived?.reduce((acc, itm) => {
+    return acc + itm.props?.count || 0;
+  }, 0);
+  const avgSum = nonArchived?.reduce((acc, itm) => {
+    return acc + average[itm?.props?.title] || 0;
+  }, 0);
+  const avgCons = (100 / avgSum) * countSum;
   const timeLeft = intervalToDuration({
     start: new Date(Date.now()),
     end: endOfDayDate,
@@ -1908,7 +1918,17 @@ export const List = ({
             />
           </Tooltip>
         )}
-
+      {component?.props?.settings?.defaultType === 'Counter' &&
+        component?.props?.settings?.startOfDay &&
+        component?.props?.settings?.endOfDay && (
+          <Tooltip title={`${avgCons.toFixed(0)}% of average consumption`}>
+            <LinearProgress
+              variant="determinate"
+              color="success"
+              value={avgCons}
+            />
+          </Tooltip>
+        )}
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
