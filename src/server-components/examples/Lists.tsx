@@ -2820,7 +2820,9 @@ const Sum = ({
   if (
     items?.length > 0 &&
     items?.some((c) => !!c?.props?.archived) &&
-    !includeArchived
+    !includeArchived &&
+    pos === 0 &&
+    neg === 0
   ) {
     return (
       <Warning
@@ -2857,12 +2859,14 @@ const Sum = ({
   if (neg === 0 && pos > 0) {
     return (
       <Alert sx={{ mt: 1 }} severity={'success'}>
-        {`You ` +
-          (posArchived > 0 ? `gained ${posArchived.toFixed(2)}€` : '') +
-          (posArchived > 0 && posNotArchived > 0 ? ' and ' : '') +
+        {`` +
+          (posArchived > 0
+            ? `Previous income: ${posArchived.toFixed(2)}€`
+            : '') +
+          (posArchived > 0 && posNotArchived > 0 ? ' . ' : '.') +
           `${
             posNotArchived > 0
-              ? `planned with ${posNotArchived.toFixed(2)}€`
+              ? `Planned income: ${posNotArchived.toFixed(2)}€`
               : ''
           }`}
       </Alert>
