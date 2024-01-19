@@ -12,6 +12,7 @@ export const Warning = ({
   children,
   noDismiss = false,
   noPortal = false,
+  showMore = true,
   sx,
 }: {
   id: string;
@@ -21,6 +22,7 @@ export const Warning = ({
   children?: React.ReactNode;
   noDismiss?: boolean;
   noPortal?: boolean;
+  showMore?: boolean;
   sx?: any;
 }) => {
   const [dismissed, setDismissed] = useLocalStorage(id + 'dismissed', false);
@@ -38,13 +40,14 @@ export const Warning = ({
       severity={severity}
       action={
         <>
-          {action || (
-            <Button>
-              <Link to="/about" component={RouterLink}>
-                More
-              </Link>
-            </Button>
-          )}
+          {action ||
+            (showMore && (
+              <Button>
+                <Link to="/about" component={RouterLink}>
+                  More
+                </Link>
+              </Button>
+            ))}
           {!noDismiss && (
             <IconButton onClick={() => setDismissed(true)}>
               <CloseIcon />

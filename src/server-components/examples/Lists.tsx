@@ -2873,6 +2873,7 @@ const Sum = ({
         sx={{ mt: 1 }}
         severity={'info'}
         noPortal
+        showMore={false}
       >{`Add ${counter ? 'costs' : 'items'} to track your expenses`}</Warning>
     );
   }
