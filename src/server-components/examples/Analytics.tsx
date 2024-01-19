@@ -122,7 +122,7 @@ export const AnalyticsPage = (props) => {
           getHours(start) > 0 &&
           getHours(start) < getHours(new Date(list.props.settings.startOfDay))
         ) {
-          start.setDate(start.getDate() - todo.props.archived ? 1 : 0);
+          start.setDate(start.getDate() - (todo.props.archived ? 1 : 0));
         }
         const date = startOfDay(start).getTime();
         acc[date] = {
