@@ -131,9 +131,13 @@ import {
   formatDuration,
   getDate,
   getHours,
+  getMinutes,
   getTime,
   hoursToMilliseconds,
   intervalToDuration,
+  setHours,
+  setMinutes,
+  setSeconds,
   startOfDay,
   subDays,
 } from 'date-fns';
@@ -1817,9 +1821,30 @@ export const List = ({
     );
   }
 
+  const endOfDayTime = new Date(component?.props?.settings?.endOfDay);
+  const startOfDayTime = new Date(component?.props?.settings?.startOfDay);
+  const endOfDay = setSeconds(
+    setMinutes(
+      setHours(new Date(), getHours(endOfDayTime)),
+      getMinutes(endOfDayTime)
+    ),
+    0
+  );
+  const startOfDay = setSeconds(
+    setMinutes(
+      setHours(new Date(), getHours(startOfDayTime)),
+      getMinutes(startOfDayTime)
+    ),
+    0
+  );
+
+  if (getHours(endOfDay) === 0 && getMinutes(endOfDay) === 0) {
+    endOfDay.setDate(new Date().getDate() + 1);
+  }
+
   const timeLeft = intervalToDuration({
     start: new Date(Date.now()),
-    end: new Date(component?.props?.settings?.endOfDay || Date.now()),
+    end: endOfDay,
   });
   return (
     <Card
@@ -1873,13 +1898,8 @@ export const List = ({
               variant="determinate"
               color="secondary"
               value={
-                (100 /
-                  (getTime(new Date(component?.props?.settings?.endOfDay)) -
-                    getTime(
-                      new Date(component?.props?.settings?.startOfDay)
-                    ))) *
-                (getTime(Date.now()) -
-                  getTime(new Date(component?.props?.settings?.startOfDay)))
+                (100 / (getTime(endOfDay) - getTime(startOfDay))) *
+                (getTime(Date.now()) - getTime(startOfDay))
               }
             />
           </Tooltip>
@@ -3079,17 +3099,19 @@ const TodoItem = (props) => {
         </span>
       </Tooltip>
       {deps?.length > 0 &&
-        deps.map((dep) => {
-          return (
-            <TodoItem
-              key={dep.id}
-              todo={dep.id}
-              dependency={true}
-              refetchParent={refetchTodo}
-              refetchList={refetchList}
-            ></TodoItem>
-          );
-        })}
+        deps
+          .filter((dep) => dep?.id)
+          .map((dep) => {
+            return (
+              <TodoItem
+                key={dep.id}
+                todo={dep.id}
+                dependency={true}
+                refetchParent={refetchTodo}
+                refetchList={refetchList}
+              ></TodoItem>
+            );
+          })}
     </>
   );
 };
@@ -3592,11 +3614,13 @@ const ListItemMenu = (props) => {
                     onChange={(e) => setCost(e.target.value)}
                   />
                 </Tooltip>
-                {(component?.props?.dependencies || [])?.map((dep) => {
-                  {
-                    return <Chip label={dep.title}></Chip>;
-                  }
-                })}
+                {(component?.props?.dependencies || [])
+                  ?.filter((dep) => dep?.id)
+                  .map((dep) => {
+                    {
+                      return <Chip label={dep.title}></Chip>;
+                    }
+                  })}
                 <Box sx={{ mt: 1 }}>
                   <Autocomplete
                     options={suggestions || []}
