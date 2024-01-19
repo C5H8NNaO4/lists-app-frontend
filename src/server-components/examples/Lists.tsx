@@ -1793,7 +1793,7 @@ export const List = ({
     () =>
       Object.keys(sums || {}).reduce((acc, key) => {
         const { sum, n } = sums[key];
-        if (n < 2) return acc;
+        // if (n < 2) return acc;
         return { ...acc, [key]: sum / n };
       }, {}),
     [sums]
@@ -1850,10 +1850,10 @@ export const List = ({
     (itm) => !itm.props?.archived
   );
   const countSum = nonArchived?.reduce((acc, itm) => {
-    return acc + itm?.props?.count;
+    return acc + itm.props?.count || 0;
   }, 0);
   const avgSum = nonArchived?.reduce((acc, itm) => {
-    return acc + average[itm?.props?.title];
+    return acc + average[itm?.props?.title] || 0;
   }, 0);
   const avgCons = (100 / avgSum) * countSum;
   const timeLeft = intervalToDuration({
@@ -1921,10 +1921,10 @@ export const List = ({
       {component?.props?.settings?.defaultType === 'Counter' &&
         component?.props?.settings?.startOfDay &&
         component?.props?.settings?.endOfDay && (
-          <Tooltip title={`${avgCons}% of average consumption`}>
+          <Tooltip title={`${avgCons.toFixed(0)}% of average consumption`}>
             <LinearProgress
               variant="determinate"
-              color="secondary"
+              color="success"
               value={avgCons}
             />
           </Tooltip>
