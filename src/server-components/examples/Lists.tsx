@@ -1996,7 +1996,6 @@ export const List = ({
         <CardHeader
           onClick={() => {
             setShowInDialog(!showInDialog);
-            setNumItems(25);
           }}
           title={
             component?.props?.title || (
