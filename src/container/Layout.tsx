@@ -7,7 +7,7 @@ import {
 } from '../components/Background';
 import { Actions, stateContext } from '../provider/StateProvider';
 import { routes } from '../routes';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import {
   Paper,
   Typography,
@@ -24,6 +24,7 @@ import {
   ListItemText,
   Button,
   LinearProgress,
+  Tooltip,
 } from '@mui/material';
 import styles from './Layout.module.css';
 import { Link as RouterLink } from 'react-router-dom';
@@ -55,6 +56,54 @@ const messages = [
   `Notice: This is a pre-alpha version and a work in progress. Features and documentation may not be fully complete. Please use with caution.`,
 ];
 
+export const PrankButton = ({ children }) => {
+  const [open, setOpen] = useState(false);
+  const [move, setMove] = useState(false);
+  const [moved, setMoved] = useState(false);
+  const [style, setStyle] = useState({} as any);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!ref.current) return;
+    if (move) {
+      setStyle({
+        transform: 'translateX(-75%)',
+
+        transition: 'transform 0.5s ease-out',
+      });
+    } else {
+      setStyle({
+        transition: 'transform 1s ease-in',
+      });
+    }
+  });
+  return (
+    <Tooltip ref={ref} open={open} title="Just kidding!" style={style}>
+      <Box
+        onMouseEnter={() => {
+          if (moved) return;
+          if (Math.random() > 1) {
+            setMoved(true);
+            return;
+          }
+          setMove(true);
+          setMoved(true);
+          setTimeout(() => {
+            setMove(false);
+            setTimeout(() => {
+              setOpen(true);
+              setTimeout(() => {
+                setOpen(false);
+              }, 1500);
+            }, 1000);
+          }, 500);
+        }}
+      >
+        {children}
+      </Box>
+    </Tooltip>
+  );
+};
 export const Layout = () => {
   const { state, dispatch } = useContext(stateContext);
   const [features, { loading: featuresLoading }] = useComponent('features');
@@ -169,14 +218,16 @@ export const Layout = () => {
               severity="info"
               action={
                 <>
-                  <Button
-                    color="error"
-                    onClick={() => {
-                      setCookieConsent(false);
-                    }}
-                  >
-                    Deny
-                  </Button>
+                  <PrankButton>
+                    <Button
+                      color="error"
+                      onClick={() => {
+                        setCookieConsent(false);
+                      }}
+                    >
+                      Deny
+                    </Button>
+                  </PrankButton>
                   <Button
                     color="success"
                     onClick={() => {
