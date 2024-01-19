@@ -404,8 +404,14 @@ export const MyLists = (props) => {
               .some((word) =>
                 inWord(word, state.search, state.searchDistance)
               ) || inWord(todo.props.title, state.search, state.searchDistance);
-
-          return matched;
+          const noteMatches =
+            todo.props.note
+              ?.split(' ')
+              .some((word) =>
+                inWord(word, state.search, state.searchDistance)
+              ) ||
+            inWord(todo.props.note || '', state.search, state.searchDistance);
+          return matched || noteMatches;
         })
       );
     });
@@ -488,21 +494,6 @@ export const MyLists = (props) => {
     })
   );
 
-  function handleDragEnd(event) {
-    const { active, over } = event;
-
-    if (active.id !== over.id) {
-      setOptimisticOrder((items) => {
-        const oldIndex = items.indexOf(active.id);
-        const newIndex = items.indexOf(over.id);
-
-        const newOrder = arrayMove(items, oldIndex, newIndex);
-        component?.props?.setOrder(newOrder);
-        return newOrder;
-      });
-    }
-  }
-
   const bpsLkp = {
     xs: 1,
     sm: fullWidth ? 2 : 1,
@@ -519,6 +510,47 @@ export const MyLists = (props) => {
     'defaultListColor',
     ''
   );
+
+  const notesArr =
+    filtered
+      ?.filter((list) => list.children.some((item) => item.props.note))
+      .map((list) =>
+        list.children.filter((item) => item.props.note).map((item) => item)
+      ) || [];
+
+  const [notesOrder, setNotesOrder] = useState(
+    notesArr.flat().map((n) => n.props.id)
+  );
+
+  useEffect(() => {
+    setNotesOrder(notesArr.flat().map((n) => n.props.id));
+  }, [notesArr?.length]);
+  function handleDragEnd(event) {
+    const { active, over } = event;
+
+    if (active.id !== over.id && optimisticOrder.includes(active.id)) {
+      setOptimisticOrder((items) => {
+        const oldIndex = items.indexOf(active.id);
+        const newIndex = items.indexOf(over.id);
+
+        const newOrder = arrayMove(items, oldIndex, newIndex);
+        component?.props?.setOrder(newOrder);
+        return newOrder;
+      });
+    }
+    if (
+      active.id !== over.id &&
+      notesOrder.includes(active.id) &&
+      notesOrder.includes(over.id)
+    ) {
+      const oldIndex = notesOrder.indexOf(active.id);
+      const newIndex = notesOrder.indexOf(over.id);
+
+      const newOrder = arrayMove(notesOrder, oldIndex, newIndex);
+      setNotesOrder(newOrder);
+      console.log('SET NOTES ORDER', notesOrder, newOrder, oldIndex, newIndex);
+    }
+  }
   const content = (
     <DndContext
       sensors={sensors}
@@ -526,7 +558,7 @@ export const MyLists = (props) => {
       onDragEnd={handleDragEnd}
     >
       <SortableContext
-        items={unpinnedOrder || []}
+        items={(unpinnedOrder || []).concat(state.search ? notesOrder : [])}
         strategy={rectSortingStrategy}
       >
         <Box
@@ -562,55 +594,122 @@ export const MyLists = (props) => {
               New List
             </Button>
           </Tooltip>
-          {[pinnedColumns, unpinnedColumns].map((optimisticOrder) => {
+          {[pinnedColumns, unpinnedColumns].map((optimisticOrder, i) => {
             return (
               <Grid container rowSpacing={1} columnSpacing={0}>
-                {optimisticOrder?.map((column: string[], j) => {
-                  return (
-                    <Grid
-                      item
-                      xs={12 / bpsLkp['xs']}
-                      sm={12 / bpsLkp['sm']}
-                      md={12 / bpsLkp['md']}
-                      lg={12 / bpsLkp['lg']}
-                      xl={12 / bpsLkp['xl']}
-                    >
-                      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                        {column.map((id, i) => {
-                          const list = lkp[id];
-                          if (!list) return null;
-                          return (
-                            <SortableItem
-                              key={id + i + j}
-                              id={id}
-                              fullHeight
-                              enabled={
-                                !isTouchScreenDevice() &&
-                                !list?.props?.settings?.pinned
-                              }
-                            >
-                              <List
-                                key={list.component}
-                                list={list.component || list.key}
-                                data={list}
-                                addList={component?.props?.add}
-                                remove={component?.props?.remove}
-                                id={list.id}
-                                refetch={refetch}
-                                refetchPoints={refetchPoints}
-                                nItems={nItems}
-                                lastCompleted={
-                                  pointsComponent?.props?.lastCompleted
+                {optimisticOrder
+                  ?.map((column: string[], j) => {
+                    return (
+                      <Grid
+                        item
+                        xs={12 / bpsLkp['xs']}
+                        sm={12 / bpsLkp['sm']}
+                        md={12 / bpsLkp['md']}
+                        lg={12 / bpsLkp['lg']}
+                        xl={12 / bpsLkp['xl']}
+                      >
+                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                          {column.map((id, i) => {
+                            const list = lkp[id];
+
+                            if (!list) return null;
+
+                            return (
+                              <SortableItem
+                                key={id + i + j}
+                                id={id}
+                                fullHeight
+                                enabled={
+                                  !isTouchScreenDevice() &&
+                                  !list?.props?.settings?.pinned
                                 }
-                                parent={component}
-                              />
-                            </SortableItem>
+                              >
+                                <List
+                                  key={list.component}
+                                  list={list.component || list.key}
+                                  data={list}
+                                  addList={component?.props?.add}
+                                  remove={component?.props?.remove}
+                                  id={list.id}
+                                  refetch={refetch}
+                                  refetchPoints={refetchPoints}
+                                  nItems={nItems}
+                                  lastCompleted={
+                                    pointsComponent?.props?.lastCompleted
+                                  }
+                                  parent={component}
+                                />
+                              </SortableItem>
+                            );
+                          })}
+                        </Box>
+                      </Grid>
+                    );
+                  })
+                  .concat(
+                    !(state.search && i == 1)
+                      ? []
+                      : Object.values(
+                          notesOrder.reduce((acc, noteId) => {
+                            const index = notesArr.findIndex((list) =>
+                              list.find((note) => note.props.id === noteId)
+                            );
+                            return {
+                              ...acc,
+                              [index]: (acc[index] || []).concat(noteId),
+                            };
+                          }, {})
+                        ).map((order) => {
+                          return (
+                            <Grid
+                              item
+                              xs={12 / bpsLkp['xs']}
+                              sm={12 / bpsLkp['sm']}
+                              md={12 / bpsLkp['md']}
+                              lg={12 / bpsLkp['lg']}
+                              xl={12 / bpsLkp['xl']}
+                            >
+                              {order
+                                .filter((noteId) =>
+                                  notesArr
+                                    .flat()
+                                    .find((n) => n.props.id === noteId)
+                                )
+                                .map((noteId) => {
+                                  const note = notesArr
+                                    .flat()
+                                    .find((n) => n.props.id === noteId);
+                                  return (
+                                    <Box
+                                      sx={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                      }}
+                                    >
+                                      <SortableItem
+                                        key={note.props.id}
+                                        id={note.props.id}
+                                        fullHeight
+                                        enabled={!isTouchScreenDevice() && true}
+                                      >
+                                        <Card>
+                                          <CardHeader
+                                            title={note.props.title}
+                                          ></CardHeader>
+                                          <CardContent>
+                                            <Markdown>
+                                              {note.props.note}
+                                            </Markdown>
+                                          </CardContent>
+                                        </Card>
+                                      </SortableItem>
+                                    </Box>
+                                  );
+                                })}
+                            </Grid>
                           );
-                        })}
-                      </Box>
-                    </Grid>
-                  );
-                })}
+                        })
+                  )}
               </Grid>
             );
           })}
@@ -2909,7 +3008,13 @@ const TodoItem = (props) => {
     false
   );
   const dist = state.search
-    ? minWord(component?.props?.title, state.search)
+    ? Math.min(
+        minWord(component?.props?.title, state.search),
+        minWord(
+          (component?.props?.note || '').toLowerCase(),
+          state.search.toLowerCase()
+        )
+      )
     : Infinity;
   if (loading) return null;
   const deps = component?.props?.dependencies || [];
