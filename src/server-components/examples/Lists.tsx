@@ -1577,7 +1577,6 @@ export const List = ({
       inputRef?.current?.focus();
     }
   };
-  const showNItems = component?.props?.settings?.listSize || nItems;
   const { hideHUD } = options as any;
   const [todoTitle, setTodoTitle] = useState('');
   const [listTitle, setListTitle] = useSyncedState(
@@ -1666,6 +1665,11 @@ export const List = ({
   const [showDialog, setShowDialog] = useState(false);
   const [showListMenu, setShowListMenu] = useState(false);
   const [doArchive, setDoArchive] = useState(false);
+  const [showInDialog, setShowInDialog] = useState(false);
+  const showNItems = showInDialog
+    ? 25
+    : component?.props?.settings?.listSize || nItems;
+
   const itemLkp = useMemo(
     () =>
       (component?.children || []).reduce((acc, child) => {
@@ -1872,546 +1876,612 @@ export const List = ({
     start: new Date(Date.now()),
     end: endOfDayDate,
   });
-  return (
-    <Card
-      sx={{
-        // height: '100%',
-        backgroundColor:
-          !component?.props?.title && !component?.props?.color
-            ? '#00ffff99 !important'
-            : component?.props?.color
-            ? `${
-                component?.props?.color +
-                (state.animatedBackground > 0 ? 'D3' : '')
-              } !important`
-            : undefined,
-      }}
-      onMouseOver={() => setHover(true)}
-      onMouseLeave={() => setTimeout(setHover, 200, false)}
-      elevation={
-        !component?.props?.title
-          ? 5
-          : hover
-          ? 3
-          : component?.props?.settings?.pinned
-          ? 2
-          : 1
-      }
+
+  const content = (
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragEnd={handleDragEnd}
     >
-      {error && <Alert severity="error">{error.message}</Alert>}
-      <CardHeader
-        title={
-          component?.props?.title || (
-            <ListTitleTextField
-              setListTitle={setListTitle}
-              inputRef={inputRef}
-            />
-          )
-        }
-        action={
-          component?.props?.settings?.defaultType !== 'Todo' ? undefined : (
-            <IconButton
-              sx={{
-                opacity: 0,
-                '&:hover': {
-                  opacity: 1,
-                },
-              }}
-              onClick={() => {
-                const content = component?.children?.reduce((str, item) => {
-                  return (
-                    str +
-                    `- [${item.props.completed ? 'X' : ' '}] ${
-                      item.props.title
-                    }\n`
-                  );
-                }, '');
-                copy(content);
-                dispatch({
-                  type: Actions.SHOW_MESSAGE,
-                  value: 'Copied to clipboard.',
-                });
-              }}
-            >
-              <ContentCopy />
-            </IconButton>
-          )
-        }
-      ></CardHeader>
-
-      {component?.props?.settings?.defaultType === 'Counter' &&
-        component?.props?.settings?.startOfDay &&
-        component?.props?.settings?.endOfDay && (
-          <Tooltip
-            title={`${timeLeft.hours
-              ?.toString()
-              .padStart(2, '0')}:${timeLeft.minutes
-              ?.toString()
-              .padStart(2, '0')} left in the day.`}
-          >
-            <LinearProgress
-              variant="determinate"
-              color="secondary"
-              value={dayPrc}
-            />
-          </Tooltip>
-        )}
-      {component?.props?.settings?.defaultType === 'Counter' &&
-        component?.props?.settings?.startOfDay &&
-        component?.props?.settings?.endOfDay && (
-          <Tooltip
-            arrow
-            open={hoverTitle ? true : undefined}
-            title={
-              hoverTitle
-                ? `${hoverTitle}: ${avgCons?.toFixed(2)}%`
-                : `${avgCons.toFixed(0)}% of average consumption`
-            }
-          >
-            <LinearProgress
-              variant="determinate"
-              color={avgCons > 100 ? 'error' : 'success'}
-              value={avgCons}
-            />
-          </Tooltip>
-        )}
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
+      <SortableContext
+        items={order || []}
+        strategy={verticalListSortingStrategy}
       >
-        <SortableContext
-          items={order || []}
-          strategy={verticalListSortingStrategy}
-        >
-          <MUIList
-            ref={ref as any}
-            disablePadding
-            sx={{
-              maxHeight: LIST_ITEM_HEIGHT * showNItems + 'px',
-
-              overflowY: 'auto',
-              overflowX: 'hidden',
-            }}
-          >
-            {order.map((id, i) => {
-              const todo = lkp[id];
-              // if (!todo) return null;
-              const Item = itemMap[todo?.props?.type] || TodoItem;
-
-              return (
-                <div
-                  key={id}
-                  onClick={() =>
-                    setHoverTitle(
-                      hoverTitle === todo.props.title ? null : todo.props.title
-                    )
-                  }
-                >
-                  {canAddLabel && (
-                    <LabelItem
-                      edit={edit}
-                      {...todo}
-                      remove={async (id) => {
-                        await component?.props?.removeLabel(id);
-                        await refetch();
-                      }}
-                    />
-                  )}
-                  {!canAddLabel && (
-                    <SortableItem
-                      padding="2px"
-                      key={id}
-                      id={id}
-                      // enabled={false}
-                      enabled={sort === 0}
-                      DragHandle={
-                        isTouchScreenDevice() && sort === 0
-                          ? (props) => <DragIndicatorIcon {...props} />
-                          : null
-                      }
-                      sx={{ display: 'flex' }}
-                    >
-                      <Item
-                        key={id}
-                        todo={todo.key}
-                        data={todo}
-                        edit={edit && !labelMode}
-                        add={component?.props?.add}
-                        remove={component?.props?.remove}
-                        setSelected={setSelected}
-                        lastCompleted={lastCompleted}
-                        refetchList={refetchList}
-                        refetchPoints={refetchPoints}
-                        order={component?.props?.order}
-                        setOrder={component?.props?.setOrder}
-                        average={
-                          todo.props.type === 'Counter'
-                            ? average[todo.props.title]
-                            : undefined
-                        }
-                        root={parent}
-                        selected={hoverTitle === todo.props.title}
-                      />
-                    </SortableItem>
-                  )}
-                </div>
-              );
-            })}
-          </MUIList>
-        </SortableContext>
-      </DndContext>
-      {component?.props?.settings?.defaultType === 'Expense' && (
-        <Sum items={component?.children} includeArchived={showArchived} />
-      )}
-
-      {component?.props?.settings?.defaultType === 'Counter' && (
-        <Sum
-          items={component?.children}
-          includeArchived={showArchived}
-          prop="cost"
-          multiplyKey={'count'}
-          final
-          invert
-          counter
-        />
-      )}
-
-      {component?.props?.settings?.pinned && !hover && (
-        <CardActionArea
+        <MUIList
+          ref={ref as any}
+          disablePadding
           sx={{
-            mt: 'auto',
+            maxHeight: LIST_ITEM_HEIGHT * showNItems + 'px',
+
+            overflowY: 'auto',
+            overflowX: 'hidden',
           }}
         >
-          <CardActions sx={{ display: 'flex' }}>
-            {!edit && (
-              <Tooltip
-                title={
-                  component?.props?.settings?.pinned
-                    ? 'Unpin List'
-                    : 'Pin List.'
+          {order.map((id, i) => {
+            const todo = lkp[id];
+            // if (!todo) return null;
+            const Item = itemMap[todo?.props?.type] || TodoItem;
+
+            return (
+              <div
+                key={id}
+                onClick={() =>
+                  setHoverTitle(
+                    hoverTitle === todo.props.title ? null : todo.props.title
+                  )
                 }
               >
-                <Box
-                  sx={{
-                    ml: 'auto',
-                  }}
-                >
-                  <IconButton
-                    color={
-                      component?.props?.settings?.pinned ? 'success' : undefined
-                    }
-                    onClick={async (e) => {
-                      await component?.props?.togglePinned();
+                {canAddLabel && (
+                  <LabelItem
+                    edit={edit}
+                    {...todo}
+                    remove={async (id) => {
+                      await component?.props?.removeLabel(id);
                       await refetch();
                     }}
+                  />
+                )}
+                {!canAddLabel && (
+                  <SortableItem
+                    padding="2px"
+                    key={id}
+                    id={id}
+                    // enabled={false}
+                    enabled={sort === 0}
+                    DragHandle={
+                      isTouchScreenDevice() && sort === 0
+                        ? (props) => <DragIndicatorIcon {...props} />
+                        : null
+                    }
+                    sx={{ display: 'flex' }}
                   >
-                    <PushPinIcon />
-                  </IconButton>
-                </Box>
-              </Tooltip>
-            )}
-          </CardActions>
-        </CardActionArea>
-      )}
-
-      {!(component?.props?.settings?.pinned && !hover) && (
-        <CardActionArea
-          sx={{
-            mt: 'auto',
-            opacity: hover && !hideHUD ? 1 : 0,
-            transition: 'opacity 200ms ease-in',
-            '&:hover': {
-              transition: 'opacity 200ms ease-out',
-            },
-            height: 'min-content',
+                    <Item
+                      key={id}
+                      todo={todo.key}
+                      data={todo}
+                      edit={edit && !labelMode}
+                      add={component?.props?.add}
+                      remove={component?.props?.remove}
+                      setSelected={setSelected}
+                      lastCompleted={lastCompleted}
+                      refetchList={refetchList}
+                      refetchPoints={refetchPoints}
+                      order={component?.props?.order}
+                      setOrder={component?.props?.setOrder}
+                      average={
+                        todo.props.type === 'Counter'
+                          ? average[todo.props.title]
+                          : undefined
+                      }
+                      root={parent}
+                      selected={hoverTitle === todo.props.title}
+                    />
+                  </SortableItem>
+                )}
+              </div>
+            );
+          })}
+        </MUIList>
+      </SortableContext>
+    </DndContext>
+  );
+  return (
+    <>
+      <Card
+        sx={{
+          // height: '100%',
+          backgroundColor:
+            !component?.props?.title && !component?.props?.color
+              ? '#00ffff99 !important'
+              : component?.props?.color
+              ? `${
+                  component?.props?.color +
+                  (state.animatedBackground > 0 ? 'D3' : '')
+                } !important`
+              : undefined,
+        }}
+        onMouseOver={() => setHover(true)}
+        onMouseLeave={() => setTimeout(setHover, 200, false)}
+        elevation={
+          !component?.props?.title
+            ? 5
+            : hover
+            ? 3
+            : component?.props?.settings?.pinned
+            ? 2
+            : 1
+        }
+      >
+        {error && <Alert severity="error">{error.message}</Alert>}
+        <CardHeader
+          onClick={() => {
+            setShowInDialog(!showInDialog);
+            setNumItems(25);
           }}
-        >
-          <CardActions>
-            <Tooltip title="Edit this list.">
+          title={
+            component?.props?.title || (
+              <ListTitleTextField
+                setListTitle={setListTitle}
+                inputRef={inputRef}
+              />
+            )
+          }
+          action={
+            component?.props?.settings?.defaultType !== 'Todo' ? undefined : (
               <IconButton
-                color={edit ? 'success' : 'secondary'}
+                sx={{
+                  opacity: 0,
+                  '&:hover': {
+                    opacity: 1,
+                  },
+                }}
                 onClick={() => {
-                  setTodoTitle('');
-                  setEdit(!edit);
+                  const content = component?.children?.reduce((str, item) => {
+                    return (
+                      str +
+                      `- [${item.props.completed ? 'X' : ' '}] ${
+                        item.props.title
+                      }\n`
+                    );
+                  }, '');
+                  copy(content);
+                  dispatch({
+                    type: Actions.SHOW_MESSAGE,
+                    value: 'Copied to clipboard.',
+                  });
                 }}
               >
-                <EditIcon />
+                <ContentCopy />
               </IconButton>
-            </Tooltip>
-            {edit && (
-              <Tooltip title="Delete this list.">
-                <IconButton
-                  color="error"
-                  disabled={!edit}
-                  onClick={() => {
-                    setShowDialog(true);
-                  }}
-                >
-                  <RemoveCircleIcon />
-                </IconButton>
-              </Tooltip>
-            )}
-            {edit && (
-              <Tooltip title="Add / Remove Labels">
-                <IconButton
-                  color={labelMode ? 'success' : undefined}
-                  disabled={!edit}
-                  onClick={() => {
-                    setLabelMode(!labelMode);
-                  }}
-                >
-                  <LabelIcon />
-                </IconButton>
-              </Tooltip>
-            )}
-            {!edit && (
-              <Tooltip title="Set list color.">
-                <IconButton
-                  color={showColors ? 'success' : 'info'}
-                  // disabled={!edit}
-                  onClick={(e) => {
-                    setShowColors(e.target as HTMLElement);
-                  }}
-                >
-                  <PaletteIcon />
-                </IconButton>
-              </Tooltip>
-            )}
+            )
+          }
+        ></CardHeader>
+
+        {component?.props?.settings?.defaultType === 'Counter' &&
+          component?.props?.settings?.startOfDay &&
+          component?.props?.settings?.endOfDay && (
             <Tooltip
+              title={`${timeLeft.hours
+                ?.toString()
+                .padStart(2, '0')}:${timeLeft.minutes
+                ?.toString()
+                .padStart(2, '0')} left in the day.`}
+            >
+              <LinearProgress
+                variant="determinate"
+                color="secondary"
+                value={dayPrc}
+              />
+            </Tooltip>
+          )}
+        {component?.props?.settings?.defaultType === 'Counter' &&
+          component?.props?.settings?.startOfDay &&
+          component?.props?.settings?.endOfDay && (
+            <Tooltip
+              arrow
+              open={hoverTitle ? true : undefined}
               title={
-                edit
-                  ? 'Archive this list.'
-                  : listArchiveMessageMap[
-                      component?.props?.settings?.defaultType
-                    ]
+                hoverTitle
+                  ? `${hoverTitle}: ${avgCons?.toFixed(2)}%`
+                  : `${avgCons.toFixed(0)}% of average consumption`
               }
             >
-              <span>
-                <IconButton
-                  color={edit ? 'error' : 'primary'}
-                  // disabled={!edit}
+              <LinearProgress
+                variant="determinate"
+                color={avgCons > 100 ? 'error' : 'success'}
+                value={avgCons}
+              />
+            </Tooltip>
+          )}
+        {content}
+        {component?.props?.settings?.defaultType === 'Expense' && (
+          <Sum items={component?.children} includeArchived={showArchived} />
+        )}
 
-                  onClick={async (e) => {
-                    if (edit) {
-                      await component?.props?.archive();
-                      return;
-                    }
-                    await refetch();
-                    setDoArchive(true);
+        {component?.props?.settings?.defaultType === 'Counter' && (
+          <Sum
+            items={component?.children}
+            includeArchived={showArchived}
+            prop="cost"
+            multiplyKey={'count'}
+            final
+            invert
+            counter
+          />
+        )}
+
+        {component?.props?.settings?.pinned && !hover && (
+          <CardActionArea
+            sx={{
+              mt: 'auto',
+            }}
+          >
+            <CardActions sx={{ display: 'flex' }}>
+              {!edit && (
+                <Tooltip
+                  title={
+                    component?.props?.settings?.pinned
+                      ? 'Unpin List'
+                      : 'Pin List.'
+                  }
+                >
+                  <Box
+                    sx={{
+                      ml: 'auto',
+                    }}
+                  >
+                    <IconButton
+                      color={
+                        component?.props?.settings?.pinned
+                          ? 'success'
+                          : undefined
+                      }
+                      onClick={async (e) => {
+                        await component?.props?.togglePinned();
+                        await refetch();
+                      }}
+                    >
+                      <PushPinIcon />
+                    </IconButton>
+                  </Box>
+                </Tooltip>
+              )}
+            </CardActions>
+          </CardActionArea>
+        )}
+
+        {!(component?.props?.settings?.pinned && !hover) && (
+          <CardActionArea
+            sx={{
+              mt: 'auto',
+              opacity: hover && !hideHUD ? 1 : 0,
+              transition: 'opacity 200ms ease-in',
+              '&:hover': {
+                transition: 'opacity 200ms ease-out',
+              },
+              height: 'min-content',
+            }}
+          >
+            <CardActions>
+              <Tooltip title="Edit this list.">
+                <IconButton
+                  color={edit ? 'success' : 'secondary'}
+                  onClick={() => {
+                    setTodoTitle('');
+                    setEdit(!edit);
                   }}
                 >
-                  <ArchiveIcon />
+                  <EditIcon />
                 </IconButton>
-              </span>
-            </Tooltip>
-            {!edit && (
+              </Tooltip>
+              {edit && (
+                <Tooltip title="Delete this list.">
+                  <IconButton
+                    color="error"
+                    disabled={!edit}
+                    onClick={() => {
+                      setShowDialog(true);
+                    }}
+                  >
+                    <RemoveCircleIcon />
+                  </IconButton>
+                </Tooltip>
+              )}
+              {edit && (
+                <Tooltip title="Add / Remove Labels">
+                  <IconButton
+                    color={labelMode ? 'success' : undefined}
+                    disabled={!edit}
+                    onClick={() => {
+                      setLabelMode(!labelMode);
+                    }}
+                  >
+                    <LabelIcon />
+                  </IconButton>
+                </Tooltip>
+              )}
+              {!edit && (
+                <Tooltip title="Set list color.">
+                  <IconButton
+                    color={showColors ? 'success' : 'info'}
+                    // disabled={!edit}
+                    onClick={(e) => {
+                      setShowColors(e.target as HTMLElement);
+                    }}
+                  >
+                    <PaletteIcon />
+                  </IconButton>
+                </Tooltip>
+              )}
               <Tooltip
                 title={
-                  showArchived ? 'Hide archived items.' : 'Show archived items.'
+                  edit
+                    ? 'Archive this list.'
+                    : listArchiveMessageMap[
+                        component?.props?.settings?.defaultType
+                      ]
                 }
               >
                 <span>
                   <IconButton
-                    color={showArchived ? 'success' : undefined}
-                    disabled={
-                      !component?.children?.some((c) => c?.props?.archived)
-                    }
+                    color={edit ? 'error' : 'primary'}
+                    // disabled={!edit}
+
                     onClick={async (e) => {
-                      setShowArchived(!showArchived);
+                      if (edit) {
+                        await component?.props?.archive();
+                        return;
+                      }
+                      await refetch();
+                      setDoArchive(true);
                     }}
                   >
-                    <VisibilityIcon />
+                    <ArchiveIcon />
                   </IconButton>
                 </span>
               </Tooltip>
-            )}
-            {edit && (
-              <Tooltip title={'List settings.'}>
-                <span>
-                  <IconButton
-                    color={showListMenu ? 'success' : 'info'}
-                    onClick={async (e) => {
-                      setShowListMenu(true);
+              {!edit && (
+                <Tooltip
+                  title={
+                    showArchived
+                      ? 'Hide archived items.'
+                      : 'Show archived items.'
+                  }
+                >
+                  <span>
+                    <IconButton
+                      color={showArchived ? 'success' : undefined}
+                      disabled={
+                        !component?.children?.some((c) => c?.props?.archived)
+                      }
+                      onClick={async (e) => {
+                        setShowArchived(!showArchived);
+                      }}
+                    >
+                      <VisibilityIcon />
+                    </IconButton>
+                  </span>
+                </Tooltip>
+              )}
+              {edit && (
+                <Tooltip title={'List settings.'}>
+                  <span>
+                    <IconButton
+                      color={showListMenu ? 'success' : 'info'}
+                      onClick={async (e) => {
+                        setShowListMenu(true);
+                      }}
+                    >
+                      <SettingsIcon />
+                    </IconButton>
+                  </span>
+                </Tooltip>
+              )}
+              <Tooltip
+                title={
+                  sort === 0
+                    ? 'Manual sorting.'
+                    : sort === -1
+                    ? 'Reversed sorting.'
+                    : 'Sorting by: archived, lastModified, createdAt'
+                }
+              >
+                <IconButton
+                  color={
+                    sort === -1 ? 'error' : sort === 1 ? 'success' : undefined
+                  }
+                  onClick={toggleSort}
+                >
+                  <SortIcon
+                    sx={{
+                      transform: sort === -1 ? `rotate(180deg) scaleX(-1)` : ``,
                     }}
-                  >
-                    <SettingsIcon />
-                  </IconButton>
-                </span>
+                  />
+                </IconButton>
               </Tooltip>
-            )}
-            <Tooltip
-              title={
-                sort === 0
-                  ? 'Manual sorting.'
-                  : sort === -1
-                  ? 'Reversed sorting.'
-                  : 'Sorting by: archived, lastModified, createdAt'
+              {!edit && (
+                <Tooltip title={'Pin List.'}>
+                  <Box sx={{ ml: 'auto' }}>
+                    <IconButton
+                      color={
+                        component?.props?.settings?.pinned
+                          ? 'success'
+                          : undefined
+                      }
+                      onClick={async (e) => {
+                        await component?.props?.togglePinned();
+                        await refetch();
+                      }}
+                    >
+                      <PushPinIcon />
+                    </IconButton>
+                  </Box>
+                </Tooltip>
+              )}
+              <ListMenu
+                open={showListMenu}
+                component={component}
+                onClose={() => setShowListMenu(false)}
+              />
+            </CardActions>
+          </CardActionArea>
+        )}
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'start',
+            opacity: hover ? 1 : 0.9,
+            transition: 'opacity 0.2s ease-in',
+            '&:hover': {
+              transition: 'opacity 0.2s ease-out',
+            },
+            gap: 1,
+            ml: 1,
+            mr: 2,
+            mb: 1,
+          }}
+        >
+          <TextField
+            color="secondary"
+            fullWidth
+            inputRef={inputRef}
+            value={edit && !labelMode ? listTitle : todoTitle}
+            label={canAddLabel ? 'Add Label' : edit ? 'Edit Title' : 'Add Item'}
+            error={exists}
+            helperText={exists ? 'Item already exists' : ''}
+            onChange={(e) => {
+              edit && !labelMode
+                ? setListTitle(e.target.value)
+                : setTodoTitle(e.target.value);
+            }}
+            onKeyUp={async (e) => {
+              e.stopPropagation();
+              if ((!edit || canAddLabel) && e.key === 'Enter') {
+                await addEntry(e, canAddLabel);
+                await refetchPoints();
               }
-            >
+            }}
+            onKeyDown={(e) => {
+              e.stopPropagation();
+            }}
+            InputProps={{
+              inputProps: {
+                enterKeyHint: 'enter',
+              },
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={() => {
+                      edit && !labelMode ? setListTitle('') : setTodoTitle('');
+                      setTimeout(() => inputRef.current?.focus(), 0);
+                    }}
+                    disabled={edit ? !listTitle : !todoTitle}
+                  >
+                    <IconClear />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
+          {(!edit || canAddLabel) && (
+            <Tooltip title="Add new item" placement="top">
               <IconButton
-                color={
-                  sort === -1 ? 'error' : sort === 1 ? 'success' : undefined
-                }
-                onClick={toggleSort}
+                color="primary"
+                sx={{
+                  mt: 1,
+                  backgroundColor: 'success.main',
+                  color: 'black',
+                  boxShadow:
+                    todoTitle &&
+                    `0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12)`,
+                  '&:hover': {
+                    backgroundColor: 'success.main',
+                    filter: 'brightness(0.8)',
+                  },
+                }}
+                disabled={!todoTitle}
+                onClick={async (e) => {
+                  canAddLabel
+                    ? await addEntry(e, true)
+                    : setShowType(e.target as HTMLElement);
+                }}
               >
-                <SortIcon
-                  sx={{
-                    transform: sort === -1 ? `rotate(180deg) scaleX(-1)` : ``,
-                  }}
-                />
+                <AddIcon />
               </IconButton>
             </Tooltip>
-            {!edit && (
-              <Tooltip title={'Pin List.'}>
-                <Box sx={{ ml: 'auto' }}>
-                  <IconButton
-                    color={
-                      component?.props?.settings?.pinned ? 'success' : undefined
-                    }
-                    onClick={async (e) => {
-                      await component?.props?.togglePinned();
-                      await refetch();
-                    }}
-                  >
-                    <PushPinIcon />
-                  </IconButton>
-                </Box>
-              </Tooltip>
-            )}
-            <ListMenu
-              open={showListMenu}
-              component={component}
-              onClose={() => setShowListMenu(false)}
-            />
-          </CardActions>
-        </CardActionArea>
-      )}
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'start',
-          opacity: hover ? 1 : 0.9,
-          transition: 'opacity 0.2s ease-in',
-          '&:hover': {
-            transition: 'opacity 0.2s ease-out',
-          },
-          gap: 1,
-          ml: 1,
-          mr: 2,
-          mb: 1,
-        }}
-      >
-        <TextField
-          color="secondary"
-          fullWidth
-          inputRef={inputRef}
-          value={edit && !labelMode ? listTitle : todoTitle}
-          label={canAddLabel ? 'Add Label' : edit ? 'Edit Title' : 'Add Item'}
-          error={exists}
-          helperText={exists ? 'Item already exists' : ''}
-          onChange={(e) => {
-            edit && !labelMode
-              ? setListTitle(e.target.value)
-              : setTodoTitle(e.target.value);
-          }}
-          onKeyUp={async (e) => {
-            e.stopPropagation();
-            if ((!edit || canAddLabel) && e.key === 'Enter') {
-              await addEntry(e, canAddLabel);
-              await refetchPoints();
-            }
-          }}
-          onKeyDown={(e) => {
-            e.stopPropagation();
-          }}
-          InputProps={{
-            inputProps: {
-              enterKeyHint: 'enter',
-            },
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  onClick={() => {
-                    edit && !labelMode ? setListTitle('') : setTodoTitle('');
-                    setTimeout(() => inputRef.current?.focus(), 0);
-                  }}
-                  disabled={edit ? !listTitle : !todoTitle}
-                >
-                  <IconClear />
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        />
-        {(!edit || canAddLabel) && (
-          <Tooltip title="Add new item" placement="top">
-            <IconButton
-              color="primary"
-              sx={{
-                mt: 1,
-                backgroundColor: 'success.main',
-                color: 'black',
-                boxShadow:
-                  todoTitle &&
-                  `0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12)`,
-                '&:hover': {
-                  backgroundColor: 'success.main',
-                  filter: 'brightness(0.8)',
+          )}
+        </Box>
+        <ConfirmationDialogRaw
+          title="Delete List"
+          open={showDialog}
+          id={list}
+          onClose={async (confirmed) => {
+            if (confirmed) {
+              const rem = await remove(component?.props?.id);
+              dispatch({
+                type: Actions.SHOW_MESSAGE,
+                value: `Removed List. Undo? (Ctrl+Z)`,
+              });
+              dispatch({
+                type: Actions.RECORD_CHANGE,
+                value: {
+                  reverse: async () => {
+                    await addList(rem);
+                  },
                 },
-              }}
-              disabled={!todoTitle}
-              onClick={async (e) => {
-                canAddLabel
-                  ? await addEntry(e, true)
-                  : setShowType(e.target as HTMLElement);
+              });
+            }
+            setShowDialog(false);
+          }}
+        >
+          <Alert severity="error">Are you sure you want to delete this?</Alert>
+        </ConfirmationDialogRaw>
+        <ColorMenu
+          onClose={handleClose}
+          open={showColors}
+          setColor={component?.props?.setColor}
+        ></ColorMenu>
+        <AddMenu
+          onClose={handleClose}
+          open={showType}
+          addEntry={async (...args) => {
+            await addEntry(args[0], args[1], args[2]);
+          }}
+          refetchPoints={refetchPoints}
+          canAddLabel={canAddLabel}
+        />
+      </Card>
+      <Dialog
+        open={showInDialog}
+        onClose={() => setShowInDialog(false)}
+        PaperProps={{ sx: { overflow: 'visible', margin: 0 } }}
+      >
+        <ClickAwayListener onClickAway={() => setShowInDialog(false)}>
+          <Grid container spacing={2} sx={{ p: 0 }}>
+            <Grid
+              item
+              xs={12}
+              sx={{
+                width: {
+                  xs: '100vw',
+                  sm: '775vw',
+                },
+                height: '68vh',
+                overflowY: 'scroll',
               }}
             >
-              <AddIcon />
-            </IconButton>
-          </Tooltip>
-        )}
-      </Box>
-      <ConfirmationDialogRaw
-        title="Delete List"
-        open={showDialog}
-        id={list}
-        onClose={async (confirmed) => {
-          if (confirmed) {
-            const rem = await remove(component?.props?.id);
-            dispatch({
-              type: Actions.SHOW_MESSAGE,
-              value: `Removed List. Undo? (Ctrl+Z)`,
-            });
-            dispatch({
-              type: Actions.RECORD_CHANGE,
-              value: {
-                reverse: async () => {
-                  await addList(rem);
-                },
-              },
-            });
-          }
-          setShowDialog(false);
-        }}
-      >
-        <Alert severity="error">Are you sure you want to delete this?</Alert>
-      </ConfirmationDialogRaw>
-      <ColorMenu
-        onClose={handleClose}
-        open={showColors}
-        setColor={component?.props?.setColor}
-      ></ColorMenu>
-      <AddMenu
-        onClose={handleClose}
-        open={showType}
-        addEntry={async (...args) => {
-          await addEntry(args[0], args[1], args[2]);
-        }}
-        refetchPoints={refetchPoints}
-        canAddLabel={canAddLabel}
-      />
-    </Card>
+              <CardContent>{content}</CardContent>
+              <Box
+                sx={{
+                  maxHeight: '68vh',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  position: 'absolute',
+                  right: 0,
+                  transform: 'translateX(calc(100% + 64px))',
+                  zIndex: 100,
+                }}
+              >
+                <Grid container spacing={1}>
+                  {component?.children
+                    ?.filter((itm) => itm.props.note)
+                    .map((itm) => {
+                      return (
+                        <Grid item xs={12}>
+                          <Card>
+                            <CardHeader title={itm.props.title} />
+                            <CardContent>{itm.props.note}</CardContent>
+                          </Card>
+                        </Grid>
+                      );
+                    })}
+                </Grid>
+              </Box>
+            </Grid>
+          </Grid>
+        </ClickAwayListener>
+      </Dialog>
+    </>
   );
 };
 
