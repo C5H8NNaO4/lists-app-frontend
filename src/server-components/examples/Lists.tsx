@@ -1899,7 +1899,7 @@ export const List = ({
           )
         }
         action={
-          component?.props?.settings?.defaultType === 'Todo' ? undefined : (
+          component?.props?.settings?.defaultType !== 'Todo' ? undefined : (
             <IconButton
               sx={{
                 opacity: 0,
