@@ -2735,6 +2735,7 @@ export type SumProps = {
   multiplyKey?: string | null;
   invert?: boolean;
   final?: boolean;
+  counter?: boolean;
 };
 
 const Sum = ({
