@@ -2436,7 +2436,7 @@ export const List = ({
         PaperProps={{ sx: { overflow: 'visible', margin: 0 } }}
       >
         <ClickAwayListener onClickAway={() => setShowInDialog(false)}>
-          <Grid container spacing={2} sx={{ p: 0 }}>
+          <Grid container spacing={2} sx={{ mt: 1 }}>
             <Grid
               item
               xs={12}
@@ -2445,11 +2445,14 @@ export const List = ({
                   xs: '100vw',
                   sm: '775vw',
                 },
-                height: '68vh',
+                height: '69vh',
                 overflowY: 'scroll',
+                pt: 0,
               }}
             >
-              <CardContent>{content}</CardContent>
+              <DialogTitle>{component?.props?.title}</DialogTitle>
+
+              <DialogContent>{content}</DialogContent>
               <Box
                 sx={{
                   maxHeight: '68vh',
