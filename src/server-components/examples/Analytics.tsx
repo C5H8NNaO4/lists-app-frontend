@@ -290,7 +290,7 @@ export const AnalyticsPage = (props) => {
 
   const [active, setActive] = useState(null);
   const [visibility, setVisibility] = useState({});
-
+  const [invert, setInvert] = useState(false);
   const renderCustomLegend = ({ payload }) => {
     return (
       <div className="customized-legend">
@@ -299,13 +299,16 @@ export const AnalyticsPage = (props) => {
           const active = visibility[dataKey.trim()] === false;
           const style = {
             marginRight: 10,
-            color: active ? '#AAA' : '#000',
+            color: (active && !invert) || (!active && invert) ? '#AAA' : '#000',
           };
 
           return (
             <span
               className="legend-item"
               onClick={(e) => {
+                if (e.ctrlKey) {
+                  setInvert(!invert);
+                }
                 setVisibility((visibility) => ({
                   ...visibility,
                   [dataKey.trim()]:
@@ -320,15 +323,16 @@ export const AnalyticsPage = (props) => {
                 viewBox={{ x: 0, y: 0, width: 10, height: 10 }}
               >
                 <Symbols cx={5} cy={5} type="circle" size={50} fill={color} />
-                {active && (
-                  <Symbols
-                    cx={5}
-                    cy={5}
-                    type="circle"
-                    size={25}
-                    fill={'#FFF'}
-                  />
-                )}
+                {(active && !invert) ||
+                  (!active && invert && (
+                    <Symbols
+                      cx={5}
+                      cy={5}
+                      type="circle"
+                      size={25}
+                      fill={'#FFF'}
+                    />
+                  ))}
               </Surface>
               <span>{dataKey.trim()}</span>
             </span>
@@ -352,7 +356,8 @@ export const AnalyticsPage = (props) => {
       {Object.keys(
         dataDays.reduce((acc, cur) => ({ ...acc, ...cur }), {}) || {}
       ).map((key, i) => {
-        const visible = visibility[key] !== false;
+        let visible = visibility[key] !== false;
+        if (invert) visible = !visible;
         if (key === 'date') return null;
         return (
           <Line
