@@ -91,7 +91,7 @@ export const Layout = () => {
         type: Actions.SET_BG,
       });
     }
-  }, [search, _animated]);
+  }, [search, pathname, _animated]);
 
   const [cookieConsent, setCookieConsent] = useLocalStorage<boolean | null>(
     'cookie-consent',
