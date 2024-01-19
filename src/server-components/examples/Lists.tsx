@@ -2860,7 +2860,7 @@ const Sum = ({
           (negArchived < 0
             ? `Previous spendings: ${Math.abs(negArchived).toFixed(2)}€`
             : '') +
-          (negArchived < 0 && negNotArchived < 0 ? '. ' : '.') +
+          (negArchived < 0 && negNotArchived < 0 ? '. ' : '') +
           `${
             negNotArchived < 0
               ? final
