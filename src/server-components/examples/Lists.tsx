@@ -768,31 +768,33 @@ export const MyLists = (props) => {
               </IconButton>
             </Tooltip>
           )}
-          <Tooltip title="Add new list" placement="top">
-            <Button
-              variant="contained"
-              color="primary"
-              aria-label="add"
-              // sx={{ position: 'fixed', right: 16, bottom: 16 }}
-              onClick={() => {
-                component?.props?.add({
-                  title,
-                  color: defaultListColor,
-                  settings: { defaultType: 'Todo' },
-                });
-                setTitle('');
-              }}
-              sx={{
-                position: 'relative',
-                ml: 'auto',
-                mr: '32px',
-                display: { xs: 'none', md: 'flex' },
-              }}
-            >
-              <AddIcon />
-              New List
-            </Button>
-          </Tooltip>
+          {optimisticOrder.length > 0 && (
+            <Tooltip title="Add new list" placement="top">
+              <Button
+                variant="contained"
+                color="primary"
+                aria-label="add"
+                // sx={{ position: 'fixed', right: 16, bottom: 16 }}
+                onClick={() => {
+                  component?.props?.add({
+                    title,
+                    color: defaultListColor,
+                    settings: { defaultType: 'Todo' },
+                  });
+                  setTitle('');
+                }}
+                sx={{
+                  position: 'relative',
+                  ml: 'auto',
+                  mr: '32px',
+                  display: { xs: 'none', md: 'flex' },
+                }}
+              >
+                <AddIcon />
+                New List
+              </Button>
+            </Tooltip>
+          )}
           <Tooltip title="Enable Notifications." placement="bottom">
             <NotificationButton />
           </Tooltip>
