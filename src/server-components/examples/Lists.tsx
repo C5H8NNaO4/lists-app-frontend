@@ -1591,6 +1591,7 @@ export const List = ({
   const [showType, setShowType] = useState<HTMLElement | null>(null);
   const [sort, setSort] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
+  const [hoverTitle, setHoverTitle] = useState<string | null>(null);
   const canAddLabel = edit && labelMode;
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -1849,7 +1850,9 @@ export const List = ({
   }
 
   const nonArchived = component?.children?.filter(
-    (itm) => !itm.props?.archived
+    (itm) =>
+      !itm.props?.archived &&
+      (hoverTitle ? itm.props?.title === hoverTitle : true)
   );
   const countSum = nonArchived?.reduce((acc, itm) => {
     return acc + itm.props?.count || 0;
@@ -1857,7 +1860,10 @@ export const List = ({
   const avgSum = nonArchived?.reduce((acc, itm) => {
     return acc + average[itm?.props?.title] || 0;
   }, 0);
-  const avgCons = (100 / avgSum) * countSum;
+  const avgCons = (100 / Math.max(1, avgSum)) * countSum;
+  const dayPrc =
+    (100 / (getTime(endOfDayDate) - getTime(startOfDayDate))) *
+    (getTime(Date.now()) - getTime(startOfDayDate));
   const timeLeft = intervalToDuration({
     start: new Date(Date.now()),
     end: endOfDayDate,
@@ -1942,20 +1948,31 @@ export const List = ({
             <LinearProgress
               variant="determinate"
               color="secondary"
-              value={
-                (100 / (getTime(endOfDayDate) - getTime(startOfDayDate))) *
-                (getTime(Date.now()) - getTime(startOfDayDate))
-              }
+              value={dayPrc}
             />
           </Tooltip>
         )}
       {component?.props?.settings?.defaultType === 'Counter' &&
         component?.props?.settings?.startOfDay &&
         component?.props?.settings?.endOfDay && (
-          <Tooltip title={`${avgCons.toFixed(0)}% of average consumption`}>
+          <Tooltip
+            arrow
+            open={Boolean(hoverTitle)}
+            title={
+              hoverTitle
+                ? `${hoverTitle}: ${avgCons?.toFixed(2)}%`
+                : `${avgCons.toFixed(0)}% of average consumption`
+            }
+          >
             <LinearProgress
               variant="determinate"
-              color="success"
+              color={
+                avgCons > 100
+                  ? 'error'
+                  : avgCons < dayPrc
+                  ? 'success'
+                  : 'warning'
+              }
               value={avgCons}
             />
           </Tooltip>
@@ -1985,7 +2002,14 @@ export const List = ({
               const Item = itemMap[todo?.props?.type] || TodoItem;
 
               return (
-                <div key={id}>
+                <div
+                  key={id}
+                  onClick={() =>
+                    setHoverTitle(
+                      hoverTitle === todo.props.title ? null : todo.props.title
+                    )
+                  }
+                >
                   {canAddLabel && (
                     <LabelItem
                       edit={edit}
@@ -2029,6 +2053,7 @@ export const List = ({
                             : undefined
                         }
                         root={parent}
+                        selected={hoverTitle === todo.props.title}
                       />
                     </SortableItem>
                   )}
@@ -3195,6 +3220,7 @@ const CounterItem = (props) => {
     refetchList,
     refetchPoints,
     average,
+    selected,
   } = props;
   const [component, { loading, error, refetch }] = useComponent(todoId, {
     data,
@@ -3216,15 +3242,18 @@ const CounterItem = (props) => {
       }
     >
       <span>
-        <ListItem
+        <ListItemButton
+          selected={selected}
           dense
           sx={{
             opacity: component?.props?.archived ? 0.5 : 1,
             pl: edit ? 2 : 2,
-            backgroundColor: `${
-              component?.props?.color +
-              (state.animatedBackground > 0 ? 'D3' : '')
-            } !important`,
+            backgroundColor: selected
+              ? '#00000033 !important'
+              : `${
+                  component?.props?.color +
+                  (state.animatedBackground > 0 ? 'D3' : '')
+                } !important`,
           }}
           disabled={!component?.props.completed && !edit && !canBeCompleted}
         >
@@ -3313,7 +3342,7 @@ const CounterItem = (props) => {
               </IconButton>
             )}
           </ListItemSecondaryAction>
-        </ListItem>
+        </ListItemButton>
         <ListItemMenu
           component={component}
           open={showMenu}
