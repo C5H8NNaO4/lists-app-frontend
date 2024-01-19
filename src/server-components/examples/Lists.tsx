@@ -768,7 +768,7 @@ export const MyLists = (props) => {
               </IconButton>
             </Tooltip>
           )}
-          {optimisticOrder.length > 0 && (
+          {optimisticOrder?.length > 0 && (
             <Tooltip title="Add new list" placement="top">
               <Button
                 variant="contained"
