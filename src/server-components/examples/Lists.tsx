@@ -2461,7 +2461,7 @@ export const List = ({
                   position: 'absolute',
                   right: 0,
                   top: 0,
-                  transform: 'translateX(calc(100% + 64px))',
+                  transform: 'translateX(calc(100% + 32px))',
                   zIndex: 100,
                 }}
               >
@@ -2540,7 +2540,7 @@ const TodoItemDetailCard = (props) => {
         action={
           <IconButton
             onClick={async (e) => {
-              e.preventDefault();
+              e.stopPropagation();
               await refetchList();
               setSelected(null);
             }}
