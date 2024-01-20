@@ -2539,7 +2539,8 @@ const TodoItemDetailCard = (props) => {
         title={component.props.title}
         action={
           <IconButton
-            onClick={async () => {
+            onClick={async (e) => {
+              e.preventDefault();
               await refetchList();
               setSelected(null);
             }}
@@ -3096,7 +3097,11 @@ const TodoItem = (props) => {
       >
         <span>
           <ListItemButton
-            onClick={() => setSelected(component)}
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              setSelected(component);
+            }}
             selected={dist <= 1}
             dense
             disableGutters
