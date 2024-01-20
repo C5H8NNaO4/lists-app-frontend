@@ -540,22 +540,7 @@ export const MyLists = (props) => {
             gap: 1,
           }}
         >
-          <Tooltip title="Add new list" placement="top">
-            <Button
-              variant="contained"
-              color="primary"
-              aria-label="add"
-              // sx={{ position: 'fixed', right: 16, bottom: 16 }}
-              onClick={() => {
-                component?.props?.add({
-                  title,
-                  color: defaultListColor,
-                  settings: { defaultType: 'Todo' },
-                });
-                setTitle('');
-              }}
-              sx={{
-                position          {optimisticOrder?.length > 0 && (
+          {optimisticOrder?.length > 0 && (
             <Tooltip title="Add new list" placement="top">
               <Button
                 variant="contained"
@@ -2459,7 +2444,7 @@ export const List = ({
                 width: {
                   xs: '100vw',
                   sm: '775vw',
-               },
+                },
                 height: '69vh',
                 overflowY: 'scroll',
                 pt: '0px !important',
@@ -2953,7 +2938,200 @@ const Sum = ({
             ? `Previous spendings: ${Math.abs(negArchived).toFixed(2)}€`
             : '') +
           (negArchived < 0 && negNotArchived < 0 ? '. ' : '') +
-          dispatch({
+          `${
+            negNotArchived < 0
+              ? final
+                ? `${
+                    negArchived === 0 ? 'Running total: ' : 'Running total: '
+                  } ${Math.abs(negNotArchived).toFixed(2)}€ ${
+                    negArchived < 0 ? '.' : ' '
+                  }`
+                : `Planned spendings ${Math.abs(negNotArchived).toFixed(2)}€`
+              : ''
+          }`}
+      </Alert>
+    );
+  }
+  if (neg === 0 && pos > 0) {
+    return (
+      <Alert sx={{ mt: 1 }} severity={'success'}>
+        {`` +
+          (posArchived > 0
+            ? `Previous income: ${posArchived.toFixed(2)}€`
+            : '') +
+          (posArchived > 0 && posNotArchived > 0 ? ' . ' : '.') +
+          `${
+            posNotArchived > 0
+              ? `Planned income: ${posNotArchived.toFixed(2)}€`
+              : ''
+          }`}
+      </Alert>
+    );
+  }
+
+  if (neg === 0 && pos === 0) {
+    return (
+      <Warning
+        id={counter ? 'track-costs-2' : 'track-expenses-2'}
+        sx={{ mt: 1 }}
+        severity={'info'}
+        noPortal
+        showMore={false}
+      >{`Add ${counter ? 'costs' : 'items'} to track your expenses`}</Warning>
+    );
+  }
+  return (
+    <Alert
+      sx={{ mt: 1 }}
+      severity={pos < Math.abs(neg) ? 'error' : 'success'}
+    >{`Spendings: ${Math.abs(neg).toFixed(2)}€. Gains: ${pos.toFixed(
+      2
+    )}€`}</Alert>
+  );
+};
+export interface ConfirmationDialogRawProps {
+  id: string;
+  keepMounted?: boolean;
+  open: boolean;
+  onClose: (confirmed?: boolean) => void;
+  title: string;
+}
+function ConfirmationDialogRaw(
+  props: React.PropsWithChildren<ConfirmationDialogRawProps>
+) {
+  const { onClose, open, title, ...other } = props;
+
+  const handleCancel = () => {
+    onClose();
+  };
+
+  const handleOk = () => {
+    onClose(true);
+  };
+
+  return (
+    <Dialog
+      sx={{ '& .MuiDialog-paper': { width: '80%', maxHeight: 435 } }}
+      maxWidth="xs"
+      // TransitionProps={{ onEntering: handleEntering }}
+      open={open}
+      {...other}
+    >
+      <DialogTitle>{title}</DialogTitle>
+      <DialogContent dividers>{props.children}</DialogContent>
+      <DialogActions>
+        <Button autoFocus onClick={handleCancel}>
+          Cancel
+        </Button>
+        <Button onClick={handleOk}>Ok</Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
+
+const TodoItem = (props) => {
+  const { dispatch, state } = useContext(stateContext);
+  const {
+    todo: todoKey,
+    edit,
+    add,
+    remove,
+    data,
+    lastCompleted,
+    refetchList,
+    refetchPoints,
+    setOrder,
+    setSelected,
+    order,
+    root,
+    dependency,
+    refetchParent,
+  } = props;
+  const memoizedData = useMemo(() => {
+    return data;
+  }, []);
+  const [component, { loading, error, refetch: refetchTodo }] = useComponent(
+    todoKey,
+    {
+      data: memoizedData,
+    }
+  );
+
+  const [showColors, setShowColors] = useState<HTMLElement | null>(null);
+  const [showMenu, setShowMenu] = useState(false);
+  const handleClose = () => {
+    setShowColors(null);
+  };
+  const [interval, times] = limits[component?.props?.valuePoints] || [0, 1];
+
+  const [moveToBottom, setMoveToBottom] = useLocalStorage(
+    'moveToBottom',
+    false
+  );
+  const dist = state.search
+    ? minWord(component?.props?.title, state.search)
+    : Infinity;
+  if (loading) return null;
+  const deps = component?.props?.dependencies || [];
+
+  const canBeCompleted = checkLimits(
+    lastCompleted?.[component?.props?.valuePoints],
+    component
+  );
+  return (
+    <>
+      <ListItemMenu
+        component={component}
+        open={!!showMenu}
+        onClose={() => setShowMenu(false)}
+        refetchList={refetchList}
+        root={root}
+      ></ListItemMenu>
+      <Tooltip
+        title={
+          !canBeCompleted && !component?.props?.completed
+            ? `You already completed too many items with ${component?.props?.valuePoints} points`
+            : ''
+        }
+      >
+        <span>
+          <ListItemButton
+            onClick={() => setSelected(component)}
+            selected={dist <= 1}
+            dense
+            disableGutters
+            sx={{
+              backgroundColor: component?.props?.color || undefined,
+              '&:hover': {
+                backgroundColor: component?.props?.color || undefined,
+                filter: 'brightness(80%)',
+              },
+              opacity: state.search
+                ? 1 - dist / 10
+                : component?.props?.archived
+                ? 0.5
+                : 1,
+              pl: dependency ? 4 : edit ? 0 : 2,
+            }}
+            disabled={!component?.props.completed && !edit && !canBeCompleted}
+          >
+            {edit && (
+              <>
+                <ListItemSecondaryAction
+                  sx={{
+                    left: 2,
+                    right: 'unset',
+                  }}
+                >
+                  <IconButton
+                    color="error"
+                    onClick={async (e) => {
+                      e.stopPropagation();
+                      const rem = await remove(component.props.id);
+                      const reverse = () => {
+                        add(rem);
+                      };
+                      dispatch({
                         type: Actions.RECORD_CHANGE,
                         value: {
                           reverse,
