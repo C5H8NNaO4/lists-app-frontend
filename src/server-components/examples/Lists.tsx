@@ -2460,6 +2460,7 @@ export const List = ({
                   flexDirection: 'column',
                   position: 'absolute',
                   right: 0,
+                  top: 0,
                   transform: 'translateX(calc(100% + 64px))',
                   zIndex: 100,
                 }}
