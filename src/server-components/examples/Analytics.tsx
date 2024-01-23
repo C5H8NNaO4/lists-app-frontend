@@ -21,7 +21,9 @@ import deepmerge from 'deepmerge';
 import {
   differenceInDays,
   differenceInMonths,
+  endOfDay,
   format,
+  getDate,
   getHours,
   getMonth,
   startOfDay,
@@ -113,18 +115,30 @@ export const AnalyticsPage = (props) => {
         return 'count' in todo.props && diff === 0;
       })
       .reduce((acc, todo) => {
-        const start = new Date(
+        /**
+         * In most cases we use the date when an item has been archived.
+         * If it's not archived yet it will be counted to the day it has been modified or created.
+         */
+        const analysisDate = new Date(
           todo.props.archived
             ? todo.props.archived
             : todo.props.lastModified || todo.props.createdAt || Date.now()
         );
+
+        /* Counter items can be archived until end of the next day and still be counted towards the day before. */
+        /* In order to show up at the correct day in the analysis we need to subtract 1 day from the archived date */
         if (
-          getHours(start) > 0 &&
-          getHours(start) < getHours(new Date(list.props.settings.startOfDay))
+          getHours(analysisDate) > 0 &&
+          getHours(analysisDate) <
+            getHours(
+              new Date(list.props.settings.endOfDay || endOfDay(analysisDate))
+            ) &&
+          todo.props.archived &&
+          getDate(new Date(todo.props.createdAt)) < getDate(analysisDate)
         ) {
-          start.setDate(start.getDate() - (todo.props.archived ? 1 : 0));
+          analysisDate.setDate(analysisDate.getDate() - 1);
         }
-        const date = startOfDay(start).getTime();
+        const date = startOfDay(analysisDate).getTime();
         acc[date] = {
           ...acc[date],
           [todo.props.title]:
