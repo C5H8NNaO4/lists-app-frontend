@@ -334,7 +334,7 @@ export const AnalyticsPage = (props) => {
     });
 
   const [active, setActive] = useState(null);
-  const isSmall = useMediaQuery((theme) => theme.breakpoints.down('sm'));
+  const isSmall = useMediaQuery((theme: any) => theme.breakpoints.down('sm'));
   const [invert, setInvert] = useState(isSmall);
   const renderCustomLegend = ({ payload }) => {
     return (
