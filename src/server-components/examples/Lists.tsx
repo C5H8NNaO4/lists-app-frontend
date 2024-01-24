@@ -1805,7 +1805,8 @@ export const List = ({
       Object.keys(sums || {}).reduce((acc, key) => {
         const { sum, n } = sums[key];
         // if (n < 2) return acc;
-        return { ...acc, [key]: sum / n };
+
+        return { ...acc, [key]: sum / (n + 1) };
       }, {}),
     [sums]
   );
