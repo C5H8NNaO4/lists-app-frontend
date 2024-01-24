@@ -7,6 +7,7 @@ import {
   Checkbox,
   Select,
   MenuItem as Option,
+  useMediaQuery,
 } from '@mui/material';
 import {
   Bar,
@@ -39,7 +40,7 @@ import {
   startOfWeek,
   subDays,
 } from 'date-fns';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 // const colors = [
 //   '#9e0142',
@@ -89,18 +90,16 @@ const DateFormatter = (formatStr) => (value) => {
 export const AnalyticsPage = (props) => {
   const [component, { loading, error, refetch }] = useComponent('my-lists', {});
   const [nDays, setNDays] = useState(7);
-  const listNames = component?.children?.map((list) => list.props.title) || [];
+  const listNames = useMemo(
+    () => component?.children?.map((list) => list.props.title) || [],
+    [component?.children?.length]
+  );
   const counterNames =
     component?.children
       ?.filter((list) => list.props.settings.defaultType === 'Counter')
       .map((list) => list.props.title) || [];
   const [listVisibility, setListVisibility] = useState({});
-  useEffect(() => {
-    setListVisibility(
-      listNames?.reduce((acc, cur) => ({ ...acc, [cur]: true }), {})
-    );
-  }, [component?.children?.length]);
-  const [visibility, setVisibility] = useState({});
+
   const countersMonth = component?.children.reduce((acc, list) => {
     const childs = list.children
       .filter((todo) => 'count' in todo.props)
@@ -174,6 +173,14 @@ export const AnalyticsPage = (props) => {
 
       return deepmerge(acc, childs);
     }, {});
+
+  const [visibility, setVisibility] = useState({});
+
+  useEffect(() => {
+    setListVisibility(
+      listNames?.reduce((acc, cur) => ({ ...acc, [cur]: true }), {})
+    );
+  }, [listNames]);
 
   const countersData = Object.keys(countersMonth || {})
     .sort((a, b) => {
@@ -327,8 +334,8 @@ export const AnalyticsPage = (props) => {
     });
 
   const [active, setActive] = useState(null);
-
-  const [invert, setInvert] = useState(false);
+  const isSmall = useMediaQuery((theme) => theme.breakpoints.down('sm'));
+  const [invert, setInvert] = useState(isSmall);
   const renderCustomLegend = ({ payload }) => {
     return (
       <div className="customized-legend">
@@ -347,8 +354,19 @@ export const AnalyticsPage = (props) => {
                 if (e.ctrlKey) {
                   setInvert(!invert);
                 }
-                setVisibility((visibility) => ({
-                  ...visibility,
+                setVisibility((visibility: Record<string, boolean>) => ({
+                  ...Object.values(countersDays || {})?.reduce(
+                    (acc: Record<string, boolean>, obj) => {
+                      return Object.keys(obj || {})?.reduce((acc, key) => {
+                        return {
+                          ...acc,
+                          [key]:
+                            typeof acc[key] === 'undefined' ? true : acc[key],
+                        };
+                      }, acc);
+                    },
+                    visibility
+                  ),
                   [dataKey.trim()]:
                     visibility[dataKey.trim()] === false ? true : false,
                 }));
@@ -384,8 +402,13 @@ export const AnalyticsPage = (props) => {
     <LineChart data={countersDataDays}>
       <CartesianGrid strokeDasharray="3 3" />
       <Tooltip
-        content={({ payload }) => (
-          <CustomTooltip active={active} payload={payload} />
+        content={({ payload, active }) => (
+          <CustomTooltip
+            active={Object.keys(visibility).filter((key) =>
+              invert ? !visibility[key] : visibility[key]
+            )}
+            payload={payload}
+          />
         )}
       />
       <XAxis dataKey="date" tickFormatter={DateFormatter('dd.MM')} />
@@ -559,7 +582,7 @@ export const AnalyticsPage = (props) => {
             <Typography variant="h2" component="h2" gutterBottom>
               Daily Counters
             </Typography>
-            <Box sx={{ display: 'flex' }}>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
               {counterNames.map((listName) => {
                 const checked = listVisibility[listName];
                 return (
@@ -597,7 +620,6 @@ export const AnalyticsPage = (props) => {
             <ResponsiveContainer width="100%" height={window.innerHeight / 2.5}>
               {barChartDaily}
             </ResponsiveContainer>
-
             <ResponsiveContainer width="100%" height={window.innerHeight / 2.5}>
               {countersLineChart}
             </ResponsiveContainer>
@@ -668,7 +690,7 @@ const CustomTooltip = ({
   active,
   payload,
 }: {
-  active?: null | string;
+  active?: null | string | string[];
   payload?: any;
 }) => {
   return (
@@ -688,7 +710,11 @@ const CustomTooltip = ({
     >
       {Object.keys(payload?.[0]?.payload || {})
         .filter((key) => !['date'].includes(key))
-        .filter((key) => (active ? key === active : true))
+        .filter(
+          (key) =>
+            active?.length === 0 ||
+            (active ? [active].flat().includes(key) : true)
+        )
         .map((key, i, arr) => {
           return (
             <ListItem
