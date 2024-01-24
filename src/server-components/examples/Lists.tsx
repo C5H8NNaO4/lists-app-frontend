@@ -3715,7 +3715,21 @@ const ListItemMenu = (props) => {
                         </Select>
                       </FormControl>
                     </Tooltip>
-
+                    {component?.props?.archived && (
+                      <Box>
+                        <FormLabel>Archive Date</FormLabel>
+                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                          <MobileDatePicker
+                            value={new Date(component?.props?.archived)}
+                            onChange={(e) => {
+                              component?.props?.setArchived(
+                                e?.toISOString() || null
+                              );
+                            }}
+                          />
+                        </LocalizationProvider>
+                      </Box>
+                    )}
                     <ColorMenu
                       onClose={handleClose}
                       open={showColors}

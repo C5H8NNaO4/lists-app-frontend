@@ -1,5 +1,13 @@
 import { useComponent } from '@state-less/react-client';
-import { Container, Alert, Typography, Box } from '@mui/material';
+import {
+  Container,
+  Alert,
+  Typography,
+  Box,
+  Checkbox,
+  Select,
+  MenuItem as Option,
+} from '@mui/material';
 import {
   Bar,
   BarChart,
@@ -31,7 +39,7 @@ import {
   startOfWeek,
   subDays,
 } from 'date-fns';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 // const colors = [
 //   '#9e0142',
@@ -80,7 +88,19 @@ const DateFormatter = (formatStr) => (value) => {
 };
 export const AnalyticsPage = (props) => {
   const [component, { loading, error, refetch }] = useComponent('my-lists', {});
-
+  const [nDays, setNDays] = useState(7);
+  const listNames = component?.children?.map((list) => list.props.title) || [];
+  const counterNames =
+    component?.children
+      ?.filter((list) => list.props.settings.defaultType === 'Counter')
+      .map((list) => list.props.title) || [];
+  const [listVisibility, setListVisibility] = useState({});
+  useEffect(() => {
+    setListVisibility(
+      listNames?.reduce((acc, cur) => ({ ...acc, [cur]: true }), {})
+    );
+  }, [component?.children?.length]);
+  const [visibility, setVisibility] = useState({});
   const countersMonth = component?.children.reduce((acc, list) => {
     const childs = list.children
       .filter((todo) => 'count' in todo.props)
@@ -100,56 +120,60 @@ export const AnalyticsPage = (props) => {
     return deepmerge(acc, childs);
   }, {});
 
-  const countersDays = component?.children.reduce((acc, list) => {
-    const childs = list.children
-      .filter((todo) => {
-        const diff = differenceInMonths(
-          new Date(
-            todo.props.lastModified ||
-              todo.props.createdAt ||
-              todo.props.archived ||
-              Date.now()
-          ),
-          Date.now()
-        );
-        return 'count' in todo.props && diff === 0;
-      })
-      .reduce((acc, todo) => {
-        /**
-         * In most cases we use the date when an item has been archived.
-         * If it's not archived yet it will be counted to the day it has been modified or created.
-         */
-        const analysisDate = new Date(
-          todo.props.archived
-            ? todo.props.archived
-            : todo.props.lastModified || todo.props.createdAt || Date.now()
-        );
+  const countersDays = component?.children
+    .filter((list) => listVisibility[list.props.title])
+    .reduce((acc, list) => {
+      const childs = list.children
+        .filter((todo) => {
+          const diff = differenceInDays(
+            startOfDay(
+              new Date(
+                todo.props.lastModified ||
+                  todo.props.createdAt ||
+                  todo.props.archived ||
+                  Date.now()
+              )
+            ),
+            startOfDay(Date.now())
+          );
+          return 'count' in todo.props && Math.floor(diff) * -1 < nDays;
+        })
+        .reduce((acc, todo) => {
+          /**
+           * In most cases we use the date when an item has been archived.
+           * If it's not archived yet it will be counted to the day it has been modified or created.
+           */
+          const analysisDate = new Date(
+            todo.props.archived
+              ? todo.props.archived
+              : todo.props.lastModified || todo.props.createdAt || Date.now()
+          );
 
-        /* Counter items can be archived until end of the next day and still be counted towards the day before. */
-        /* In order to show up at the correct day in the analysis we need to subtract 1 day from the archived date */
-        if (
-          getHours(analysisDate) > 0 &&
-          getHours(analysisDate) <
-            getHours(
-              new Date(list.props.settings.endOfDay || endOfDay(analysisDate))
-            ) &&
-          todo.props.archived &&
-          getDate(new Date(todo.props.createdAt)) < getDate(analysisDate)
-        ) {
-          analysisDate.setDate(analysisDate.getDate() - 1);
-        }
-        const date = startOfDay(analysisDate).getTime();
-        acc[date] = {
-          ...acc[date],
-          [todo.props.title]:
-            (acc?.[date]?.[todo.props.title] || 0) + todo.props.count,
-          date,
-        };
-        return acc;
-      }, {});
+          /* Counter items can be archived until end of the next day and still be counted towards the day before. */
+          /* In order to show up at the correct day in the analysis we need to subtract 1 day from the archived date */
+          if (
+            getHours(analysisDate) > 0 &&
+            getHours(analysisDate) <
+              getHours(
+                new Date(list.props.settings.endOfDay || endOfDay(analysisDate))
+              ) &&
+            todo.props.archived &&
+            getDate(new Date(todo.props.createdAt)) < getDate(analysisDate)
+          ) {
+            analysisDate.setDate(analysisDate.getDate() - 1);
+          }
+          const date = startOfDay(analysisDate).getTime();
+          acc[date] = {
+            ...acc[date],
+            [todo.props.title]:
+              (acc?.[date]?.[todo.props.title] || 0) + todo.props.count,
+            date,
+          };
+          return acc;
+        }, {});
 
-    return deepmerge(acc, childs);
-  }, {});
+      return deepmerge(acc, childs);
+    }, {});
 
   const countersData = Object.keys(countersMonth || {})
     .sort((a, b) => {
@@ -303,7 +327,7 @@ export const AnalyticsPage = (props) => {
     });
 
   const [active, setActive] = useState(null);
-  const [visibility, setVisibility] = useState({});
+
   const [invert, setInvert] = useState(false);
   const renderCustomLegend = ({ payload }) => {
     return (
@@ -498,7 +522,7 @@ export const AnalyticsPage = (props) => {
     </BarChart>
   );
   const barChartDaily = (
-    <BarChart data={countersDataDays}>
+    <BarChart data={countersDataDays.slice(-1)}>
       <CartesianGrid strokeDasharray="3 3" />
       <Tooltip
         cursor={{ fill: '#FFFFFFAA' }}
@@ -528,15 +552,53 @@ export const AnalyticsPage = (props) => {
           </>
         )}
         {/* TODO: Refactor to be more generic */}
-        {countersDataDays?.length && (
+
+        {(countersDataDays?.length ||
+          counterNames.every((name) => !listVisibility[name])) && (
           <>
             <Typography variant="h2" component="h2" gutterBottom>
               Daily Counters
             </Typography>
-            <ResponsiveContainer width="100%" height={250}>
+            <Box sx={{ display: 'flex' }}>
+              {counterNames.map((listName) => {
+                const checked = listVisibility[listName];
+                return (
+                  <div>
+                    <Checkbox
+                      color="secondary"
+                      key={listName}
+                      checked={Boolean(checked)}
+                      onChange={(e) =>
+                        setListVisibility({
+                          ...listVisibility,
+                          [listName]: e.target.checked,
+                        })
+                      }
+                    />
+                    {listName}
+                  </div>
+                );
+              })}
+              <Select
+                sx={{ ml: 'auto' }}
+                size="small"
+                value={nDays}
+                onChange={(e) => setNDays(Number(e.target.value))}
+              >
+                <Option value={1}>1 Days</Option>
+                <Option value={2}>2 Days</Option>
+                <Option value={5}>5 Days</Option>
+                <Option value={7}>7 Days</Option>
+                <Option value={14}>14 Days</Option>
+                <Option value={30}>1 Month</Option>
+                <Option value={90}>3 Month</Option>
+              </Select>
+            </Box>
+            <ResponsiveContainer width="100%" height={window.innerHeight / 2.5}>
               {barChartDaily}
             </ResponsiveContainer>
-            <ResponsiveContainer width="100%" height={250}>
+
+            <ResponsiveContainer width="100%" height={window.innerHeight / 2.5}>
               {countersLineChart}
             </ResponsiveContainer>
           </>
