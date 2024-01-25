@@ -151,8 +151,8 @@ export const AnalyticsPage = (props) => {
           /* Counter items can be archived until end of the next day and still be counted towards the day before. */
           /* In order to show up at the correct day in the analysis we need to subtract 1 day from the archived date */
           if (
-            getHours(analysisDate) > 0 &&
-            getHours(analysisDate) <
+            getHours(analysisDate) >= 0 &&
+            getHours(analysisDate) <=
               getHours(
                 new Date(list.props.settings.endOfDay || endOfDay(analysisDate))
               ) &&
