@@ -609,7 +609,7 @@ export const MyLists = (props) => {
   );
   useEffect(() => {
     setShowWizard(component?.children?.length === 0);
-  }, [component?.children]);
+  }, [loading]);
   const [nItems, setNItems] = useState(5);
 
   const [show, setShow] = useState<Record<string, boolean | EventTarget>>({
