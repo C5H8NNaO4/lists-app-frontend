@@ -617,10 +617,16 @@ export const AnalyticsPage = (props) => {
                 <Option value={90}>3 Month</Option>
               </Select>
             </Box>
-            <ResponsiveContainer width="100%" height={window.innerHeight / 2.5}>
+            <ResponsiveContainer
+              width="100%"
+              height={window.innerHeight * (isSmall ? 0.8 : 0.68)}
+            >
               {barChartDaily}
             </ResponsiveContainer>
-            <ResponsiveContainer width="100%" height={window.innerHeight / 2.5}>
+            <ResponsiveContainer
+              width="100%"
+              height={window.innerHeight * (isSmall ? 0.8 : 0.68)}
+            >
               {countersLineChart}
             </ResponsiveContainer>
           </>
