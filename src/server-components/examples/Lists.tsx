@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
+import { v4 } from 'uuid';
 import {
   Box,
   Button,
@@ -42,7 +43,10 @@ import {
   useTheme,
   LinearProgress,
   Autocomplete,
+  DialogContentText,
 } from '@mui/material';
+import SportsBarIcon from '@mui/icons-material/SportsBar';
+import DirectionsRunIcon from '@mui/icons-material/DirectionsRun';
 import EditIcon from '@mui/icons-material/Edit';
 import TrophyIcon from '@mui/icons-material/EmojiEvents';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
@@ -148,6 +152,7 @@ import { createPortal } from 'react-dom';
 import { getAllTodosFromAllLists } from '../../lib/lists';
 import ContentCopy from '@mui/icons-material/ContentCopy';
 import copy from 'copy-to-clipboard';
+import AutoFixHigh from '@mui/icons-material/AutoFixHigh';
 
 const minWord = (word: string, str: string) => {
   let min = Infinity;
@@ -269,6 +274,319 @@ const requestNotificationPermission = async () => {
 
   return permission;
 };
+
+const Wizard = ({ onClose, open, root }) => {
+  const hasEmotionsList = root?.children?.some(
+    (list) => list.props.id === 'built-in-positive-emotions'
+  );
+  const hasActivityList = root?.children?.some(
+    (list) => list.props.id === 'built-in-activity'
+  );
+  const hasconsumptionList = root?.children?.some(
+    (list) => list.props.id === 'built-in-consumption'
+  );
+  const posIds = [v4(), v4(), v4(), v4()];
+  const actIds = [v4(), v4(), v4(), v4()];
+  const cnsIds = [v4(), v4(), v4(), v4(), v4(), v4(), v4(), v4(), v4(), v4()];
+  const negIds = [v4(), v4(), v4(), v4(), v4()];
+  const createEmotionsLists = async () => {
+    await root?.props?.add({
+      title: 'Positive Emotions',
+      id: 'built-in-positive-emotions', // This is important to be able to reference it later
+      settings: { defaultType: 'Counter' },
+      order: [posIds[0], posIds[1], posIds[2]],
+      todos: [
+        {
+          id: posIds[0],
+          title: 'Joy',
+          type: 'Counter',
+          count: 0,
+        },
+        {
+          id: posIds[1],
+          title: 'Enthusiasm',
+          type: 'Counter',
+          count: 0,
+        },
+        {
+          id: posIds[2],
+          title: 'Balanced',
+          type: 'Counter',
+          count: 0,
+        },
+      ],
+    });
+    await root?.props?.add({
+      title: 'Negative Emotions',
+      id: 'built-in-negative-emotions', // This is important to be able to reference it later
+      settings: { defaultType: 'Counter' },
+      order: [negIds[0], negIds[1], negIds[2], negIds[3], negIds[4], negIds[5]],
+      todos: [
+        {
+          id: negIds[0],
+          title: 'Anxiety',
+          type: 'Counter',
+          count: 0,
+        },
+        {
+          id: negIds[1],
+          title: 'Depression',
+          type: 'Counter',
+          count: 0,
+        },
+        {
+          id: negIds[2],
+          title: 'Euphoria',
+          type: 'Counter',
+          count: 0,
+        },
+        {
+          id: negIds[3],
+          title: 'Restlessness',
+          type: 'Counter',
+          count: 0,
+        },
+        {
+          id: negIds[4],
+          title: 'Tiredness',
+          type: 'Counter',
+          count: 0,
+        },
+        {
+          id: negIds[5],
+          title: 'Grumpyness',
+          type: 'Counter',
+          count: 0,
+        },
+      ],
+    });
+  };
+
+  const createActivityLists = async () => {
+    await root?.props?.add({
+      title: 'Activity',
+      id: 'built-in-activity', // This is important to be able to reference it later
+      settings: { defaultType: 'Counter' },
+      order: [actIds[0], actIds[1], actIds[2], actIds[3]],
+      todos: [
+        {
+          id: actIds[0],
+          title: 'Went outside',
+          type: 'Counter',
+          count: 0,
+        },
+        {
+          id: actIds[1],
+          title: 'Sports',
+          type: 'Counter',
+          count: 0,
+        },
+        {
+          id: actIds[2],
+          title: 'Walks',
+          type: 'Counter',
+          count: 0,
+        },
+        {
+          id: actIds[3],
+          title: '5k steps',
+          type: 'Counter',
+          count: 0,
+        },
+      ],
+    });
+  };
+
+  const createConsumptionList = async () => {
+    await root?.props?.add({
+      title: 'Consumption',
+      id: 'built-in-consumption', // This is important to be able to reference it later
+      settings: { defaultType: 'Counter' },
+      order: [
+        cnsIds[0],
+        cnsIds[1],
+        cnsIds[2],
+        cnsIds[3],
+        cnsIds[4],
+        cnsIds[5],
+        cnsIds[6],
+        cnsIds[7],
+        cnsIds[7],
+        cnsIds[9],
+      ],
+      todos: [
+        {
+          id: cnsIds[0],
+          title: 'Water',
+          type: 'Counter',
+          count: 0,
+        },
+        {
+          id: cnsIds[1],
+          title: 'Beer',
+          type: 'Counter',
+          count: 0,
+        },
+        {
+          id: cnsIds[2],
+          title: 'Alcohol',
+          type: 'Counter',
+          count: 0,
+        },
+        {
+          id: cnsIds[3],
+          title: 'Soda',
+          type: 'Counter',
+          count: 0,
+        },
+        {
+          id: cnsIds[4],
+          title: 'Meals',
+          type: 'Counter',
+          count: 0,
+        },
+        {
+          id: cnsIds[5],
+          title: 'Snacks',
+          type: 'Counter',
+          count: 0,
+        },
+        {
+          id: cnsIds[6],
+          title: 'Coffee',
+          type: 'Counter',
+          count: 0,
+        },
+        {
+          id: cnsIds[7],
+          title: 'Tea',
+          type: 'Counter',
+          count: 0,
+        },
+        {
+          id: cnsIds[8],
+          title: 'Cigarrettes',
+          type: 'Counter',
+          count: 0,
+        },
+        {
+          id: cnsIds[9],
+          title: 'Joints',
+          type: 'Counter',
+          count: 0,
+        },
+      ],
+    });
+  };
+  return (
+    <Dialog open={open} onClose={onClose}>
+      <DialogTitle>Wizard</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          You can jumpstart your list experience by creating a few generic lists
+          to help you get started.
+        </DialogContentText>
+        <Grid container spacing={1}>
+          <Grid item xs={12} sm={6}>
+            <Card>
+              <CardHeader title="Emotions ❤"></CardHeader>
+              <CardContent>
+                <Markdown>
+                  A set of lists to track your emotions. You can use them to
+                  keep a diary of your emotions and view them in a graph
+                  whenever you wish. *Hint: Make the counters range from e.g. -5
+                  to 5 to mark an opposite effect.*
+                </Markdown>
+              </CardContent>
+              <CardActionArea>
+                <CardActions>
+                  <Button
+                    disabled={hasEmotionsList}
+                    onClick={createEmotionsLists}
+                  >
+                    Create
+                  </Button>
+                </CardActions>
+              </CardActionArea>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Card
+              sx={{
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+              }}
+            >
+              <CardHeader
+                title={
+                  <Box sx={{ alignItems: 'center', display: 'flex' }}>
+                    Activity {<DirectionsRunIcon></DirectionsRunIcon>}
+                  </Box>
+                }
+              ></CardHeader>
+              <CardContent>
+                <Typography>
+                  A list to track your activity. Use it to keep a diary of your
+                  activity and correlate it with your mood.
+                </Typography>
+              </CardContent>
+              <CardActionArea>
+                <CardActions>
+                  <Button
+                    disabled={hasActivityList}
+                    onClick={createActivityLists}
+                  >
+                    Create
+                  </Button>
+                </CardActions>
+              </CardActionArea>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Card
+              sx={{
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+              }}
+            >
+              <CardHeader
+                title={
+                  <Box sx={{ alignItems: 'center', display: 'flex' }}>
+                    Consumption {<SportsBarIcon></SportsBarIcon>}
+                  </Box>
+                }
+              ></CardHeader>
+              <CardContent>
+                <Typography>
+                  A list to track your consumption. Use it to keep a diary of
+                  your food and beverage intake. Want to smoke less? Track your
+                  costs and progress here.
+                </Typography>
+              </CardContent>
+              <CardActionArea>
+                <CardActions>
+                  <Button
+                    disabled={hasconsumptionList}
+                    onClick={createConsumptionList}
+                  >
+                    Create
+                  </Button>
+                </CardActions>
+              </CardActionArea>
+            </Card>
+          </Grid>
+        </Grid>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>Close</Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
 export const MyLists = (props) => {
   const [component, { loading, error, refetch }] = useComponent('my-lists', {});
   const { session } = useContext(authContext);
@@ -286,6 +604,12 @@ export const MyLists = (props) => {
     'showExpenses',
     false
   );
+  const [showWizard, setShowWizard] = useState(
+    component?.children?.length === 0
+  );
+  useEffect(() => {
+    setShowWizard(component?.children?.length === 0);
+  }, [component?.children]);
   const [nItems, setNItems] = useState(5);
 
   const [show, setShow] = useState<Record<string, boolean | EventTarget>>({
@@ -930,6 +1254,13 @@ export const MyLists = (props) => {
         showExpenses={showExpenses}
         setShowArchived={setShowArchived}
         setShowExpenses={setShowExpenses}
+        showWizard={showWizard}
+        setShowWizard={setShowWizard}
+      />
+      <Wizard
+        open={showWizard}
+        onClose={() => setShowWizard(false)}
+        root={component}
       />
       <ImportMenu
         onClose={handleClose('import')}
@@ -1046,6 +1377,8 @@ const MoreMenu = ({
   setShowArchived,
   showExpenses,
   setShowExpenses,
+  showWizard,
+  setShowWizard,
 }) => {
   const { state, dispatch } = useContext(stateContext);
   const navigate = useNavigate();
@@ -1149,6 +1482,20 @@ const MoreMenu = ({
                   >
                     <AttachMoneyIcon />
                     Show Total
+                  </SwitchButton>
+                </Tooltip>
+                <Tooltip title="Show Wizard." placement="left">
+                  <SwitchButton
+                    fullWidth
+                    sx={{ justifyContent: 'start', gap: 1 }}
+                    color={showWizard ? 'success' : undefined}
+                    // sx={{ ml: 'auto' }}
+                    onClick={() => {
+                      setShowWizard(!showWizard);
+                    }}
+                  >
+                    <AutoFixHigh />
+                    Show Wizard
                   </SwitchButton>
                 </Tooltip>
                 <hr />
@@ -2063,7 +2410,7 @@ export const List = ({
               title={
                 hoverTitle
                   ? `${hoverTitle}: ${avgCons?.toFixed(2)}%`
-                  : `${avgCons.toFixed(0)}% of average consumption`
+                  : `${avgCons.toFixed(0)}% of average consumptionption`
               }
             >
               <LinearProgress
