@@ -753,4 +753,3 @@ export const AnalyticsPage = (props) => {
     </>
   );
 };
-const expensesToLine = (data) => {};

@@ -2943,7 +2943,6 @@ const TodoItemDetailCard = (props) => {
         component={listComponent}
         edit={edit}
         setEdit={setEdit}
-        setTodoTitle={() => {}}
         refetch={refetchList}
       />
     </Card>
