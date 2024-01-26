@@ -27,7 +27,6 @@ export const ExampleChart = ({ data }) => {
           />
           <XAxis dataKey="date" tickFormatter={DateFormatter('dd.MM')} />
           <Legend />
-
           {Object.keys(data.reduce((acc, cur) => ({ ...acc, ...cur }), {}))
             .filter((key) => !['date', 'createdAt', 'archived'].includes(key))
             .map((key, i) => {

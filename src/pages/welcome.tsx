@@ -27,13 +27,19 @@ export const WelcomePage = () => {
   const ctx = useContext(authContext);
   const navigate = useNavigate();
   const [component, { loading }] = useComponent('landing-list-3');
-  const data =
-    component?.children?.map((counter) => {
-      return {
-        date: counter?.props?.archived,
-        [counter.props.title]: counter?.props?.count,
-      };
-    }) || [];
+  const data = Object.values(
+    component?.children
+      ?.map((counter) => {
+        return {
+          date: counter?.props?.archived,
+          [counter.props.title]: counter?.props?.count,
+        };
+      })
+      .reduce(
+        (acc, cur) => ({ ...acc, [cur.date]: { ...acc[cur.date], ...cur } }),
+        {}
+      )
+  );
   return (
     <div>
       <Meta Component={ListsMeta} />
