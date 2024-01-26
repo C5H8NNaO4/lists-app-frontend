@@ -15,6 +15,7 @@ import {
   Card,
   CardMedia,
   CardContent,
+  CardHeader,
 } from '@mui/material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { Markdown } from '../components/Markdown';
@@ -38,7 +39,7 @@ export const WelcomePage = () => {
       .reduce(
         (acc, cur) => ({ ...acc, [cur.date]: { ...acc[cur.date], ...cur } }),
         {}
-      )
+      ) || {}
   );
   return (
     <div>
@@ -80,90 +81,102 @@ export const WelcomePage = () => {
           </Box>
         </Paper>
         <Grid container spacing={2} sx={{ my: 1 }}>
-          <Grid item xs={12} md={6}>
-            <Card sx={{ display: 'flex', flexDirection: 'row' }}>
-              <CardMedia
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  minWidth: 300,
-                }}
-              >
-                <List
-                  list="landing-list-1"
-                  nItems={5}
-                  options={{ hideHUD: true }}
-                />
-              </CardMedia>
-              <CardContent>
-                <Typography variant="h4">Simple Lists</Typography>
-                <Typography>
-                  Enter a title and add different items to your lists by
-                  clicking the + button.
-                </Typography>
-                <Typography>
-                  Complete items by clicking the checkmark.
-                </Typography>
-              </CardContent>
+          <Grid item xs={12} lg={6}>
+            <Card>
+              <Grid container spacing={2}>
+                <Grid item xs={12} lg={6}>
+                  <CardMedia
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      minWidth: 300,
+                    }}
+                  >
+                    <List
+                      list="landing-list-1"
+                      nItems={5}
+                      options={{ hideHUD: true }}
+                    />
+                  </CardMedia>
+                </Grid>
+                <Grid item xs={12} lg={6}>
+                  <CardHeader title="Simple Lists"></CardHeader>
+                  <CardContent>
+                    <Typography>
+                      Enter a title and add different items to your lists by
+                      clicking the + button.
+                    </Typography>
+                    <Typography>
+                      Complete items by clicking the checkmark.
+                    </Typography>
+                  </CardContent>
+                </Grid>
+              </Grid>
             </Card>
           </Grid>
-          <Grid item xs={12} md={6}>
-            <Card sx={{ display: 'flex', flexDirection: 'row' }}>
-              <CardMedia
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  minWidth: 300,
-                }}
-              >
-                <List
-                  list="landing-list-2"
-                  nItems={5}
-                  options={{ hideHUD: false }}
-                />
-              </CardMedia>
-              <CardContent>
-                <Typography variant="h4">Color your life</Typography>
-                <Typography>
-                  Select the palette icon to choose a color.
-                </Typography>
-                <Typography>
-                  To delete items, press the edit (pencil) icon and then the red
-                  delete icon.
-                </Typography>
-              </CardContent>
+          <Grid item xs={12} lg={6}>
+            <Card>
+              <Grid container spacing={2}>
+                <Grid item xs={12} lg={6}>
+                  <CardMedia
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      minWidth: 300,
+                    }}
+                  >
+                    <List
+                      list="landing-list-2"
+                      nItems={5}
+                      options={{ hideHUD: false }}
+                    />
+                  </CardMedia>
+                </Grid>
+                <Grid item xs={12} lg={6}>
+                  <CardHeader title="Color your life"></CardHeader>
+                  <CardContent>
+                    <Typography>
+                      Select the palette icon to choose a color.
+                    </Typography>
+                    <Typography>
+                      To delete items, press the edit (pencil) icon and then the
+                      red delete icon.
+                    </Typography>
+                  </CardContent>
+                </Grid>
+              </Grid>
             </Card>
           </Grid>
           <Grid item container xs={12} spacing={2}>
-            <Grid item xs={12} md={6}>
-              <Card
-                sx={{ display: 'flex', flexDirection: 'row', height: '100%' }}
-              >
-                <CardMedia
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    minWidth: 300,
-                  }}
-                >
-                  <List
-                    list="landing-list-3"
-                    nItems={5}
-                    options={{ showArchived: true }}
-                  />
-                </CardMedia>
-                <CardContent>
-                  <Typography variant="h4">Track consumption</Typography>
-                  <Typography>
-                    Once you have added a few items, you can track your
-                    consumption over time using the analytics feature. Correlate
-                    mood with coffee intake, activity and whatever else you want
-                    to track.
-                  </Typography>
-                </CardContent>
+            <Grid item xs={12} lg={6}>
+              <Card>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} lg={6}>
+                    <CardMedia
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        minWidth: 300,
+                      }}
+                    >
+                      <List list="landing-list-3" nItems={5} />
+                    </CardMedia>
+                  </Grid>
+                  <Grid item xs={12} lg={6}>
+                    <CardHeader title="Track your history"></CardHeader>
+                    <CardContent>
+                      <Typography>
+                        Once you have added a few items, you can track your
+                        consumption over time using the analytics feature.
+                        Correlate mood with coffee intake, activity and whatever
+                        else you want to track.
+                      </Typography>
+                    </CardContent>
+                  </Grid>
+                </Grid>
               </Card>
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} lg={6}>
               <ExampleChart data={data} />
             </Grid>
           </Grid>
