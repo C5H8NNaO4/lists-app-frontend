@@ -1886,6 +1886,11 @@ const transpose = (arr: Array<any>, n: number): Array<any> => {
   }
   return ret;
 };
+
+export type ListOptions = {
+  showArchived?: boolean;
+  hideHUD?: boolean;
+};
 export const List = ({
   list,
   data,
@@ -1908,8 +1913,9 @@ export const List = ({
   nItems: number;
   lastCompleted?: any;
   refetchPoints?: any;
-  options?: any;
+  options?: ListOptions;
   parent?: any;
+  showArchived?: boolean;
 }) => {
   const { dispatch, state } = useContext(stateContext);
   const [component, { loading, error, refetch: refetchList }] = useComponent(
@@ -1925,6 +1931,8 @@ export const List = ({
     }
   };
   const { hideHUD } = options as any;
+  const isSmall = useMediaQuery((theme: any) => theme.breakpoints.down('sm'));
+
   const [todoTitle, setTodoTitle] = useState('');
   const [listTitle, setListTitle] = useSyncedState(
     component?.props?.title,
@@ -1933,10 +1941,11 @@ export const List = ({
   );
   const [edit, setEdit] = useState(false);
   const [labelMode, setLabelMode] = useState(false);
-  const [hover, setHover] = useState(false);
+  const [hover, setHover] = useState(isSmall);
   const [showColors, setShowColors] = useState<HTMLElement | null>(null);
   const [showArchived, setShowArchived] = useState<boolean>(
-    component?.props?.settings?.defaultType === 'Expense'
+    options.showArchived ||
+      component?.props?.settings?.defaultType === 'Expense'
   );
   const [showType, setShowType] = useState<HTMLElement | null>(null);
   const [sort, setSort] = useState(0);
@@ -2329,7 +2338,7 @@ export const List = ({
               : undefined,
         }}
         onMouseOver={() => setHover(true)}
-        onMouseLeave={() => setTimeout(setHover, 200, false)}
+        onMouseLeave={() => setTimeout(setHover, 200, isSmall || false)}
         elevation={
           !component?.props?.title
             ? 5
@@ -2477,11 +2486,11 @@ export const List = ({
           </CardActionArea>
         )}
 
-        {!(component?.props?.settings?.pinned && !hover) && (
+        {!(component?.props?.settings?.pinned && !hover) && !hideHUD && (
           <CardActionArea
             sx={{
               mt: 'auto',
-              opacity: hover && !hideHUD ? 1 : 0,
+              opacity: hover ? 1 : 0,
               transition: 'opacity 200ms ease-in',
               '&:hover': {
                 transition: 'opacity 200ms ease-out',
@@ -2859,6 +2868,7 @@ const TodoItemDetailCard = (props) => {
   const [component] = useComponent(todo.component, {
     data: todo,
   });
+
   const [hover, setHover] = useState(false);
   const [edit, setEdit] = useState(false);
   const [todoTitle, setTodoTitle] = useSyncedState(
@@ -2928,7 +2938,7 @@ const TodoItemDetailCard = (props) => {
         </sup>
       </CardContent>
       <ListActions
-        hover={hover}
+        hover={true}
         itemComponent={component}
         component={listComponent}
         edit={edit}
@@ -4063,21 +4073,33 @@ const ListItemMenu = (props) => {
                         </Select>
                       </FormControl>
                     </Tooltip>
-                    {component?.props?.archived && (
-                      <Box>
-                        <FormLabel>Archive Date</FormLabel>
-                        <LocalizationProvider dateAdapter={AdapterDateFns}>
-                          <MobileDatePicker
-                            value={new Date(component?.props?.archived)}
-                            onChange={(e) => {
-                              component?.props?.setArchived(
-                                e?.toISOString() || null
-                              );
-                            }}
-                          />
-                        </LocalizationProvider>
-                      </Box>
-                    )}
+
+                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                      <FormLabel>Creation Date</FormLabel>
+                      <LocalizationProvider dateAdapter={AdapterDateFns}>
+                        <MobileDatePicker
+                          value={new Date(component?.props?.createdAt)}
+                          onChange={(e) => {
+                            component?.props?.setCreated(
+                              e?.toISOString() || null
+                            );
+                          }}
+                        />
+                      </LocalizationProvider>
+                      <FormLabel>Archive Date</FormLabel>
+                      <LocalizationProvider dateAdapter={AdapterDateFns}>
+                        <MobileDatePicker
+                          value={new Date(component?.props?.archived)}
+                          onChange={async (e) => {
+                            await component?.props?.setArchived(
+                              e?.toISOString() || null
+                            );
+                            await refetchList();
+                          }}
+                        />
+                      </LocalizationProvider>
+                    </Box>
+
                     <ColorMenu
                       onClose={handleClose}
                       open={showColors}

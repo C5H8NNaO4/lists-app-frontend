@@ -41,6 +41,9 @@ import {
   subDays,
 } from 'date-fns';
 import { useEffect, useMemo, useState } from 'react';
+import { CustomTooltip } from '../../components/charts/CustomTooltip';
+import { colors } from '../../lib/colors';
+import { DateFormatter } from '../../lib/analytics';
 
 // const colors = [
 //   '#9e0142',
@@ -56,37 +59,31 @@ import { useEffect, useMemo, useState } from 'react';
 //   'black',
 // ];
 
-const colors = [
-  '#333333',
-  '#FF4136',
-  '#FF851B',
-  '#FFDC00',
-  '#45B69C',
-  '#4CAF50',
-  '#F012BE',
-  '#B10DC9',
-  '#85144b',
-  '#3D9970',
-  '#AAAAAA',
-  '#FF6347',
-  '#39CCCC',
-  '#7FDBFF',
-  '#F0DB4F',
-  '#001F3F',
-  '#0074E4',
-  '#00AEEF',
-  '#FFFFFF',
-  '#D3D3D3',
+// const colors = [
+//   '#333333',
+//   '#FF4136',
+//   '#FF851B',
+//   '#FFDC00',
+//   '#45B69C',
+//   '#4CAF50',
+//   '#F012BE',
+//   '#B10DC9',
+//   '#85144b',
+//   '#3D9970',
+//   '#AAAAAA',
+//   '#FF6347',
+//   '#39CCCC',
+//   '#7FDBFF',
+//   '#F0DB4F',
+//   '#001F3F',
+//   '#0074E4',
+//   '#00AEEF',
+//   '#FFFFFF',
+//   '#D3D3D3',
 
-  'black',
-];
-const DateFormatter = (formatStr) => (value) => {
-  try {
-    return format(new Date(value), formatStr);
-  } catch (e) {
-    return value;
-  }
-};
+//   'black',
+// ];
+
 export const AnalyticsPage = (props) => {
   const [component, { loading, error, refetch }] = useComponent('my-lists', {});
   const [nDays, setNDays] = useState(7);
@@ -174,6 +171,24 @@ export const AnalyticsPage = (props) => {
       return deepmerge(acc, childs);
     }, {});
 
+  const listTree = component?.children
+    .filter((list) => list.props.settings.defaultType === 'Counter')
+    .reduce((acc, list, i) => {
+      return list.children.reduce((acc, todo, j) => {
+        acc[list.props.title] = {
+          ...(acc[list.props.title] || {}),
+          [todo.props.title]: true,
+        };
+        return acc;
+      }, acc);
+    }, {});
+  console.log('LIST TREE', listTree);
+  const listMapping = Object.keys(listTree || {}).reduce((acc, list, i) => {
+    return Object.keys(listTree[list]).reduce((acc, todo, j) => {
+      acc[todo] = { i, j };
+      return acc;
+    }, acc);
+  }, {});
   const [visibility, setVisibility] = useState({});
 
   useEffect(() => {
@@ -416,19 +431,24 @@ export const AnalyticsPage = (props) => {
 
       {Object.keys(
         dataDays.reduce((acc, cur) => ({ ...acc, ...cur }), {}) || {}
-      ).map((key, i) => {
-        let visible = visibility[key] !== false;
-        if (invert) visible = !visible;
-        if (key === 'date') return null;
-        return (
-          <Line
-            strokeWidth={2}
-            dataKey={visible ? key : ' ' + key}
-            connectNulls
-            stroke={colors[i]}
-          />
-        );
-      })}
+      )
+        .filter((key) => {
+          if (key === 'date') return false;
+          return true;
+        })
+        .map((key, i) => {
+          let visible = visibility[key] !== false;
+          if (invert) visible = !visible;
+          console.log('COLOR', listMapping[key]);
+          return (
+            <Line
+              strokeWidth={2}
+              dataKey={visible ? key : ' ' + key}
+              connectNulls
+              stroke={colors[listMapping[key].j || 0][listMapping[key].i]}
+            />
+          );
+        })}
     </LineChart>
   );
   const burndownChart = (
@@ -448,7 +468,15 @@ export const AnalyticsPage = (props) => {
 
       {Object.keys(lastWeek[0] || {}).map((key, i) => {
         if (key === 'date' || (active && key !== active)) return null;
-        return <Line strokeWidth={2} dataKey={key} stroke={colors[i]} />;
+        return (
+          <Line
+            strokeWidth={2}
+            dataKey={key}
+            stroke={
+              colors[i % colors.length][i % colors[i % colors.length].length]
+            }
+          />
+        );
       })}
     </LineChart>
   );
@@ -462,11 +490,18 @@ export const AnalyticsPage = (props) => {
 
       {Object.keys(expenseData[0] || {}).map((key, i) => {
         if (key === 'date') return null;
-        return <Bar dataKey={key} fill={colors[i]} />;
+        return (
+          <Bar
+            dataKey={key}
+            fill={
+              colors[i % colors.length][i % colors[i % colors.length].length]
+            }
+          />
+        );
       })}
     </BarChart>
   );
-  const expensePieChart = pieData.map((pieData) => {
+  const expensePieChart = pieData.map((pieData, j) => {
     return (
       <PieChart>
         <Legend />
@@ -475,11 +510,17 @@ export const AnalyticsPage = (props) => {
             data={pieData || []}
             dataKey={'value'}
             nameKey={'name'}
-            fill={colors[0]}
+            fill={colors[j % colors.length][j % colors[j].length]}
             label
           >
-            {(pieData || []).map((entry, index) => (
-              <Cell fill={colors[index % colors.length]} />
+            {(pieData || []).map((entry, i) => (
+              <Cell
+                fill={
+                  colors[i % colors.length][
+                    i % colors[i % colors.length].length
+                  ]
+                }
+              />
             ))}
           </Pie>
         }
@@ -502,7 +543,14 @@ export const AnalyticsPage = (props) => {
 
       {Object.keys(itemData[0] || {}).map((key, i) => {
         if (key === 'date') return null;
-        return <Bar dataKey={key} fill={colors[i]} />;
+        return (
+          <Bar
+            dataKey={key}
+            fill={
+              colors[i % colors.length][i % colors[i % colors.length].length]
+            }
+          />
+        );
       })}
     </BarChart>
   );
@@ -525,7 +573,7 @@ export const AnalyticsPage = (props) => {
 
       {Object.keys(sumData[0] || {}).map((key, i) => {
         if (key === 'date') return null;
-        return <Bar dataKey={key} fill={[colors[6], colors[0]][i]} />;
+        return <Bar dataKey={key} fill={colors[i][0]} />;
       })}
     </BarChart>
   );
@@ -540,7 +588,14 @@ export const AnalyticsPage = (props) => {
       <Legend />
       {Object.keys(data[0] || {}).map((key, i) => {
         if (key === 'date') return null;
-        return <Bar dataKey={key} fill={colors[i]} />;
+        return (
+          <Bar
+            dataKey={key}
+            fill={
+              colors[i % colors.length][i % colors[i % colors.length].length]
+            }
+          />
+        );
       })}
     </BarChart>
   );
@@ -556,7 +611,14 @@ export const AnalyticsPage = (props) => {
       {Object.keys(dataDaysLkp).map((key, i) => {
         if (key === 'date') return null;
         if (dataDaysLkp[key] === 0) return null;
-        return <Bar dataKey={key} fill={colors[i]} />;
+        return (
+          <Bar
+            dataKey={key}
+            fill={
+              colors[i % colors.length][i % colors[i % colors.length].length]
+            }
+          />
+        );
       })}
     </BarChart>
   );
@@ -692,52 +754,3 @@ export const AnalyticsPage = (props) => {
   );
 };
 const expensesToLine = (data) => {};
-const CustomTooltip = ({
-  active,
-  payload,
-}: {
-  active?: null | string | string[];
-  payload?: any;
-}) => {
-  return (
-    <Paper
-      className="noFocus"
-      elevation={1}
-      sx={{
-        background: '#FFFFFFAA',
-        backdropFilter: 'blur(2px);',
-        '&:hover': {
-          background: '#000',
-        },
-        display: 'flex',
-        maxWidth: '750px',
-        flexWrap: 'wrap',
-      }}
-    >
-      {Object.keys(payload?.[0]?.payload || {})
-        .filter((key) => !['date'].includes(key))
-        .filter(
-          (key) =>
-            active?.length === 0 ||
-            (active ? [active].flat().includes(key) : true)
-        )
-        .map((key, i, arr) => {
-          return (
-            <ListItem
-              key={key}
-              sx={{
-                maxWidth:
-                  arr.length > 20 ? '20%' : arr.length > 10 ? '33%' : '50%',
-              }}
-            >
-              <ListItemText
-                sx={{ my: 0, p: 0 }}
-                primary={key}
-                secondary={payload[0]?.payload[key]}
-              />
-            </ListItem>
-          );
-        })}
-    </Paper>
-  );
-};

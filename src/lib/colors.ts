@@ -9,13 +9,13 @@ const hues = [
   'indigo',
   'purple',
   'pink',
+  'ocre',
+  'brown',
 ];
-const shades = ['light', undefined, 'dark'];
+const shades = ['light'];
 
-export const colors = shades
-  .map((shade) =>
-    hues.map((hue) => {
-      return randomColor({ luminosity: shade, hue, count: 20 });
-    })
-  )
-  .flat(1);
+export const colors = hues.map((hue) => {
+  return randomColor({ hue, count: 10 });
+});
+
+console.log('COLORS', colors);

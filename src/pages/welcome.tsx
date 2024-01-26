@@ -1,5 +1,5 @@
 import { List, MyLists } from '../server-components/examples/Lists';
-import { authContext } from '@state-less/react-client';
+import { authContext, useComponent } from '@state-less/react-client';
 import { useContext } from 'react';
 import { ListsMeta, Meta } from '../components/Meta';
 import { Warning } from '../components/Warning';
@@ -19,11 +19,21 @@ import {
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { Markdown } from '../components/Markdown';
 import { getRawPath } from '../components/CollabEditButton';
+import { ExampleChart } from '../components/charts/ExampleChart';
 
 const PAGE_SRC = 'readme/welcome.md';
+
 export const WelcomePage = () => {
   const ctx = useContext(authContext);
   const navigate = useNavigate();
+  const [component, { loading }] = useComponent('landing-list-3');
+  const data =
+    component?.children?.map((counter) => {
+      return {
+        date: counter?.props?.archived,
+        [counter.props.title]: counter?.props?.count,
+      };
+    }) || [];
   return (
     <div>
       <Meta Component={ListsMeta} />
@@ -117,6 +127,39 @@ export const WelcomePage = () => {
                 </Typography>
               </CardContent>
             </Card>
+          </Grid>
+          <Grid item container xs={12} spacing={2}>
+            <Grid item xs={12} md={6}>
+              <Card
+                sx={{ display: 'flex', flexDirection: 'row', height: '100%' }}
+              >
+                <CardMedia
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    minWidth: 300,
+                  }}
+                >
+                  <List
+                    list="landing-list-3"
+                    nItems={5}
+                    options={{ showArchived: true }}
+                  />
+                </CardMedia>
+                <CardContent>
+                  <Typography variant="h4">Track consumption</Typography>
+                  <Typography>
+                    Once you have added a few items, you can track your
+                    consumption over time using the analytics feature. Correlate
+                    mood with coffee intake, activity and whatever else you want
+                    to track.
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <ExampleChart data={data} />
+            </Grid>
           </Grid>
         </Grid>
       </Container>
