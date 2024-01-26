@@ -604,9 +604,7 @@ export const MyLists = (props) => {
     'showExpenses',
     false
   );
-  const [showWizard, setShowWizard] = useState(
-    component?.children?.length === 0
-  );
+  const [showWizard, setShowWizard] = useState(false);
   useEffect(() => {
     setShowWizard(component?.children?.length === 0);
   }, [loading]);
