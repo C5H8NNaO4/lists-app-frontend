@@ -73,7 +73,7 @@ export const PrankButton = ({ children }) => {
       });
     } else {
       setStyle({
-        transition: 'transform 1s ease-in',
+        transition: 'transform 1s ease-out',
       });
     }
   });
@@ -94,9 +94,9 @@ export const PrankButton = ({ children }) => {
               setOpen(true);
               setTimeout(() => {
                 setOpen(false);
-              }, 1500);
-            }, 1000);
-          }, 500);
+              }, 1000);
+            }, 0);
+          }, 1500);
         }}
       >
         {children}
