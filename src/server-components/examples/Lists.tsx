@@ -2320,7 +2320,7 @@ export const List = ({
           // height: '100%',
           backgroundColor:
             !component?.props?.title && !component?.props?.color
-              ? '#00ffff99 !important'
+              ? '#ffffff99 !important'
               : component?.props?.color
               ? `${
                   component?.props?.color +
@@ -2410,7 +2410,7 @@ export const List = ({
               title={
                 hoverTitle
                   ? `${hoverTitle}: ${avgCons?.toFixed(2)}%`
-                  : `${avgCons.toFixed(0)}% of average consumptionption`
+                  : `${avgCons.toFixed(0)}% of average consumption`
               }
             >
               <LinearProgress

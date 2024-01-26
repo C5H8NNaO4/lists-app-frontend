@@ -9,7 +9,7 @@ import TableRow from '@mui/material/TableRow';
 import Link from '@mui/material/Link';
 import Box from '@mui/material/Box';
 import { Link as RouterLink } from 'react-router-dom';
-import { useContext, useEffect, useRef, useState, createElement } from 'react';
+import { useContext, useEffect, useState, createElement } from 'react';
 
 import { a11yDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
@@ -113,7 +113,14 @@ export const Markdown = ({ children, src, disablePadding }: MarkdownProps) => {
         },
         a: (props: any) => {
           return (
-            <Link to={props.href} component={RouterLink}>
+            <Link
+              sx={{
+                color: 'success.main',
+                '&:visited': { color: 'secondary.main' },
+              }}
+              to={props.href}
+              component={RouterLink}
+            >
               {props.children}
             </Link>
           );
