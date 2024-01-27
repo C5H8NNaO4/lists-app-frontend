@@ -158,7 +158,8 @@ export const AnalyticsPage = (props) => {
                 new Date(list.props.settings.endOfDay || endOfDay(analysisDate))
               ) &&
             todo.props.archived &&
-            getDate(new Date(todo.props.createdAt)) < getDate(analysisDate)
+            getDate(new Date(todo.props.createdAt)) <
+              getDate(new Date(todo.props.archived))
           ) {
             analysisDate.setDate(analysisDate.getDate() - 1);
           }
