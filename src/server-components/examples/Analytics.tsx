@@ -117,7 +117,11 @@ export const AnalyticsPage = (props) => {
   }, {});
 
   const countersDays = component?.children
-    .filter((list) => listVisibility[list.props.title])
+    .filter(
+      (list) =>
+        listVisibility[list.props.title] &&
+        list.props.settings.defaultType === 'Counter'
+    )
     .reduce((acc, list) => {
       const childs = list.children
         .filter((todo) => {
@@ -439,7 +443,7 @@ export const AnalyticsPage = (props) => {
         .map((key, i) => {
           let visible = visibility[key] !== false;
           if (invert) visible = !visible;
-          console.log('COLOR', listMapping[key]);
+          console.log('COLOR', key, listMapping);
           return (
             <Line
               strokeWidth={2}
