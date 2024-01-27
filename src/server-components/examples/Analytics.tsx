@@ -445,7 +445,9 @@ export const AnalyticsPage = (props) => {
               strokeWidth={2}
               dataKey={visible ? key : ' ' + key}
               connectNulls
-              stroke={colors[listMapping[key].j || 0][listMapping[key].i]}
+              stroke={
+                colors[listMapping[key].j % colors?.length][listMapping[key].i]
+              }
             />
           );
         })}
