@@ -3474,7 +3474,7 @@ const TodoItem = (props) => {
                   ? Math.round(8 * 16)
                       .toString(16)
                       .toUpperCase()
-                  : '00') +
+                  : component?.props?.color || '00') +
                 ' !important',
               pl: dependency ? 4 : edit ? 0 : 2,
             }}
@@ -3687,6 +3687,8 @@ const CounterItem = (props) => {
           sx={{
             opacity: component?.props?.archived ? 0.5 : 1,
             pl: edit ? 2 : 2,
+            filter: selected ? 'brightness(80%)' : '',
+
             backgroundColor: selected
               ? '#00000033 !important'
               : `${
@@ -3703,7 +3705,10 @@ const CounterItem = (props) => {
                 ? Math.round(8 * 16)
                     .toString(16)
                     .toUpperCase()
-                : '00') +
+                : selected
+                ? '#00000033 !important'
+                : component?.props?.color +
+                  (state.animatedBackground > 0 ? 'D3' : '')) +
               ' !important',
           }}
           disabled={!component?.props.completed && !edit && !canBeCompleted}
