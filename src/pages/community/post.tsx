@@ -29,6 +29,7 @@ export const PostsPage = (props) => {
   if (params.post === 'new') {
     return <NewPost />;
   }
+
   return (
     <Container maxWidth="lg" disableGutters sx={{ py: 4 }}>
       <Post id={params.post} />
@@ -37,7 +38,7 @@ export const PostsPage = (props) => {
   );
 };
 
-const Post = (post) => {
+const Post = ({ id }) => {
   const [skip, setSkip] = useState(false);
   const [component, { error, loading, refetch }] = useComponent(id);
 
