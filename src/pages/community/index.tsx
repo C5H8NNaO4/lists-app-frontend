@@ -77,7 +77,7 @@ const Post = (post) => {
     [upvotes, downvotes, score, wilson, random]
   );
 
-  const nAnswers = post.children.length - 1;
+  const nAnswers = post.children.length - 2;
   return (
     <Card
       sx={{
@@ -141,9 +141,9 @@ const Post = (post) => {
   );
 };
 
-const Posts = ({ componentKey = 'lists-forum' }) => {
+const Posts = () => {
   const [page, setPage] = useState(1);
-  const [component, { error, loading }] = useComponent(componentKey, {
+  const [component, { error, loading }] = useComponent('community-forum', {
     props: {
       page: page,
       pageSize: PAGE_SIZE_POSTS,
