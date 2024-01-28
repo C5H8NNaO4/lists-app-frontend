@@ -434,7 +434,7 @@ export const Layout = () => {
                               </Link>
                             </ListItemText>
                           </ListItem>
-                          <ViewCounter />
+                          <ViewCounter componentKey="lists-views" />
                         </List>
                       </div>
                     </CardContent>

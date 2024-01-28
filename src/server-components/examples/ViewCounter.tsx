@@ -10,12 +10,22 @@ import {
   ListItemIcon,
 } from '@mui/material';
 
-export const ViewCounter = () => {
-  const [component, { error, loading }] = useComponent('view-counter', {});
+export type ViewCounterProps = {
+  componentKey: string;
+  data?: any;
+  skip?: boolean;
+};
+export const ViewCounter = ({ componentKey, data, skip }: ViewCounterProps) => {
+  const [component, { loading }] = useComponent(componentKey, {
+    skip,
+    data,
+  });
 
   return (
     <Tooltip title="Views" placement="left">
-      <Box sx={{ display: 'flex' }}>
+      <Box
+        sx={{ display: 'flex', justifyContent: 'start', width: 'min-content' }}
+      >
         <ListItem dense>
           <ListItemIcon>
             <VisibilityIcon />
