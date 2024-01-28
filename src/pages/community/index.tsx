@@ -20,6 +20,7 @@ import { calc } from '../../server-components/examples/VotingApp';
 import { Link as RouterLink } from 'react-router-dom';
 import { useMemo, useState } from 'react';
 import { PAGE_SIZE_POSTS } from '../../lib/const';
+import { ViewCounter } from '../../server-components/examples/ViewCounter';
 const PAGE_SRC = 'src/pages/States.md';
 
 export const CommunityPage = () => {
@@ -107,6 +108,10 @@ const Post = (post) => {
               color={nAnswers === 0 ? undefined : 'success'}
               label={`${nAnswers} answers`}
             ></Chip>
+            <ViewCounter
+              componentKey={post?.props?.viewCounter?.component}
+              data={post?.props?.viewCounter}
+            />
           </CardContent>
         </FlexBox>
         <Box>
