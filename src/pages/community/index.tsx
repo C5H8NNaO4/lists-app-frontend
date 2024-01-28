@@ -143,7 +143,7 @@ const Post = (post) => {
 
 const Posts = () => {
   const [page, setPage] = useState(1);
-  const [component, { error, loading }] = useComponent('community-forum', {
+  const [component, { error, loading }] = useComponent('lists-forum', {
     props: {
       page: page,
       pageSize: PAGE_SIZE_POSTS,
