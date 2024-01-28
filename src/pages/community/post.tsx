@@ -10,11 +10,12 @@ import {
   CardActions,
   Alert,
   LinearProgress,
+  IconButton,
 } from '@mui/material';
 
 import { Markdown } from '../../components/Markdown';
 import { FlexBox } from '../../components/FlexBox';
-import { useComponent } from '@state-less/react-client';
+import { useComponent, useLocalStorage } from '@state-less/react-client';
 import { UpDownButtons } from '../../server-components/examples/VotingApp';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
@@ -23,6 +24,7 @@ import { NewPostButton } from '.';
 import { CommunityComments } from '../../server-components/examples/Comments';
 import { useSyncedState } from '../../lib/hooks';
 import { ViewCounter } from '../../server-components/examples/ViewCounter';
+import Visibility from '@mui/icons-material/Visibility';
 
 export const PostsPage = (props) => {
   const params = useParams();
@@ -48,6 +50,10 @@ const Post = ({ id }) => {
   }, [component?.props]);
 
   const [edit, setEdit] = useState(false);
+  const [showDeleted, setShowDeleted] = useLocalStorage(
+    'mod-show-deleted',
+    false
+  );
   const [body, setBody, { loading: bodyLoading }] = useSyncedState(
     component?.props?.body,
     component?.props?.setBody
@@ -67,8 +73,15 @@ const Post = ({ id }) => {
         sx={{ alignItems: 'center', height: 'min-content', flexWrap: 'wrap' }}
       >
         <CardHeader title={component?.props?.title}></CardHeader>
-
-        <NewPostButton />
+        <FlexBox sx={{ ml: 'auto' }}>
+          <IconButton
+            color={showDeleted ? 'info' : undefined}
+            onClick={() => setShowDeleted(!showDeleted)}
+          >
+            <Visibility />
+          </IconButton>
+          <NewPostButton />
+        </FlexBox>
       </FlexBox>
       <Card sx={{ mb: 1 }} color="info">
         {component?.props?.deleted && (
@@ -159,7 +172,9 @@ const Post = ({ id }) => {
         <ViewCounter componentKey={component?.props.viewCounter?.component} />
       )}
       {component?.children
-        .filter((c) => c?.props?.body)
+        .filter(
+          (c) => c?.props?.body && (showDeleted ? true : !c?.props?.deleted)
+        )
         ?.map((answer) => {
           return <Answer answer={answer} />;
         })}
