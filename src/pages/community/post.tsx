@@ -37,7 +37,7 @@ export const PostsPage = (props) => {
   );
 };
 
-const Post = ({ id }) => {
+const Post = (post) => {
   const [skip, setSkip] = useState(false);
   const [component, { error, loading, refetch }] = useComponent(id);
 
@@ -157,9 +157,11 @@ const Post = ({ id }) => {
       {component?.props.viewCounter && (
         <ViewCounter componentKey={component?.props.viewCounter?.component} />
       )}
-      {component?.children.slice(2)?.map((answer) => {
-        return <Answer answer={answer} />;
-      })}
+      {component?.children
+        .filter((c) => c?.props?.body)
+        ?.map((answer) => {
+          return <Answer answer={answer} />;
+        })}
     </>
   );
 };
