@@ -3464,11 +3464,18 @@ const TodoItem = (props) => {
                 backgroundColor: component?.props?.color || undefined,
                 filter: 'brightness(80%)',
               },
-              opacity: state.search
-                ? 1 - dist / 10
-                : component?.props?.archived
-                ? 0.5
-                : 1,
+              background:
+                '#4CAF50' +
+                (state.search
+                  ? Math.round((1 - dist / 10) * 16 * 16 - 1)
+                      .toString(16)
+                      .toUpperCase()
+                  : component?.props?.archived
+                  ? Math.round(8 * 16)
+                      .toString(16)
+                      .toUpperCase()
+                  : '00') +
+                ' !important',
               pl: dependency ? 4 : edit ? 0 : 2,
             }}
             disabled={!component?.props.completed && !edit && !canBeCompleted}
@@ -3660,6 +3667,9 @@ const CounterItem = (props) => {
     lastCompleted?.[component?.props?.valuePoints],
     component
   );
+  const dist = state.search
+    ? minWord(component?.props?.title, state.search)
+    : Infinity;
   if (loading) return null;
 
   return (
@@ -3683,6 +3693,18 @@ const CounterItem = (props) => {
                   component?.props?.color +
                   (state.animatedBackground > 0 ? 'D3' : '')
                 } !important`,
+            background:
+              '#4CAF50' +
+              (state.search
+                ? Math.round((1 - dist / 10) * 16 * 16 - 1)
+                    .toString(16)
+                    .toUpperCase()
+                : component?.props?.archived
+                ? Math.round(8 * 16)
+                    .toString(16)
+                    .toUpperCase()
+                : '00') +
+              ' !important',
           }}
           disabled={!component?.props.completed && !edit && !canBeCompleted}
         >
