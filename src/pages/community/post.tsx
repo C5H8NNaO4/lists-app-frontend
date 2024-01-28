@@ -155,11 +155,7 @@ const Post = ({ id }) => {
         </CardActions>
       </Card>
       {component?.props.viewCounter && (
-        <ViewCounter
-          componentKey={component?.props.viewCounter?.component}
-          data={component?.props.viewCounter}
-          skip={skip}
-        />
+        <ViewCounter componentKey={component?.props.viewCounter?.component} />
       )}
       {component?.children.slice(2)?.map((answer) => {
         return <Answer answer={answer} />;
