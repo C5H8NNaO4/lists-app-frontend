@@ -154,7 +154,10 @@ import ContentCopy from '@mui/icons-material/ContentCopy';
 import copy from 'copy-to-clipboard';
 import AutoFixHigh from '@mui/icons-material/AutoFixHigh';
 
-const minWord = (word: string, str: string) => {
+const minWord = (word: string, str: string, wholeWord?: boolean) => {
+  if (wholeWord) {
+    return levenshtein.get(word.slice(0, str.length), str);
+  }
   let min = Infinity;
   for (let i = 0; i < word.length; i++) {
     min = Math.min(min, levenshtein.get(word.slice(i, str.length + i), str));
@@ -3423,7 +3426,7 @@ const TodoItem = (props) => {
     false
   );
   const dist = state.search
-    ? minWord(component?.props?.title, state.search)
+    ? minWord(component?.props?.title, state.search, true)
     : Infinity;
   if (loading) return null;
   const deps = component?.props?.dependencies || [];
