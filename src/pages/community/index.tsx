@@ -10,10 +10,10 @@ import {
   Chip,
   Link,
   Pagination,
+  Grid,
 } from '@mui/material';
 
 import { Markdown } from '../../components/Markdown';
-import { Navigation } from '../../components/NavigationButton';
 import { FlexBox } from '../../components/FlexBox';
 import { useComponent } from '@state-less/react-client';
 import { calc } from '../../server-components/examples/VotingApp';
@@ -21,6 +21,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import { useMemo, useState } from 'react';
 import { PAGE_SIZE_POSTS } from '../../lib/const';
 import { ViewCounter } from '../../server-components/examples/ViewCounter';
+import { FORUM_KEY } from '../../lib/config';
 const PAGE_SRC = 'src/pages/States.md';
 
 export const CommunityPage = () => {
@@ -40,7 +41,6 @@ export const CommunityPage = () => {
         {/* <Markdown src={getRawPath(PAGE_SRC)}>*Loading*</Markdown> */}
         <Header />
         <Posts />
-        <Navigation />
       </Paper>
     </Container>
   );
@@ -85,7 +85,7 @@ const Post = (post) => {
         opacity: post.props.deleted ? 0.9 : 1,
       }}
     >
-      <FlexBox>
+      <Grid container>
         <Box
           sx={{
             width: '2px',
@@ -96,59 +96,68 @@ const Post = (post) => {
               : 'warning.main',
           }}
         ></Box>
-        <FlexBox sx={{ flexDirection: 'column', gap: 1 }}>
-          <CardContent
-            sx={{ ml: 8, display: 'flex', flexDirection: 'column', gap: 1 }}
-          >
-            <Chip
-              color={sum > 0 ? 'success' : sum < 0 ? 'error' : undefined}
-              label={`${sum} votes`}
-            />
-            <Chip
-              color={nAnswers === 0 ? undefined : 'success'}
-              label={`${nAnswers} answers`}
-            ></Chip>
-            <ViewCounter
-              componentKey={post?.props?.viewCounter?.component}
-              data={post?.props?.viewCounter}
-            />
-          </CardContent>
-        </FlexBox>
-        <Box>
-          <CardHeader
-            title={
-              <Link to={`/community/${post.component}`} component={RouterLink}>
-                {post.props.title}
-              </Link>
-            }
-            sx={{ pb: 0 }}
-          />
-          <CardContent
-            sx={{
-              pt: 0,
-              pb: '0rem !important',
-              maxHeight: '5rem',
-              mb: 2,
-
-              overflow: 'hidden',
-            }}
-          >
-            <Markdown>{post.props.body}</Markdown>
-          </CardContent>
-          {post.props.tags?.length > 0 && (
-            <CardContent sx={{ display: 'flex', gap: 1 }}>
-              {post.props.tags?.map((tag) => <Chip color="info" label={tag} />)}
+        <Grid item>
+          <FlexBox sx={{ flexDirection: 'column', gap: 1 }}>
+            <CardContent
+              sx={{ ml: 8, display: 'flex', flexDirection: 'column', gap: 1 }}
+            >
+              <Chip
+                color={sum > 0 ? 'success' : sum < 0 ? 'error' : undefined}
+                label={`${sum} votes`}
+              />
+              <Chip
+                color={nAnswers === 0 ? undefined : 'success'}
+                label={`${nAnswers} answers`}
+              ></Chip>
+              <ViewCounter
+                componentKey={post?.props?.viewCounter?.component}
+                data={post?.props?.viewCounter}
+              />
             </CardContent>
-          )}
-        </Box>
-      </FlexBox>
+          </FlexBox>
+        </Grid>
+        <Grid item>
+          <Box>
+            <CardHeader
+              title={
+                <Link
+                  to={`/community/${post.component}`}
+                  component={RouterLink}
+                >
+                  {post.props.title}
+                </Link>
+              }
+              sx={{ pb: 0 }}
+            />
+            <CardContent
+              sx={{
+                pt: 0,
+                pb: '0rem !important',
+                maxHeight: '5rem',
+                mb: 2,
+
+                overflow: 'hidden',
+              }}
+            >
+              <Markdown>{post.props.body}</Markdown>
+            </CardContent>
+            {post.props.tags?.length > 0 && (
+              <CardContent sx={{ display: 'flex', gap: 1 }}>
+                {post.props.tags?.map((tag) => (
+                  <Chip color="info" label={tag} />
+                ))}
+              </CardContent>
+            )}
+          </Box>
+        </Grid>
+      </Grid>
     </Card>
   );
 };
 
 const Posts = () => {
   const [page, setPage] = useState(1);
-  const [component, { error, loading }] = useComponent('lists-forum', {
+  const [component, { error, loading }] = useComponent(FORUM_KEY, {
     props: {
       page: page,
       pageSize: PAGE_SIZE_POSTS,

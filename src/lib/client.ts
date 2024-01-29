@@ -1,7 +1,7 @@
 import { ApolloClient, InMemoryCache, split, HttpLink } from '@apollo/client';
 import { WebSocketLink } from '@apollo/client/link/ws';
 import { getMainDefinition } from '@apollo/client/utilities';
-import { LOCAL_HOST } from '../config';
+import { LOCAL_HOST } from './config';
 
 // Create an HTTP link
 const statelessHttp = new HttpLink({

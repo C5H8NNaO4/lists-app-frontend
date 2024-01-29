@@ -3,7 +3,7 @@ import { authContext } from '@state-less/react-client';
 import { useContext, useState } from 'react';
 import GoogleLogin, { GoogleLoginResponse } from 'react-google-login';
 import GoogleIcon from '@mui/icons-material/Google';
-import { GOOGLE_ID } from '../config';
+import { GOOGLE_ID } from '../lib/config';
 import { stateContext } from '../provider/StateProvider';
 
 import Menu from '@mui/material/Menu';
