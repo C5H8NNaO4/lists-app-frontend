@@ -63,3 +63,12 @@ pre {
   display: flex;
   flex-direction: column;
 }
+
+div > p {
+  margin: 0;
+  max-width: 70ch;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  word-break: break-word;
+  white-space: nowrap;
+}
