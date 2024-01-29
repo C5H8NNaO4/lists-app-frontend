@@ -3432,7 +3432,10 @@ const TodoItem = (props) => {
     false
   );
   const dist = state.search
-    ? minWord(component?.props?.title, state.search, true)
+    ? levenshtein.get(
+        component?.props?.title.padEnd(state.search.length, '*'),
+        state.search
+      )
     : Infinity;
   if (loading) return null;
   const deps = component?.props?.dependencies || [];
