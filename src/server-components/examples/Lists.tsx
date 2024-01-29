@@ -3762,7 +3762,13 @@ const CounterItem = (props) => {
                 >
                   <RemoveIcon></RemoveIcon>
                 </IconButton>
-                <Tooltip title={average ? `Ø ${average.toFixed(2)}` : ''}>
+                <Tooltip
+                  title={
+                    typeof average !== 'undefined'
+                      ? `Ø ${average.toFixed(2)}`
+                      : ''
+                  }
+                >
                   {component?.props?.count}
                 </Tooltip>
                 <IconButton
