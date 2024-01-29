@@ -3433,7 +3433,9 @@ const TodoItem = (props) => {
   );
   const dist = state.search
     ? levenshtein.get(
-        component?.props?.title.padEnd(state.search.length, '*'),
+        component?.props?.title
+          .padEnd(state.search.length, '*')
+          .slice(0, state.search.length),
         state.search
       )
     : Infinity;
@@ -3680,7 +3682,10 @@ const CounterItem = (props) => {
     component
   );
   const dist = state.search
-    ? minWord(component?.props?.title, state.search)
+    ? levenshtein.get(
+        component?.props?.title.padEnd(state.search.length, '*'),
+        state.search
+      )
     : Infinity;
   if (loading) return null;
 
