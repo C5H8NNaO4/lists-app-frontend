@@ -92,8 +92,8 @@ const Post = (post) => {
             backgroundColor: post.props.deleted
               ? 'error.main'
               : post.props.approved
-              ? 'success.main'
-              : 'warning.main',
+                ? 'success.main'
+                : 'warning.main',
           }}
         ></Box>
         <Grid item>
@@ -180,7 +180,14 @@ const Posts = () => {
 };
 const Header = () => {
   return (
-    <FlexBox sx={{ alignItems: 'center' }}>
+    <FlexBox
+      sx={{
+        alignItems: 'center',
+        flexWrap: 'wrap-reverse',
+        justifyContent: 'center',
+        alignContent: 'center',
+      }}
+    >
       <Typography variant="h2">Top Questions</Typography>
       <NewPostButton />
     </FlexBox>

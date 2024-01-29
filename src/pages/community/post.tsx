@@ -70,10 +70,21 @@ const Post = ({ id }) => {
   return (
     <>
       <FlexBox
-        sx={{ alignItems: 'center', height: 'min-content', flexWrap: 'wrap' }}
+        sx={{
+          alignItems: 'center',
+          height: 'min-content',
+          flexWrap: 'wrap-reverse',
+        }}
       >
         <CardHeader title={component?.props?.title}></CardHeader>
-        <FlexBox sx={{ ml: 'auto' }}>
+        <FlexBox
+          sx={{
+            ml: 'auto',
+            mr: { xs: 'auto', sm: 'unset' },
+            px: 2,
+            flexDirection: { xs: 'column-reverse', sm: 'row' },
+          }}
+        >
           <IconButton
             color={showDeleted ? 'info' : undefined}
             onClick={() => setShowDeleted(!showDeleted)}
@@ -110,8 +121,8 @@ const Post = ({ id }) => {
                     bodyLoading
                       ? 'warning'
                       : component?.props?.body === body
-                      ? 'success'
-                      : 'primary'
+                        ? 'success'
+                        : 'primary'
                   }
                   multiline
                   fullWidth
@@ -210,8 +221,8 @@ const Answer = ({ answer }) => {
                   loading
                     ? 'warning'
                     : component?.props?.body === body
-                    ? 'success'
-                    : 'primary'
+                      ? 'success'
+                      : 'primary'
                 }
                 multiline
                 fullWidth
