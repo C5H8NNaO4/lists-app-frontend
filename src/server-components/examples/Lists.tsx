@@ -2158,7 +2158,7 @@ export const List = ({
         const { sum, n } = sums[key];
         // if (n < 2) return acc;
 
-        return { ...acc, [key]: sum / (n + 1) };
+        return { ...acc, [key]: sum / n };
       }, {}),
     [sums]
   );
