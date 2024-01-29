@@ -160,7 +160,13 @@ const minWord = (word: string, str: string, wholeWord?: boolean) => {
   }
   let min = Infinity;
   for (let i = 0; i < word.length; i++) {
-    min = Math.min(min, levenshtein.get(word.slice(i, str.length + i), str));
+    min = Math.min(
+      min,
+      levenshtein.get(
+        word.padEnd(str.length, '*').slice(i, str.length + i),
+        str
+      )
+    );
   }
   return min;
 };
