@@ -3481,7 +3481,7 @@ const TodoItem = (props) => {
               background:
                 '#4CAF50' +
                 (state.search
-                  ? Math.round((1 - dist / 10) * 16 * 16 - 1)
+                  ? Math.round((1 - dist / 3) * 16 * 16 - 1)
                       .toString(16)
                       .toUpperCase()
                   : component?.props?.archived
@@ -3715,7 +3715,7 @@ const CounterItem = (props) => {
             background:
               '#4CAF50' +
               (state.search
-                ? Math.round((1 - dist / 10) * 16 * 16 - 1)
+                ? Math.round((1 - dist / 3) * 16 * 16 - 1)
                     .toString(16)
                     .toUpperCase()
                 : component?.props?.archived
