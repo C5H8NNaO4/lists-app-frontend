@@ -1961,7 +1961,7 @@ export const List = ({
 
   const toggleSort = async () => {
     await refetchList();
-    const nextSort = ((sort + 2) % 3) - 1;
+    const nextSort = ((sort + 2) % 4) - 1;
     setSort(nextSort);
   };
   const exists =
@@ -2065,13 +2065,17 @@ export const List = ({
   if (sort !== 0) {
     filteredItemOrder.sort((a, b) => {
       const aUpdated =
-        lkp[a]?.props?.archived ||
-        lkp[a]?.props?.lastModified ||
-        lkp[a]?.props?.createdAt;
+        sort === 1
+          ? lkp[a]?.props?.valuePoints || -1
+          : lkp[a]?.props?.archived ||
+            lkp[a]?.props?.lastModified ||
+            lkp[a]?.props?.createdAt;
       const bUpdated =
-        lkp[b]?.props?.archived ||
-        lkp[b]?.props?.lastModified ||
-        lkp[b]?.props?.createdAt;
+        sort === 1
+          ? lkp[b]?.props?.valuePoints || -1
+          : lkp[b]?.props?.archived ||
+            lkp[b]?.props?.lastModified ||
+            lkp[b]?.props?.createdAt;
 
       return (bUpdated - aUpdated) * sort;
     });
@@ -2624,6 +2628,8 @@ export const List = ({
                     ? 'Manual sorting.'
                     : sort === -1
                     ? 'Reversed sorting.'
+                    : sort === 1
+                    ? 'Sorting by value'
                     : 'Sorting by: archived, lastModified, createdAt'
                 }
               >
