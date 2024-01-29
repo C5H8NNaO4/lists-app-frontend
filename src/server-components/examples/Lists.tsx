@@ -3431,12 +3431,14 @@ const TodoItem = (props) => {
     'moveToBottom',
     false
   );
+  const title: string = component?.props?.title;
   const dist = state.search
     ? levenshtein.get(
-        component?.props?.title
+        title
+          .toUpperCase()
           .padEnd(state.search.length, '*')
           .slice(0, state.search.length),
-        state.search
+        state.search.toUpperCase()
       )
     : Infinity;
   if (loading) return null;
@@ -3681,10 +3683,11 @@ const CounterItem = (props) => {
     lastCompleted?.[component?.props?.valuePoints],
     component
   );
+  const title: string = component?.props?.title;
   const dist = state.search
     ? levenshtein.get(
-        component?.props?.title.padEnd(state.search.length, '*'),
-        state.search
+        title.toUpperCase().padEnd(state.search.length, '*'),
+        state.search.toUpperCase()
       )
     : Infinity;
   if (loading) return null;
