@@ -2158,7 +2158,7 @@ export const List = ({
         const { sum, n } = sums[key];
         // if (n < 2) return acc;
 
-        return { ...acc, [key]: sum / (n + 1) };
+        return { ...acc, [key]: sum / n };
       }, {}),
     [sums]
   );
@@ -3762,7 +3762,13 @@ const CounterItem = (props) => {
                 >
                   <RemoveIcon></RemoveIcon>
                 </IconButton>
-                <Tooltip title={average ? `Ø ${average.toFixed(2)}` : ''}>
+                <Tooltip
+                  title={
+                    typeof average !== 'undefined'
+                      ? `Ø ${average.toFixed(2)}`
+                      : ''
+                  }
+                >
                   {component?.props?.count}
                 </Tooltip>
                 <IconButton
