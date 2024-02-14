@@ -9,31 +9,85 @@ body {
   font-weight: 300;
   margin: 0px;
   height: 100vh;
+  width: 100vw;
 }
 
 #root {
   height: 100%;
+  width: 100%;
 }
 
 .App {
   height: 100%;
+  width: 100%;
+}
+
+.markdown.landing h1 {
+  font-size: 5em;
+}
+
+.markdown.landing h2 {
+  font-size: 4em;
+}
+
+.markdown.landing h3 {
+  font-size: 3em;
+}
+
+.markdown.landing h4 {
+  font-size: 2em;
+}
+.markdown.landing p {
+  font-size: 1.3em;
+}
+
+.markdown.landing li div span {
+  font-size: 1.5rem !important;
+}
+
+.markdown.landing li div li div span {
+  font-size: 1.2rem !important;
+}
+
+.markdown.landing #react-server {
+  font-size: 7em;
+}
+
+.markdown.center {
+  justify-content: center;
 }
 
 h1,
 h2 {
   font-weight: 400;
+  margin: 0px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+li {
+  color: #333333;
 }
 /* Apply monospace Roboto font to pre code elements */
 pre code {
   font-family: 'Roboto Mono', monospace;
 }
 
+pre {
+  width: 100%;
+}
+
 code {
   font-family: 'Roboto Mono', monospace;
 }
 
-.bg {
-  background: url('/bg.png');
+#bg.bg {
+  background: url('/bg.webp');
   background-size: cover;
 }
 
@@ -48,7 +102,7 @@ pre {
 .light.bg .MuiPaper-root:not(.opaque) {
   /* background-color: #1E1F27AA !important; */
   background-color: #ffffff33;
-  backdrop-filter: blur(9px);
+  backdrop-filter: blur(6px);
 }
 
 #bg {
@@ -64,11 +118,55 @@ pre {
   flex-direction: column;
 }
 
-div > p {
-  margin: 0;
+.markdown > * {
+  width: 100%;
+  width: -webkit-fill-available;
+  width: -moz-available;
+}
+
+.markdown.preview > * {
   max-width: 70ch;
+}
+
+.markdown.center > :is(h1, h2, h3, h4, h5, h6) {
+  text-align: center;
+  max-width: 40ch;
+  min-width: 100%;
+}
+.markdown > p {
+  max-width: 70ch;
+
   /* text-overflow: ellipsis; */
   overflow: hidden;
   word-break: break-word;
-  /* white-space: nowrap; */
+  text-align: left;
+}
+
+.markdown > ul > li {
+  max-width: 70ch;
+  word-break: break-word;
+  text-align: left;
+}
+
+.markdown.disablePadding > p {
+  margin: 0px;
+}
+
+.markdown.center > ul,
+.markdown.center > p {
+  margin-left: auto;
+  margin-right: auto;
+}
+.markdown.center > ul {
+  width: fit-content;
+  max-width: max-content;
+}
+.markdown-small p {
+  margin: 0;
+  font-size: 0.8rem;
+}
+
+.MuiCardHeader-action {
+  margin: 0px !important;
+  transform: translate(0px, -1px);
 }

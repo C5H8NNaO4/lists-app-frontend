@@ -14,7 +14,13 @@ import { useContext, useEffect, useRef, useState, createElement } from 'react';
 import { a11yDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { IconButton } from '@mui/material';
+import {
+  IconButton,
+  List,
+  ListItem,
+  ListItemText,
+  Typography,
+} from '@mui/material';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import copy from 'copy-to-clipboard';
 import { Actions, stateContext } from '../provider/StateProvider';
@@ -28,6 +34,9 @@ type MarkdownProps = {
   disablePadding?: boolean;
   optimisticHeight?: string;
   small?: boolean;
+  preview?: boolean;
+  center?: boolean;
+  landing?: boolean;
 };
 
 mermaid.initialize({
@@ -50,6 +59,9 @@ export const Markdown = ({
   disablePadding,
   optimisticHeight = '0px',
   small = false,
+  preview = false,
+  center = true,
+  landing = false,
 }: MarkdownProps) => {
   const [markdown, setMarkdown] = useState<string>(children || '');
   const { state, dispatch } = useContext(stateContext);
@@ -73,13 +85,22 @@ export const Markdown = ({
         .replace(/[^\w\s]/g, '') // Remove special characters
         .replace(/\s+/g, '-'); // Replace spaces with hyphens
 
+      if (preview)
+        return createElement('b', { id: anchor || undefined }, children);
       return createElement(`h${level}`, { id: anchor || undefined }, children);
     }
+    if (preview) return createElement('b', {}, children);
     return createElement(`h${level}`, {}, children);
   };
 
   return (
     <div
+      className={clsx('markdown', {
+        center,
+        disablePadding,
+        preview,
+        landing,
+      })}
       style={{
         minHeight: optimisticHeight,
         width: '100%',
@@ -100,6 +121,33 @@ export const Markdown = ({
           h4: headingRenderer,
           h5: headingRenderer,
           h6: headingRenderer,
+          ul: (props: any) => {
+            console.log('Props', props);
+            return (
+              <List dense disablePadding>
+                {props.children.map((child) => {
+                  if (child === '\n') return null;
+                  return (
+                    <ListItem
+                      dense
+                      sx={{
+                        py: 0,
+                        my: 1,
+                        borderLeft: '1.5px solid',
+                        borderLeftColor:
+                          props.depth === 0 ? 'info.main' : 'warning.main',
+                      }}
+                    >
+                      <ListItemText
+                        sx={{ m: 0 }}
+                        primary={child?.props?.children || child}
+                      ></ListItemText>
+                    </ListItem>
+                  );
+                })}
+              </List>
+            );
+          },
           pre: (props: any) => {
             const language = (
               props.children[0]?.props?.className || '-bash'

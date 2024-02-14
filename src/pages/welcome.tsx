@@ -80,6 +80,7 @@ export const WelcomePage = () => {
             </Link>
           </Box>
         </Paper>
+
         <Grid container spacing={2} sx={{ my: 1 }}>
           <Grid item xs={12} lg={6}>
             <Card>
@@ -181,6 +182,15 @@ export const WelcomePage = () => {
             </Grid>
           </Grid>
         </Grid>
+        <Paper sx={{ display: 'flex', mt: 1 }}>
+          <video
+            autoPlay
+            muted
+            style={{ width: '100%' }}
+            src="/demo.mp4"
+            loop
+          ></video>
+        </Paper>
       </Container>
     </div>
   );
