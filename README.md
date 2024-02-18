@@ -2,7 +2,7 @@
 
 Welcome to Lists, a productivity app built with [React Server](https://state-less.cloud)!
 
-![Lists App](/public/screenshot.png)
+![Lists App](https://github.com/C5H8NNaO4/lists-app-frontend/raw/master/public/screenshot.png)
 
 ## Overview
 
@@ -18,7 +18,7 @@ Lists is a feature-rich productivity app designed to help you manage your tasks,
 
 ## Try It Out!
 
-Experience the power of Lists by visiting the [Live Demo](https://lists.state-less.cloud) hosted on React Server. Sign up for a free account and start boosting your productivity today!
+Experience the power of Lists by visiting the [Live Demo](https://lists.state-less.cloud/welcome) hosted on React Server. Sign up for a free account and start boosting your productivity today!
 
 ## Installation
 
