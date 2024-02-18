@@ -28,7 +28,7 @@ import { FORUM_KEY } from '../../lib/config';
 import { createPortal } from 'react-dom';
 
 export const CommunityPage = () => {
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useLocalStorage(
     'forum-page-size',
     PAGE_SIZE_POSTS
