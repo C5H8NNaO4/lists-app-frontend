@@ -40,12 +40,12 @@ let localClient: any = null;
 if (import.meta.env.MODE !== 'production') {
   // Create an HTTP link
   const localHttp = new HttpLink({
-    uri: `http://${LOCAL_HOST}:4000/graphql`,
+    uri: `http://${LOCAL_HOST}/graphql`,
   });
 
   // Create a WebSocket link
   const localWs = new WebSocketLink({
-    uri: `ws://${LOCAL_HOST}:4000/graphql`,
+    uri: `ws://${LOCAL_HOST}/graphql`,
     options: {
       reconnect: true,
     },
