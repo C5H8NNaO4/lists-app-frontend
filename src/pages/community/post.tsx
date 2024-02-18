@@ -11,7 +11,6 @@ import {
   Alert,
   LinearProgress,
   IconButton,
-  Popper,
   Popover,
   ClickAwayListener,
 } from '@mui/material';
@@ -28,10 +27,8 @@ import { CommunityComments } from '../../server-components/examples/Comments';
 import { useSyncedState } from '../../lib/hooks';
 import { ViewCounter } from '../../server-components/examples/ViewCounter';
 import Visibility from '@mui/icons-material/Visibility';
-import Favorite from '@mui/icons-material/Favorite';
 import {
   AddCircleOutline,
-  Pin,
   PushPin,
   PushPinOutlined,
 } from '@mui/icons-material';
@@ -168,10 +165,11 @@ const Post = ({ id }) => {
         <CardActions>
           {component?.props?.canDelete && (
             <Button
-              color={component?.props?.deleted ? 'error' : 'warning'}
+              disabled={component?.props?.deleted}
+              color="error"
               onClick={() => component.props.del()}
             >
-              {component?.props?.deleted ? 'Destroy' : 'Delete'}
+              Delete
             </Button>
           )}
           {!component?.props?.approved &&

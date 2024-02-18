@@ -1,5 +1,4 @@
 import {
-  Paper,
   Container,
   Button,
   Typography,
@@ -27,7 +26,6 @@ import { PAGE_SIZE_POSTS } from '../../lib/const';
 import { ViewCounter } from '../../server-components/examples/ViewCounter';
 import { FORUM_KEY } from '../../lib/config';
 import { createPortal } from 'react-dom';
-const PAGE_SRC = 'src/pages/States.md';
 
 export const CommunityPage = () => {
   const [page, setPage] = useState(1);
@@ -35,7 +33,7 @@ export const CommunityPage = () => {
     'forum-page-size',
     PAGE_SIZE_POSTS
   );
-  const [component, { error, loading }] = useComponent(FORUM_KEY, {
+  const [component, { loading }] = useComponent(FORUM_KEY, {
     props: {
       page,
       pageSize,
@@ -75,7 +73,7 @@ export const CommunityPage = () => {
               ),
               document.getElementById('progress')!
             )}
-          <Posts page={page} setPage={setPage} component={component} />
+          <Posts component={component} />
         </CardContent>
         <CardActions>
           <Pagination
@@ -90,12 +88,9 @@ export const CommunityPage = () => {
 };
 
 const Post = (post) => {
-  const [votes, { error, loading }] = useComponent(
-    post.children[0]?.component,
-    {
-      data: post.children[0],
-    }
-  );
+  const [votes] = useComponent(post.children[0]?.component, {
+    data: post.children[0],
+  });
   const { score, upvotes, downvotes } = votes?.props || {};
   const wilson = true,
     random = true;
@@ -133,45 +128,30 @@ const Post = (post) => {
       }}
     >
       <Grid container>
-        {post?.props?.canDelete && (
-          <Box
-            sx={{
-              width: '2px',
-              backgroundColor: post.props.deleted
-                ? 'error.main'
-                : post.props.approved
-                  ? 'success.main'
-                  : 'warning.main',
-            }}
-          ></Box>
-        )}
         {post?.props?.sticky && (
           <Box
             sx={{
-              width: '0px',
-              borderLeft: '4px dashed',
-              borderColor: 'warning.main',
+              width: {
+                xs: '100%',
+                md: '2px',
+              },
+              height: {
+                xs: '2px',
+                md: 'unset',
+              },
+              // borderTop: '4px dashed',
+              backgroundColor: 'info.main',
             }}
           ></Box>
         )}
-        <Grid item>
-          <FlexBox sx={{ flexDirection: 'column', gap: 1 }}>
-            <CardContent
-              sx={{ ml: 8, display: 'flex', flexDirection: 'column', gap: 1 }}
-            >
-              <Chip
-                color={sum > 0 ? 'success' : sum < 0 ? 'error' : undefined}
-                label={`${sum} votes`}
-              />
-              <Chip
-                color={nAnswers === 0 ? undefined : 'success'}
-                label={`${nAnswers} answers`}
-              ></Chip>
-              <ViewCounter
-                componentKey={post?.props?.viewCounter?.component}
-                data={post?.props?.viewCounter}
-              />
-            </CardContent>
+        <Grid item order={{ xs: 2, md: 0 }}>
+          <FlexBox sx={{ flexDirection: 'column', gap: 1, minWidth: 200 }}>
+            <PostOverviewMeta
+              plainText={false}
+              nAnswers={nAnswers}
+              nVotes={sum}
+              post={post}
+            />
           </FlexBox>
         </Grid>
         <Grid item>
@@ -205,7 +185,7 @@ const Post = (post) => {
             {post.props.tags?.length > 0 && (
               <CardContent sx={{ display: 'flex', gap: 1 }}>
                 {post.props.tags?.map((tag) => (
-                  <Chip color="info" label={tag} />
+                  <Chip size="small" label={tag} />
                 ))}
               </CardContent>
             )}
@@ -216,7 +196,55 @@ const Post = (post) => {
   );
 };
 
-const Posts = ({ page, setPage, component }) => {
+const PostOverviewMeta = ({ nVotes, nAnswers, post, plainText }) => {
+  const votesStr = `${nVotes} votes`;
+  const answersStr = `${nAnswers} answers`;
+  return (
+    <CardContent
+      sx={{
+        ml: 'auto',
+        mr: {
+          xs: 'auto',
+          md: 'unset',
+        },
+        display: 'flex',
+        flexDirection: {
+          xs: 'row',
+          md: 'column',
+        },
+        gap: 1,
+        textAlign: 'right',
+      }}
+    >
+      {plainText ? <span>{votesStr}</span> : <Chip label={votesStr} />}
+      {plainText ? <span>{answersStr}</span> : <Chip label={answersStr}></Chip>}
+      {post?.props?.canDelete && (
+        <Chip
+          sx={{
+            backgroundColor: post.props.deleted
+              ? 'error.main'
+              : post.props.locked
+                ? 'warning.main'
+                : post.props.approved
+                  ? 'success.main'
+                  : undefined,
+          }}
+          label={['deleted', 'locked', 'approved']
+            .filter((k) => !!post.props[k])
+            .join('. ')}
+        ></Chip>
+      )}
+      <ViewCounter
+        clientOnly
+        variant={plainText ? 'plaintext' : 'listitem'}
+        componentKey={post?.props?.viewCounter?.component}
+        data={post?.props?.viewCounter}
+      />
+    </CardContent>
+  );
+};
+
+const Posts = ({ component }) => {
   const sticky = component?.children?.filter((post) => post.props.sticky) || [];
   const nonSticky =
     component?.children?.filter((post) => !post.props.sticky) || [];
