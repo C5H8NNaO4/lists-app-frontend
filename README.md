@@ -21,27 +21,17 @@ Lists is a feature-rich productivity app designed to help you manage your tasks,
 Experience the power of Lists by visiting the [Live Demo](https://lists.state-less.cloud) hosted on React Server. Sign up for a free account and start boosting your productivity today!
 
 ## Installation
-### Install the backend
-```
-git clone https://github.com/C5H8NNaO4/lists-app-backend.git
-cd lists-app-backend
-yarn install
-yarn start
-```
-### Install the frontend
-```
-git clone https://github.com/C5H8NNaO4/lists-app-frontend.git
-cd lists-app-frontend
-yarn install
-yarn dev
-```
+
+Here is a medium post covering how to host Lists yourself.
+[https://medium.com/@moritz.roessler/how-to-host-our-lists-app-yourself-82561e8c364a](https://medium.com/@moritz.roessler/how-to-host-our-lists-app-yourself-82561e8c364a)
 
 ## Contribute
-* Fork the repository
-* Create a branch
-* Commit your changes
-* Push to the branch
-* Open a pull request
+
+- Fork the repository
+- Create a branch
+- Commit your changes
+- Push to the branch
+- Open a pull request
 
 We welcome contributions from the community! Feel free to submit bug reports, feature requests, or pull requests to help make Lists even better.
 
