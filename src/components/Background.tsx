@@ -2,19 +2,19 @@
 
 import { useTheme } from '@mui/material';
 import clsx from 'clsx';
-import {
+import React, {
   FunctionComponent,
   PropsWithChildren,
   useEffect,
   useMemo,
   useRef,
+  useState,
 } from 'react';
 
 enum Vanta {
   CLOUDS,
   WAVES,
 }
-
 type VANTA = {
   [index: string]: any;
   CLOUDS: any;
@@ -31,25 +31,28 @@ let instance: VANTA;
 
 type VantaBackgroudProps = {
   enabled?: boolean;
-  bg?: boolean;
   light: any;
   dark: any;
+  bg?: number;
+  el?: string;
 };
 
 export const VantaBackground: FunctionComponent<
   PropsWithChildren<VantaBackgroudProps>
 > = ({
   enabled = false,
-  bg = true,
   children,
   light = SunnyBlueClouds,
   dark = DarkFog,
+  bg,
+  el = '#bg',
 }) => {
   const instance = useRef<any>();
   const theme = useTheme();
   const { type, ...rest } = theme.palette.mode === 'light' ? light : dark;
+
   const sharedProps = {
-    el: '#bg',
+    el: el,
     mouseControls: false,
     touchControls: false,
     gyroControls: false,
@@ -58,21 +61,28 @@ export const VantaBackground: FunctionComponent<
   /** Destroy the background on unmount */
   useEffect(() => {
     return () => {
-      if (instance.current && instance?.current?.destroy)
-        instance?.current?.destroy?.();
+      if (instance.current && instance.current.destroy) {
+        instance.current.destroy();
+        instance.current = null;
+      }
     };
   }, []);
 
   const render = useMemo(
     () => () => {
+      if (!document.querySelector(el)) return;
+
+      console.log('RENDERING VANTA', el, enabled);
+
       const fn = window.VANTA[type] || window.VANTA.CLOUDS;
-      if (enabled) {
+      if (enabled && !instance.current) {
         instance.current = fn({
           ...sharedProps,
           ...rest,
         });
-      } else if (instance.current && instance.current.destroy) {
+      } else if (!enabled && instance.current && instance.current.destroy) {
         instance.current.destroy();
+        instance.current = null;
       }
     },
     [enabled, dark, light, type]
@@ -86,6 +96,7 @@ export const VantaBackground: FunctionComponent<
     return () => {
       if (instance.current && instance.current.destroy)
         instance.current.destroy();
+      instance.current = null;
     };
   }, [enabled, dark, light, type]);
 
@@ -108,12 +119,16 @@ export const VantaBackground: FunctionComponent<
 
   return (
     <div
-      id="bg"
-      className={clsx(theme.palette.mode, 'fh', {
+      id={el.replace('#', '')}
+      className={clsx(theme.palette.mode, 'fh', `bg${bg}`, {
         animated: enabled,
-        bg,
       })}
-      style={{ overflow: 'hidden', height: '100%' }}
+      style={{
+        overflow: 'hidden',
+        position: 'relative',
+        width: '100%',
+        height: '100%',
+      }}
     >
       {children}
     </div>
@@ -127,6 +142,8 @@ export const SunnyBlueClouds = {
   sunColor: 0xdc7412,
   sunlightColor: 0xe17833,
   speed: 1,
+  width: '100%',
+  height: '100%',
 };
 
 export const SunsetDarkClouds = {

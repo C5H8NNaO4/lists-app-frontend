@@ -134,19 +134,11 @@ export const Layout = () => {
     }
   }, [features?.props?.animated]);
 
-  useEffect(() => {
-    console.log('INCLUDES BG', _animated, search.includes('bg=1'));
-    if (_animated === 0 && search.includes('bg=1')) {
-      dispatch({
-        type: Actions.SET_BG,
-      });
-    }
-  }, [search, pathname, _animated]);
-
   const [cookieConsent, setCookieConsent] = useLocalStorage<boolean | null>(
     'cookie-consent',
     null
   );
+
   useEffect(() => {
     if (cookieConsent && 'gtag' in window) {
       gtag('event', 'load', { event_category: 'page' });
@@ -166,7 +158,7 @@ export const Layout = () => {
       light={SunnyBlueClouds}
       dark={DarkWaves}
       enabled={_animated === 2}
-      bg={_animated > 0}
+      bg={_animated}
     >
       <Box
         key={pathname}
@@ -283,9 +275,7 @@ export const Layout = () => {
               }}
             >
               <Typography variant="body2" color="textSecondary" align="center">
-                <Link href="https://state-less.cloud">
-                  © 2023 React Server
-                </Link>
+                <Link href="https://state-less.cloud">© 2023 React Server</Link>
               </Typography>
               <Grid container spacing={1} justifyContent="center">
                 <Grid item xs={12} sm={6} md={4} xl={2}>

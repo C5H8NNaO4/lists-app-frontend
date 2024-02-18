@@ -22,12 +22,66 @@ body {
   width: 100%;
 }
 
+.markdown.landing h1 {
+  font-size: 5em;
+}
+
+.markdown.landing h2 {
+  font-size: 4em;
+}
+
+.markdown.landing h3 {
+  font-size: 3em;
+}
+
+.markdown.landing h4 {
+  font-size: 2em;
+}
+.markdown.landing p {
+  font-size: 1.3em;
+}
+
+.markdown.landing li div span {
+  font-size: 1.5rem !important;
+}
+
+.markdown.landing li div li div span {
+  font-size: 1.2rem !important;
+}
+
+.markdown.landing #react-server {
+  font-size: 7em;
+}
+
+.markdown.center {
+  justify-content: center;
+}
+
 h1,
 h2 {
   font-weight: 400;
   margin: 0px;
   margin-top: 8px;
   margin-bottom: 8px;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+li {
+  color: #333333;
+}
+
+.bg2 h1,
+.bg2 h2,
+.bg2 h3,
+.bg2 h4,
+.bg2 p,
+.bg2 li {
+  color: #222222;
+  text-shadow: 0px 0px 3px #dddddd;
 }
 /* Apply monospace Roboto font to pre code elements */
 pre code {
@@ -42,8 +96,38 @@ code {
   font-family: 'Roboto Mono', monospace;
 }
 
-#bg.bg {
+.bg1 {
+  background: url('/bg-3.webp');
+  background-size: cover;
+}
+
+.bg3 {
   background: url('/bg.webp');
+  background-size: cover;
+}
+
+.bg4 {
+  background: url('/bg-1.webp');
+  background-size: cover;
+}
+
+.bg5 {
+  background: url('/bg-2.webp');
+  background-size: cover;
+}
+
+.bg6 {
+  background: url('/bg-4.webp');
+  background-size: cover;
+}
+
+.bg7 {
+  background: url('/bg-5.webp');
+  background-size: cover;
+}
+
+.bg8 {
+  background: url('/bg-6.webp');
   background-size: cover;
 }
 
@@ -55,7 +139,14 @@ pre {
   border-radius: 5px;
   margin: 10px 0px;
 }
-.light.bg .MuiPaper-root:not(.opaque) {
+.light.bg1 .MuiPaper-root:not(.opaque),
+.light.bg2 .MuiPaper-root:not(.opaque),
+.light.bg3 .MuiPaper-root:not(.opaque),
+.light.bg4 .MuiPaper-root:not(.opaque),
+.light.bg5 .MuiPaper-root:not(.opaque),
+.light.bg6 .MuiPaper-root:not(.opaque),
+.light.bg7 .MuiPaper-root:not(.opaque),
+.light.bg8 .MuiPaper-root:not(.opaque) {
   /* background-color: #1E1F27AA !important; */
   background-color: #ffffff33;
   backdrop-filter: blur(6px);
@@ -63,6 +154,11 @@ pre {
 
 #bg {
   z-index: 0;
+}
+
+.vanta-canvas {
+  width: 100% !important;
+  height: 100% !important;
 }
 
 .recharts-tooltip-wrapper:focus {

@@ -18,6 +18,7 @@ import { authContext } from '@state-less/react-client';
 import { GoogleLoginButton } from './LoggedInGoogleButton';
 import { ConnectionCounter } from '../server-components/examples/ConnectionCounter';
 import { navigation } from '../routes';
+import { BackgroundButton } from './BackgroundButton';
 
 export default function ButtonAppBar() {
   const { state, dispatch } = React.useContext(stateContext);
@@ -25,6 +26,7 @@ export default function ButtonAppBar() {
   const { pathname } = useLocation();
 
   const theme = useTheme();
+
   const lessThanSmall = useMediaQuery(theme.breakpoints.down('sm'));
   return (
     <AppBar sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
@@ -41,7 +43,11 @@ export default function ButtonAppBar() {
         </IconButton>
         {!lessThanSmall && (
           <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-            <img src="/react-server.png" style={{ width: 24, height: 24 }} />
+            <img
+              src="/favicon.svg"
+              style={{ width: 24, height: 24 }}
+              loading="lazy"
+            />
             <Link component={RouterLink} to="/" sx={{ color: 'white' }}>
               <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                 {navigation.find((nav) => nav[0] === pathname)?.[3] ||
@@ -50,7 +56,9 @@ export default function ButtonAppBar() {
             </Link>
           </Box>
         )}
-        <Box sx={{ display: pathname === '/' ? 'flex' : 'none', flexGrow: 1 }}>
+        <Box
+          sx={{ display: pathname === '/lists' ? 'flex' : 'none', flexGrow: 1 }}
+        >
           <TextField
             label="Search"
             value={state.search}
@@ -100,24 +108,7 @@ export default function ButtonAppBar() {
         {!lessThanSmall && (
           <Box sx={{ display: 'flex' }}>
             <ConnectionCounter />
-            <IconButton
-              color={
-                state.animatedBackground === 2
-                  ? 'secondary'
-                  : state.animatedBackground === 1
-                  ? 'info'
-                  : 'inherit'
-              }
-              onClick={() => {
-                dispatch({ type: Actions.TOGGLE_ANIMATED_BACKGROUND });
-                localStorage.setItem(
-                  'animatedBackgroundUser',
-                  ((state.animatedBackground + 1) % 3).toString()
-                );
-              }}
-            >
-              <AutoFixHighIcon />
-            </IconButton>
+            <BackgroundButton />
             <GoogleLoginButton />
           </Box>
         )}

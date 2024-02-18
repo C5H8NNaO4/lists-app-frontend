@@ -17,11 +17,14 @@ type HistoryAction = {
   reverse: () => void;
 };
 
+const params = new URLSearchParams(window?.location?.search);
+const bg = Number(params.get('bg')) % 4;
+
 const initialState: State = {
   menuOpen: false,
   animatedBackground: localStorage.getItem('animatedBackgroundUser')
     ? Number(localStorage.getItem('animatedBackgroundUser'))
-    : Number(localStorage.getItem('animatedBackground')),
+    : Number(localStorage.getItem('animatedBackground')) || bg,
   messages: [] as any[],
   alerts: {
     info: [],
@@ -36,6 +39,7 @@ const initialState: State = {
 export enum Actions {
   TOGGLE_MENU,
   SET_BG,
+  CHOOSE_BG,
   TOGGLE_ANIMATED_BACKGROUND,
   SHOW_MESSAGE,
   HIDE_MESSAGE,
@@ -68,7 +72,12 @@ const reducer = (state: State, action: Action) => {
     case Actions.TOGGLE_ANIMATED_BACKGROUND:
       return {
         ...state,
-        animatedBackground: (~~state.animatedBackground + 1) % 3,
+        animatedBackground: (~~state.animatedBackground + 1) % 4,
+      };
+    case Actions.CHOOSE_BG:
+      return {
+        ...state,
+        animatedBackground: action.value,
       };
     case Actions.SHOW_MESSAGE:
       return {
