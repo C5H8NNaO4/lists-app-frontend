@@ -22,56 +22,12 @@ body {
   width: 100%;
 }
 
-.markdown.landing h1 {
-  font-size: 5em;
-}
-
-.markdown.landing h2 {
-  font-size: 4em;
-}
-
-.markdown.landing h3 {
-  font-size: 3em;
-}
-
-.markdown.landing h4 {
-  font-size: 2em;
-}
-.markdown.landing p {
-  font-size: 1.3em;
-}
-
-.markdown.landing li div span {
-  font-size: 1.5rem !important;
-}
-
-.markdown.landing li div li div span {
-  font-size: 1.2rem !important;
-}
-
-.markdown.landing #react-server {
-  font-size: 7em;
-}
-
-.markdown.center {
-  justify-content: center;
-}
-
 h1,
 h2 {
   font-weight: 400;
   margin: 0px;
   margin-top: 8px;
   margin-bottom: 8px;
-}
-
-h1,
-h2,
-h3,
-h4,
-p,
-li {
-  color: #333333;
 }
 /* Apply monospace Roboto font to pre code elements */
 pre code {
