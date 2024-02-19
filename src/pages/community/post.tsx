@@ -28,17 +28,10 @@ import { useSyncedState } from '../../lib/hooks';
 import { ViewCounter } from '../../server-components/examples/ViewCounter';
 import Visibility from '@mui/icons-material/Visibility';
 import {
-  AddCircleOutline,
-  PushPin,
-  PushPinOutlined,
-} from '@mui/icons-material';
-
-const Icons = {
-  love: () => <Box sx={{ fontSize: 18, ml: 0.5 }}>❤️</Box>,
-  laugh: () => <Box sx={{ fontSize: 18, ml: 0.5 }}>😂</Box>,
-  'thumbs-up': () => <Box sx={{ fontSize: 18, ml: 0.5 }}>👍</Box>,
-  'thumbs-down': () => <Box sx={{ fontSize: 18, ml: 0.5 }}>👎</Box>,
-};
+  AnswerActions,
+  ContentEditor,
+  PostActions,
+} from '../../server-components/ContentEditor';
 
 export const PostsPage = (props) => {
   const params = useParams();
@@ -54,6 +47,7 @@ export const PostsPage = (props) => {
   );
 };
 
+const DRAFT = true;
 const Post = ({ id }) => {
   const [skip, setSkip] = useState(false);
   const [component, { error, loading, refetch }] = useComponent(id);
@@ -63,16 +57,23 @@ const Post = ({ id }) => {
     if (component?.props) setSkip(true);
   }, [component?.props]);
 
-  const [edit, setEdit] = useState(false);
+  const [edit, setEdit] = useState(0);
   const [showDeleted, setShowDeleted] = useLocalStorage(
     'mod-show-deleted',
     false
   );
-  const [body, setBody, { loading: bodyLoading }] = useSyncedState(
+  const [bodyServer, setBodyServer, { loading: bodyLoading }] = useSyncedState(
     component?.props?.body,
-    component?.props?.setBody
+    component?.props?.setBody,
+    {
+      draft: DRAFT,
+    }
   );
-  const editTitle = edit ? 'Ok' : 'Edit';
+
+  const [body, setBody] = useState(bodyServer);
+  useEffect(() => {
+    setBody(bodyServer);
+  }, [bodyServer]);
   if (error) return null;
   if (loading)
     return (
@@ -123,38 +124,36 @@ const Post = ({ id }) => {
               wilson={false}
             />
           )}
-          <Box sx={{ display: 'flex', width: '100%' }}>
-            <CardContent
-              sx={{
-                flex: 1,
-              }}
-            >
-              {edit && !component?.props?.deleted && (
-                <TextField
-                  color={
-                    bodyLoading
-                      ? 'warning'
-                      : component?.props?.body === body
-                        ? 'success'
-                        : 'primary'
-                  }
-                  multiline
-                  fullWidth
-                  label={
-                    'Body' + (component?.props?.body !== body ? '...' : '')
-                  }
-                  rows={7}
-                  value={body}
-                  onChange={(e) => !bodyLoading && setBody(e.target.value)}
-                ></TextField>
-              )}
-              {(!edit || component?.props?.deleted) && (
-                <Markdown center={false}>{component?.props?.body}</Markdown>
-              )}
-            </CardContent>
-          </Box>
+          <ContentEditor
+            draft={DRAFT}
+            body={DRAFT ? body : bodyServer}
+            component={component}
+            edit={edit > 0}
+            loading={bodyLoading}
+            setBody={DRAFT ? setBody : setBodyServer}
+            setEdit={async (e) => {
+              if (!e) {
+                await setBodyServer(body);
+                setEdit(0);
+              } else {
+                setEdit(2);
+              }
+            }}
+          />
         </FlexBox>
-
+        <PostActions
+          draft={DRAFT}
+          component={component}
+          edit={edit}
+          setEdit={async (e) => {
+            if (!e) {
+              await setBodyServer(body);
+              setEdit(0);
+            } else {
+              setEdit(2);
+            }
+          }}
+        />
         {component?.props.tags?.length > 0 && (
           <CardContent sx={{ display: 'flex', gap: 1 }}>
             {component?.props.tags?.map((tag) => (
@@ -162,47 +161,6 @@ const Post = ({ id }) => {
             ))}
           </CardContent>
         )}
-        <CardActions>
-          {component?.props?.canDelete && (
-            <Button
-              disabled={component?.props?.deleted}
-              color="error"
-              onClick={() => component.props.del()}
-            >
-              Delete
-            </Button>
-          )}
-          {!component?.props?.approved &&
-            component?.props?.canDelete &&
-            !component?.props?.deleted && (
-              <Button
-                disabled={component?.props?.deleted}
-                color="success"
-                onClick={() => component.props.approve()}
-              >
-                Approve
-              </Button>
-            )}
-          {component?.props?.canDelete && !component?.props?.deleted && (
-            <Button
-              disabled={component?.props?.deleted}
-              color={component?.props?.sticky ? 'success' : undefined}
-              onClick={() => component.props.toggleSticky()}
-            >
-              {!component?.props?.sticky ? <PushPinOutlined /> : <PushPin />}
-              Sticky
-            </Button>
-          )}
-          {component?.props?.canDelete && (
-            <Button
-              disabled={component?.props?.deleted}
-              key={editTitle}
-              onClick={() => setEdit(!edit)}
-            >
-              {editTitle}
-            </Button>
-          )}
-        </CardActions>
       </Card>
       {component?.props.viewCounter && (
         <ViewCounter componentKey={component?.props.viewCounter?.component} />
@@ -218,91 +176,18 @@ const Post = ({ id }) => {
   );
 };
 
-const Reactions = ({ data }) => {
-  const [component, { error, refetch }] = useComponent(data?.component, {
-    data,
-  });
-  const { voted, reactions } = component?.props || {};
-  const reactionKeys = Object.keys(component?.props?.reactions || {});
-  const [anchor, setAnchor] = useState(false);
-  const iconButtonRef = useRef(null);
-  return (
-    <>
-      {reactionKeys
-        .filter((key) => reactions[key] > 0 || voted === key)
-        .map((reaction) => {
-          const Icon = Icons[reaction];
-          return (
-            <Chip
-              icon={<Icon />}
-              color={voted === reaction ? 'success' : undefined}
-              disabled={voted !== null && voted !== reaction}
-              onClick={() => component?.props?.react(reaction)}
-              label={reactions[reaction] || '0'}
-            />
-          );
-        })}
-
-      {!voted && (
-        <IconButton
-          ref={iconButtonRef}
-          color={Boolean(anchor) ? 'success' : 'default'}
-          onClick={(e) => setAnchor(!anchor)}
-        >
-          {<AddCircleOutline />}
-        </IconButton>
-      )}
-      <ReactionPopper
-        id={`reactions-${component?.key}`}
-        anchor={anchor ? iconButtonRef.current : null}
-        onClose={() => setAnchor(false)}
-        react={component?.props?.react}
-      />
-    </>
-  );
-};
-
-const availableReactions = ['love', 'laugh', 'thumbs-up', 'thumbs-down'];
-const ReactionPopper = ({ anchor, id, onClose, react }) => {
-  return !anchor ? null : (
-    <Popover
-      id={id}
-      open={Boolean(anchor)}
-      anchorEl={anchor}
-      sx={{ zIndex: 1000000000 }}
-      anchorOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      transformOrigin={{
-        vertical: 'bottom',
-        horizontal: 'center',
-      }}
-    >
-      <ClickAwayListener onClickAway={onClose}>
-        <Box sx={{ border: 1, p: 1, bgcolor: 'background.paper' }}>
-          {availableReactions.map((reaction) => {
-            const Icon = Icons[reaction];
-            return (
-              <IconButton onClick={() => react(reaction)}>
-                {<Icon />}
-              </IconButton>
-            );
-          })}
-        </Box>
-      </ClickAwayListener>
-    </Popover>
-  );
-};
 const Answer = ({ answer }) => {
   const [component, { error, refetch }] = useComponent(answer?.component, {
     data: answer,
   });
-  const [edit, setEdit] = useState(false);
-  const [body, setBody, { loading }] = useSyncedState(
+  const [edit, setEdit] = useState(0);
+  const [bodyServer, setBodyServer, { loading: bodyLoading }] = useSyncedState(
     component?.props?.body,
     component?.props?.setBody
   );
+
+  const [body, setBody] = useState(bodyServer);
+
   return (
     <Card sx={{ mb: 1 }} color="info">
       <FlexBox>
@@ -315,62 +200,31 @@ const Answer = ({ answer }) => {
           {component?.props?.deleted && (
             <Alert severity="error">This post has been deleted.</Alert>
           )}
-          <CardContent sx={{ flex: 1 }}>
-            {edit && !component?.props?.deleted && (
-              <TextField
-                color={
-                  loading
-                    ? 'warning'
-                    : component?.props?.body === body
-                      ? 'success'
-                      : 'primary'
-                }
-                multiline
-                fullWidth
-                label={'Body' + (component?.props?.body !== body ? '...' : '')}
-                rows={7}
-                value={body}
-                onChange={(e) => !loading && setBody(e.target.value)}
-              ></TextField>
-            )}
-            {(!edit || component?.props?.deleted) && (
-              <Markdown center={false}>{component?.props?.body}</Markdown>
-            )}
-          </CardContent>
+          <ContentEditor
+            draft={DRAFT}
+            body={DRAFT ? body : bodyServer}
+            component={component}
+            edit={edit > 0}
+            loading={bodyLoading}
+            setBody={DRAFT ? setBody : setBodyServer}
+            setEdit={async (e) => {
+              if (!e) {
+                await setBodyServer(body);
+                setEdit(0);
+              } else {
+                setEdit(2);
+              }
+            }}
+          />
         </Box>
       </FlexBox>
 
-      {component?.props?.canDelete && (
-        <CardActions
-          sx={{
-            borderWidth: '0px',
-            borderBottomWidth: '1px',
-            borderStyle: 'dashed',
-            borderColor: 'secondary.main',
-          }}
-        >
-          <Button
-            disabled={component?.props?.deleted}
-            color="error"
-            onClick={() => component?.props?.del(!edit)}
-          >
-            Delete
-          </Button>
-          <Button
-            disabled={component?.props?.deleted}
-            onClick={() => setEdit(!edit)}
-          >
-            {!edit ? 'Edit' : 'Ok'}
-          </Button>
-
-          <Reactions data={component?.children?.[2]} />
-        </CardActions>
-      )}
-      {!component?.props?.canDelete && (
-        <CardActions>
-          <Reactions data={component?.children?.[2]} />
-        </CardActions>
-      )}
+      <AnswerActions
+        component={component}
+        edit={edit}
+        setEdit={setEdit}
+        draft={DRAFT}
+      />
       <CommunityComments id={answer?.children[1]?.component} />
     </Card>
   );

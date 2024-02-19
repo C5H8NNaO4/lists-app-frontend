@@ -22,13 +22,13 @@ import { useComponent, useLocalStorage } from '@state-less/react-client';
 import { calc } from '../../server-components/examples/VotingApp';
 import { Link as RouterLink } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
-import { PAGE_SIZE_POSTS } from '../../lib/const';
+import { PAGE_SIZE_POSTS, PAGE_START } from '../../lib/const';
 import { ViewCounter } from '../../server-components/examples/ViewCounter';
-import { FORUM_KEY } from '../../lib/config';
+import { FORUM_BASE_PATH, FORUM_KEY } from '../../lib/config';
 import { createPortal } from 'react-dom';
 
 export const CommunityPage = () => {
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(PAGE_START);
   const [pageSize, setPageSize] = useLocalStorage(
     'forum-page-size',
     PAGE_SIZE_POSTS
@@ -159,7 +159,8 @@ const Post = (post) => {
             <CardHeader
               title={
                 <Link
-                  to={`/community/${post.component}`}
+                  sx={{ color: 'secondary.main' }}
+                  to={`${FORUM_BASE_PATH}/${post.component}`}
                   component={RouterLink}
                 >
                   {post.props.title}
@@ -219,15 +220,16 @@ const PostOverviewMeta = ({ nVotes, nAnswers, post, plainText }) => {
       {plainText ? <span>{answersStr}</span> : <Chip label={answersStr}></Chip>}
       {post?.props?.canDelete && (
         <Chip
-          sx={{
-            backgroundColor: post.props.deleted
-              ? 'error.main'
+          variant="outlined"
+          color={
+            post.props.deleted
+              ? 'error'
               : post.props.locked
-              ? 'warning.main'
+              ? 'warning'
               : post.props.approved
-              ? 'success.main'
-              : undefined,
-          }}
+              ? 'success'
+              : undefined
+          }
           label={['deleted', 'locked', 'approved']
             .filter((k) => !!post.props[k])
             .join('. ')}
@@ -296,7 +298,11 @@ const Header = ({ pageSize, setPageSize }) => {
 export const NewPostButton = () => {
   return (
     <Button variant="contained" color="secondary" sx={{ ml: 'auto' }}>
-      <Link to="/new" component={RouterLink}>
+      <Link
+        to={`${FORUM_BASE_PATH}/new`}
+        component={RouterLink}
+        color={'#EEEEEE'}
+      >
         Ask Question
       </Link>
     </Button>
