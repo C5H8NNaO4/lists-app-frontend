@@ -159,8 +159,7 @@ const Post = (post) => {
             <CardHeader
               title={
                 <Link
-                  sx={{ color: 'secondary.main' }}
-                  to={`/${post.component}`}
+                  to={`/community/${post.component}`}
                   component={RouterLink}
                 >
                   {post.props.title}
@@ -224,10 +223,10 @@ const PostOverviewMeta = ({ nVotes, nAnswers, post, plainText }) => {
             backgroundColor: post.props.deleted
               ? 'error.main'
               : post.props.locked
-                ? 'warning.main'
-                : post.props.approved
-                  ? 'success.main'
-                  : undefined,
+              ? 'warning.main'
+              : post.props.approved
+              ? 'success.main'
+              : undefined,
           }}
           label={['deleted', 'locked', 'approved']
             .filter((k) => !!post.props[k])
