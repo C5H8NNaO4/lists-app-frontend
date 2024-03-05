@@ -181,7 +181,8 @@ const Comment = ({ comment, canDelete, wilson }) => {
   });
   const props = component?.props;
   const isOwnComment =
-    props.identity.email === session?.strategies?.[session.strategy]?.email ||
+    props.identity.email ===
+      session?.strategies?.[session.strategy || '']?.email ||
     (props.identity.strategy === 'anonymous' &&
       props.identity.id === JSON.parse(localStorage.id));
   const Icon = StrategyIcons[props?.identity?.strategy];
@@ -225,7 +226,8 @@ const CommunityComment = ({ comment, canDelete, wilson }) => {
   });
   const props = component?.props;
   const isOwnComment =
-    props.identity.email === session?.strategies?.[session.strategy]?.email ||
+    props.identity.email ===
+      session?.strategies?.[session.strategy || '']?.email ||
     (props.identity.strategy === 'anonymous' &&
       props.identity.id === JSON.parse(localStorage.id));
   const Icon = StrategyIcons[props?.identity?.strategy];

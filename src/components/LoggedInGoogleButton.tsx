@@ -36,7 +36,7 @@ export const LoggedInGoogleButton = () => {
     return null;
   }
 
-  const decoded = session.strategies.google.decoded;
+  const decoded = session.strategies?.google.decoded;
 
   return (
     <>
@@ -49,10 +49,10 @@ export const LoggedInGoogleButton = () => {
         color={state.animatedBackground ? 'info' : 'info'}
       >
         <Avatar
-          src={decoded.picture}
+          src={decoded?.picture}
           sx={{ width: 24, height: 24, mr: 1 }}
         ></Avatar>
-        {lessThanSmall ? '' : decoded.given_name}
+        {lessThanSmall ? '' : decoded?.given_name}
       </Button>
       <Menu
         id="basic-menu"
